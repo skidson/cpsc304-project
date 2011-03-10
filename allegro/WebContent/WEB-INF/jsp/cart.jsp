@@ -3,19 +3,13 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 
 <body>
-<!-- wrap starts here -->
 	<div id="wrap">
 		<c:set var="directory" value="home"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
-		<!-- content-wrap starts here -->
 		<div id="content-wrap">
-		
 			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
-				
 			<div id="main">
-				
 				<h2><a href="search.html">Shopping Cart</a></h2>
-				
 				<table><center><form method="post">			
 				
 					<tr>
@@ -53,25 +47,13 @@
 					
 				</form></center></table>
 				
-				
-				
-			</div>
+			</div> <!-- main -->
 		
-		<!-- content-wrap ends here -->	
-		</div>
+		</div> <!-- content-wrap -->	
 					
-		<!--footer starts here-->
-		<div id="footer">
-			
-			<p>
-			&copy; 2011 <strong>Allegro Music Ltd.</strong>
-			
-   		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				
-		</div>	
+		<%@ include file="/WEB-INF/jsp/footer.jsp" %>
 
-<!-- wrap ends here -->
-</div>
+</div> <!-- wrap -->
 
 </body>
 </html>

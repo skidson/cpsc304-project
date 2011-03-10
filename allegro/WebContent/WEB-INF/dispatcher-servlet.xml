@@ -8,9 +8,11 @@
         http://www.springframework.org/schema/beans 
         	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/context 
-        	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
-        
-    <context:component-scan base-package="ca.ubc.magic.icd.web.controller"/>
+        	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/aop 
+			http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+			
+    <context:component-scan base-package="ca.ubc.cs304.allegro.controller"/>
     
 	<bean id="handlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 		<property name="alwaysUseFullPath" value = "true" />
@@ -23,13 +25,13 @@
     <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
     
     <bean id="profile" class="ca.ubc.cs304.allegro.model.Profile" scope="session">
-		<property name="customer" value="true"/>
+		<property name="customer" value="false"/>
 		<property name="clerk" value="false"/>
 		<property name="manager" value="false"/>
 		<aop:scoped-proxy/>
 	</bean>
 	
-	<bean id="linkManager" class="ca.ubc.cs304.allegro.model.ProfileManager">
+	<bean id="profileManager" class="ca.ubc.cs304.allegro.model.ProfileManager">
 		<property name="profile" ref="profile"/>
 	</bean>
 	

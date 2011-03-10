@@ -3,12 +3,10 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 
 <body>
-<!-- wrap starts here -->
 	<div id="wrap">
 		<c:set var="directory" value="home"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		
-		<!-- content-wrap starts here -->
 		<div id="content-wrap">
 		
 			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
@@ -19,34 +17,24 @@
 				
 				<table>
 					<tr>
-						<td><a href="/login?role=customer"><img src="images/customer_logo.png" width="128" height="128" /></a></td>
-						<td><a href="/login?role=clerk"><img src="images/clerk_logo.png" width="128" height="128"/></a></td>
-						<td><a href="/login?role=manager"><img src="images/manager_logo.png" width="128" height="128"/></a></td>
+						<td><a href="<c:url value="/index/home?role=customer"/>"><img src="images/customer_logo.png" width="128" height="128" /></a></td>
+						<td><a href="<c:url value="/index/home?role=clerk"/>"><img src="images/clerk_logo.png" width="128" height="128"/></a></td>
+						<td><a href="<c:url value="/index/home?role=manager"/>"><img src="images/manager_logo.png" width="128" height="128"/></a></td>
 					</tr>
 					<tr>
-						<td><center><a href="/customer/home"><h1>Customer</h1></a></center></td>
-						<td><center><a href="/clerk/home"><h1>Clerk</h1></a></center></td>
-						<td><center><a href="/manager/home"><h1>Manager</h1></center></a></td>
+						<td align="center"><a href="<c:url value="/index/home?role=customer"/>"><h1>Customer</h1></a></td>
+						<td align="center"><a href="<c:url value="/index/home?role=clerk"/>"><h1>Clerk</h1></a></td>
+						<td align="center"><a href="<c:url value="/index/home?role=manager"/>"><h1>Manager</h1></a></td>
 					</tr>
 				</table>
 				
-			</div>
+			</div> <!-- main -->
 		
-		<!-- content-wrap ends here -->	
-		</div>
+		</div> <!-- content-wrap -->	
 					
-		<!--footer starts here-->
-		<div id="footer">
-			
-			<p>
-			&copy; 2011 <strong>Allegro Music Ltd.</strong>
-			
-   		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				
-		</div>	
+		<%@ include file="/WEB-INF/jsp/footer.jsp" %>
 
-<!-- wrap ends here -->
-</div>
+</div> <!-- wrap -->
 
 </body>
 </html>

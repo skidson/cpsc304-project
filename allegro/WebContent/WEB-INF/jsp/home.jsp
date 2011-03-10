@@ -9,8 +9,7 @@
 		<div id="content-wrap">
 			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
 			<div id="main">
-				
-				<h2>Search</h2>
+				<h2>Home</h2>
 				
 				<table><center><form method="post">			
 					<tr>
@@ -26,15 +25,25 @@
 					<td colSpan="2"><center><input class="button" value="          Search          " type="submit" /></center></td></tr>
 				</form></center></table>
 				
-				<!-- Search results here -->
+				<!-- Search results here --!>
 				
-			</div> <!-- main -->
+			</div>
 		
-		</div> <!-- content-wrap -->	
+		<!-- content-wrap ends here -->	
+		</div>
 					
-		<%@ include file="/WEB-INF/jsp/footer.jsp" %>
+		<!--footer starts here-->
+		<div id="footer">
+			
+			<p>
+			&copy; 2011 <strong>Allegro Music Ltd.</strong>
+			
+   		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				
+		</div>	
 
-</div> <!-- wrap -->
+<!-- wrap ends here -->
+</div>
 
 </body>
 </html>

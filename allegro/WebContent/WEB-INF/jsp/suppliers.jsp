@@ -3,17 +3,14 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 
 <body>
-<!-- wrap starts here -->
 	<div id="wrap">
 		<c:set var="directory" value="home"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
-		
-		<!-- content-wrap starts here -->
 		<div id="content-wrap">
 			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
 			<div id="main">
 				
-				<h2><a href="welcome.html">Manage Suppliers</a></h2>
+				<h2>Manage Suppliers</h2>
 				
 				<center><table>
 					<form method="post">
@@ -35,22 +32,13 @@
 					</form>	
 				</table></center>
 				
-			</div>
-		
-		<!-- content-wrap ends here -->	
-		</div>
-					
-		<!--footer starts here-->
-		<div id="footer">
+			</div> <!-- main -->
 			
-			<p>
-			&copy; 2011 <strong>Allegro Music Ltd.</strong>
-   		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				
-		</div>	
+		</div> <!-- content-wrap -->
+					
+		<%@ include file="/WEB-INF/jsp/footer.jsp" %>
 
-<!-- wrap ends here -->
-</div>
+</div> <!-- wrap -->
 
 </body>
 </html>
