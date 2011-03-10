@@ -4,7 +4,7 @@
 
 <body>
 	<div id="wrap">
-		<c:set var="directory" value="home"/>
+		<c:set var="directory" value="search"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		<div id="content-wrap">
 			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
@@ -14,16 +14,17 @@
 				
 				<table><center><form method="post">			
 					<tr>
-					<td><label>Category:</label></td>
-					<td colSpan="2"><select>
-						<option>Albums</option>
-						<option>Books</option>
-						<option>DVD</option>
-						<option>Sheet Music</option>
-					</select></td>
+						<td><label>Category:</label></td>
+						<td colSpan="2"><select>
+							<option>Albums</option>
+							<option>Books</option>
+							<option>DVD</option>
+							<option>Sheet Music</option>
+						</select></td>
 					</tr>
 					<tr><td><label>Keyword:</label></td><td><input type="text" size="30" name="j_password" /></td>
-					<td colSpan="2"><center><input class="button" value="          Search          " type="submit" /></center></td></tr>
+						<td colSpan="2"><center><input class="button" value="          Search          " type="submit" /></center></td>
+					</tr>
 				</form></center></table>
 				
 				<!-- Search results here -->

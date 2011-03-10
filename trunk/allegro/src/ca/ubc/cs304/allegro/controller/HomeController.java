@@ -16,29 +16,18 @@ public class HomeController {
 	@Autowired
 	private ProfileManager profileManager;
 	
-	@RequestMapping("/index/home")
-	public ModelAndView home(@RequestParam("role") String role) {
-		if (role.equals("manager"))
-			profileManager.setManagerAccess(true);
-		if (role.equals("clerk"))
-			profileManager.setClerkAccess(true);
-		if (role.equals("customer"))
-			profileManager.setCustomerAccess(true);
-		
-		switch(profileManager.getProfile().getPermissionLevel()) {
-		case 1:
-			return clerkHome();
-		case 2:
-			return managerHome();
-		default:
-			return customerHome();
-		}
+	@RequestMapping("/index/welcome")
+	public ModelAndView welcome() {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		return new ModelAndView("welcome", model);
 	}
 	
 	@RequestMapping("/manager/home")
 	public ModelAndView managerHome() {
+		profileManager.setManagerAccess(true);
+		profileManager.setClerkAccess(false);
+		profileManager.setCustomerAccess(false);
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		
 		// TODO duplicate supplyController behaviour here
 		
 		return new ModelAndView("suppliers", model);
@@ -46,6 +35,9 @@ public class HomeController {
 	
 	@RequestMapping("/clerk/home")
 	public ModelAndView clerkHome() {
+		profileManager.setManagerAccess(false);
+		profileManager.setClerkAccess(true);
+		profileManager.setCustomerAccess(false);
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		
 		// TODO duplicate purchaseController behaviour here
@@ -55,6 +47,9 @@ public class HomeController {
 	
 	@RequestMapping("/customer/home")
 	public ModelAndView customerHome() {
+		profileManager.setManagerAccess(false);
+		profileManager.setClerkAccess(false);
+		profileManager.setCustomerAccess(true);
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		
 		// TODO duplicate searchController behaviour here

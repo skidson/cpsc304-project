@@ -4,12 +4,12 @@
 
 <body>
 	<div id="wrap">
-		<c:set var="directory" value="home"/>
+		<c:set var="directory" value="cart"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		<div id="content-wrap">
 			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
 			<div id="main">
-				<h2><a href="search.html">Shopping Cart</a></h2>
+				<h2>Shopping Cart</h2>
 				<table><center><form method="post">			
 				
 					<tr>
