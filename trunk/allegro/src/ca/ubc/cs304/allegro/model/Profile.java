@@ -42,6 +42,15 @@ public class Profile implements Serializable {
 	public void setCustomer(boolean customer) {
 		this.customer = customer;
 	}
+	
+	public int getPermissionLevel() {
+		int level = 0;
+		if (clerk)
+			level++;
+		if(manager)
+			level++;
+		return level;
+	}
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
