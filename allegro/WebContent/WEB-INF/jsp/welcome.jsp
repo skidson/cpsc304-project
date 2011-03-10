@@ -17,14 +17,14 @@
 				
 				<table>
 					<tr>
-						<td><a href="<c:url value="/index/home?role=customer"/>"><img src="images/customer_logo.png" width="128" height="128" /></a></td>
-						<td><a href="<c:url value="/index/home?role=clerk"/>"><img src="images/clerk_logo.png" width="128" height="128"/></a></td>
-						<td><a href="<c:url value="/index/home?role=manager"/>"><img src="images/manager_logo.png" width="128" height="128"/></a></td>
+						<td><a href="<c:url value="/customer/home"/>"><img src="<c:url value="/images/customer_logo.png"/>" width="128" height="128" /></a></td>
+						<td><a href="<c:url value="/clerk/home"/>"><img src="<c:url value="/images/clerk_logo.png"/>" width="128" height="128"/></a></td>
+						<td><a href="<c:url value="/manager/home"/>"><img src="<c:url value="/images/manager_logo.png"/>" width="128" height="128"/></a></td>
 					</tr>
 					<tr>
-						<td align="center"><a href="<c:url value="/index/home?role=customer"/>"><h1>Customer</h1></a></td>
-						<td align="center"><a href="<c:url value="/index/home?role=clerk"/>"><h1>Clerk</h1></a></td>
-						<td align="center"><a href="<c:url value="/index/home?role=manager"/>"><h1>Manager</h1></a></td>
+						<td align="center"><a href="<c:url value="/customer/home"/>"><h1>Customer</h1></a></td>
+						<td align="center"><a href="<c:url value="/clerk/home"/>"><h1>Clerk</h1></a></td>
+						<td align="center"><a href="<c:url value="/manager/home"/>"><h1>Manager</h1></a></td>
 					</tr>
 				</table>
 				

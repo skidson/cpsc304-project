@@ -15,6 +15,7 @@
 <!-- menu -->	
 <div  id="menu">
 	<ul>
+		<li <c:if test="${directory == 'home'}" >id="current"</c:if>><a href="<c:url value="/index/welcome"/>">Index</a></li>
 		<!-- Manager -->
 		<c:if test="${profile.manager}">
 			<li <c:if test="${directory == 'suppliers'}" >id="current"</c:if>><a href="<c:url value="/manager/suppliers"/>">Suppliers</a></li>

@@ -23,24 +23,24 @@ public class Profile implements Serializable {
 		return manager;
 	}
 
-	public void setManager(boolean manager) {
-		this.manager = manager;
+	public void setManager(boolean access) {
+		this.manager = access;
 	}
 
 	public boolean isClerk() {
 		return clerk;
 	}
 
-	public void setClerk(boolean clerk) {
-		this.clerk = clerk;
+	public void setClerk(boolean access) {
+		this.clerk = access;
 	}
 
 	public boolean isCustomer() {
 		return customer;
 	}
 
-	public void setCustomer(boolean customer) {
-		this.customer = customer;
+	public void setCustomer(boolean access) {
+		this.customer = access;
 	}
 	
 	public int getPermissionLevel() {
