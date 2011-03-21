@@ -1,16 +1,3 @@
-/********************************************
-   AUTHOR:  			Erwin Aligam 
-   WEBSITE:   			http://www.styleshout.com/
-	TEMPLATE NAME:		Envision
-   TEMPLATE CODE: 	S-0013
-   VERSION:          1.1
-	LAST MODIFIED     Nov-14-2007 	
- *******************************************/
- 
-/********************************************
-   HTML ELEMENTS
-********************************************/ 
-
 /* Top Elements */
 * { margin: 0; padding: 0; outline: 0 }
 
@@ -105,7 +92,7 @@ th strong {
 	color: #fff;
 }
 th {
-	background: #93BC0C;
+	background: #9f4feb;
 	height: 29px;
 	padding-left: 12px;
 	padding-right: 12px;
@@ -283,10 +270,10 @@ input.button {
 	padding-right: 20px;	
 }
 #menu ul li a:hover {
-	color: #D4E59F;	
+	color: #f0ccff;	
 }
 #menu ul li#current a {	
-	color: #D4E59F;
+	color: #f0ccff;
 }
 
 /* Main Column */
@@ -299,7 +286,7 @@ input.button {
 #main h2 {
 	margin-top: 10px;
 	font: Bold 140% 'Trebuchet MS', Tahoma, Sans-serif;
-	color: #88ac0b; 
+	color: #9f4feb; 
 	padding: 5px 0 5px 25px; 	
 	border-bottom: 1px solid #EFF0F1;
 	background: #FFF url(<%=request.getContextPath()%>/images/square-green.png) no-repeat 3px 50%;	
@@ -307,7 +294,7 @@ input.button {
 }
 #main h2 a {
 	background: none;
-	color: #88ac0b;
+	color: #4b2f69;
 	text-decoration: none;
 }
 
@@ -339,13 +326,13 @@ input.button {
 	float: right;
 	width: 26.5%;
 	padding: 0; margin: 0;	
-	color: #68774A;	
+	color: #6d4a77;	
 }	
 #sidebar h3 {
 	margin-top: 10px;
 	padding: 5px 5px; 
 	font: bold 1.4em 'Trebuchet MS', Tahoma, Sans-serif;
-	color: #728D26;	
+	color: #4a2969;	
 }
 #sidebar ul.sidemenu {
 	list-style: none;
@@ -359,7 +346,7 @@ input.button {
 	background: url(<%=request.getContextPath()%>/images/dots.jpg) repeat-x left bottom;
 	padding: 4px 0 4px 5px;
 	margin: 0 2px;	
-	color: #68774A;	
+	color: #57436f;	
 }
 * html body #sidebar ul.sidemenu li {
 	height: 1%;
