@@ -1,6 +1,8 @@
 package ca.ubc.cs304.allegro.controller;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +28,7 @@ public class HomeController {
 	@RequestMapping("/index/test")
 	public ModelAndView test() {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		JDBCManager database = new JDBCManager();
-		try {
-			database.show_item();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		
 		return new ModelAndView("welcome", model);
 	}
 	
