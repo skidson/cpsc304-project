@@ -10,6 +10,7 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			/WEB-INF/allegro-security.xml
+			/WEB-INF/allegro-services.xml
 		</param-value>
 	</context-param>
 	
