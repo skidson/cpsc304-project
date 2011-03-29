@@ -20,11 +20,14 @@
 	
 	<authentication-manager>
 		<authentication-provider>
-			<user-service>
+			<jdbc-user-service data-source-ref="allegroDatabase"
+				users-by-username-query="SELECT username, password, enabled from user WHERE user.username=?"
+		
+			<!--<user-service>
 				<user name="manager" password="baus" authorities="ROLE_ADMIN,ROLE_USER" />
 				<user name="clerk" password="password" authorities="ROLE_USER" /> 
 				<user name="customer" password="abc" authorities="ROLE_USER" />
-			</user-service>
+			</user-service> -->
 		</authentication-provider>
 	</authentication-manager>
 	

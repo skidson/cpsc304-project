@@ -5,10 +5,12 @@ import java.sql.SQLException;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 
 import ca.ubc.cs304.allegro.model.Customer;
 
-public class HibernateService {
+public class DatabaseService {
+	
 	private HibernateTemplate template;
 	
 	public Customer loadCustomer(final String id) {
