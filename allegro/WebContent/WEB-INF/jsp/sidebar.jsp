@@ -20,5 +20,14 @@
 			<li>50% off Justin Bieber sale lasts until Feb 14!</li>
 			<li>Don't miss Customer Appreciation day, Friday February 4th!</li>
 		</c:if>
+		
+		<h3>User Accounts:</h3>
+		<li><b>manager</b> - baus</li>
+		<li><b>clerk</b> - password</li>
+		<li><b>customer</b> - abc</li>
+		<li>
+			Note: All user accounts have access to all menus, return to Index to switch
+			between them.
+		</li>
 	</ul>
 </div>

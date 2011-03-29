@@ -3,7 +3,7 @@ package ca.ubc.cs304.allegro.model;
 public class Customer {
 	private String name, cid, password, address;
 	private long phone;
-
+	
 	public String getName() {
 		return name;
 	}

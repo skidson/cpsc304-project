@@ -42,23 +42,24 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 	
-	<!-- <bean id="database" class="org.apache.commons.dbcp.BasicDataSource" >
-	    <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
-	    <property name="url" value="jdbc:mysql://localhost/samples"/>
-	    <property name="username" value="root"/>
-	    <property name="password" value="pwForRoot"/>
+	<!-- <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	    <property name="dataSource" ref="allegroDatabase"/>
+	    <property name="annotatedClasses">
+	        <list>
+	            <value>ca.ubc.cs304.allegro.model.Customer</value>
+	        </list> 
+	    </property>
+	    <property name="hibernateProperties">
+	    	<props>
+	    		<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dailect</prop>
+	    		<prop key="hibernate.show_sql">true</prop>
+	    		<prop key="hibernate.hbm2ddl.auto">create</prop>
+	    	</props>
+	    </property> 
 	</bean>
 	
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-    <property name="dataSource" ref="database"/>
-    <property name="mappingResources">
-        <list>
-            <value>./resources/customer.hbm.xml</value>
-        </list>
-    </property>
-    <property name="hibernateProperties">
-        <value>hibernate.dialect=org.hibernate.dialect.Oracle10gDialect</value>
-    </property> 
-</bean>  -->
+	<bean id="databaseService" class="ca.ubc.cs304.allegro.services.DatabaseService">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>  -->
 	
 </beans>
