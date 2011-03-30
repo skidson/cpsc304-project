@@ -7,31 +7,46 @@
 		<c:set var="directory" value="reports"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		<div id="content-wrap">
-			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
 			<div id="main">
 				
 				<h2>Generate Store Report</h2>
-				<table><form method="post" action="">
+				<table><form method="post" action="/allegro/">
 					<tr>
 						<td colSpan="2">
 						<b>Store:</b>
-							<select>
-								<option>#1 - Marine & Byrne</option>
-								<option>#2 - Coquitlam</option>
-								<option>#3 - Vancouver</option>
-								<option>#4 - Surrey</option>
+							<select width="125">
+								<option>Marine & Byrne</option>
+								<option>Coquitlam</option>
+								<option>Vancouver</option>
+								<option>Surrey</option>
 							</select><br>
 						</td>
 					<tr>
-						<td colSpan="2">
-							<b>Report Type:</b><br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="group1" value="Daily" checked>Daily<br>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="group1" value="Weekly">Weekly<br><br>
-						</td>
-					</tr>
-					<tr>
-						<td><b>Start Date:</b><br><iframe src="https://www.google.com/calendar/embed?title=Start%20Date&amp;showTitle=0&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=0&amp;showTz=0&amp;height=200&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=en.canadian%23holiday%40group.v.calendar.google.com&amp;color=%23B1440E&amp;ctz=America%2FVancouver" style=" border-width:0 " width="200" height="200" frameborder="0" scrolling="no"></iframe></td> 
-						<td><b>End Date:</b><br><iframe src="https://www.google.com/calendar/embed?title=Start%20Date&amp;showTitle=0&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=0&amp;showTz=0&amp;height=200&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=en.canadian%23holiday%40group.v.calendar.google.com&amp;color=%23B1440E&amp;ctz=America%2FVancouver" style=" border-width:0 " width="200" height="200" frameborder="0" scrolling="no"></iframe></td>
+						<td><b>Date:</b>
+							<select>
+								<c:forEach var="i" begin="1" end="31">
+								<option>${i}</option>
+								</c:forEach>
+							</select>
+							<select>
+								<option>January</option>
+								<option>February</option>
+								<option>March</option>
+								<option>April</option>
+								<option>May</option>
+								<option>June</option>
+								<option>July</option>
+								<option>August</option>
+								<option>September</option>
+								<option>October</option>
+								<option>November</option>
+								<option>December</option>
+							</select>
+							<select width="125">
+								<c:forEach var="i" begin="2000" end="2011">
+								<option>${i}</option>
+								</c:forEach>
+							</select><br></td> 
 					</tr>
 					<tr><td colSpan="2"><br><br><br><center><input class="button" value=" Generate Report " type="submit"/><center></td></tr>
 				</form></table>

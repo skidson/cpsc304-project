@@ -15,9 +15,10 @@
 				<center><table>
 					<form method="post">
 						<tr><th>Name</th><th>Address</th><th>Phone</th><th>Status</th></tr>
-						<tr><td>Amazon.com</td><td>1516 2nd Ave.<br />Seattle, WA 98101</td><td>(800) 201-7575</td><td>Active</td><td><input class="button" value=" Delete " size="3"/></td></tr>
+						<tr><td>Amazon.com</td><td>1516 2nd Ave.<br />Seattle, WA 98101</td><td>(800) 201-7575</td><td>Active</td><td><input class="button" value=" Delete " size="3"/></td><td><input class="button" value=" Update " size="3"/>
+						</tr>
 						
-						<tr><td>BadMusic Inc.</td><td>123 Fakestreet<br />Amsterdam, 9999</td><td>(111) 555-0678</td><td>Active</td><td><input class="button" value=" Delete " size="3"/></td></tr>
+						<tr><td>BadMusic Inc.</td><td>123 Fakestreet<br />Amsterdam, 9999</td><td>(111) 555-0678</td><td>Active</td><td><input class="button" value=" Delete " size="3"/></td><td><input class="button" value=" Update " size="3"/></tr>
 						
 						<tr>
 							<td><input type="text" size="10" name="j_name" /></td>
