@@ -81,18 +81,26 @@ public class JDBCManager {
 	}
 	
 	/**
-	 * Fetches tuples from the indicated table that meet the conditions specified by
-	 * "key = value" for each entry in the passed Map.
-	 * @param table - the table to fetch tuples from.
+	 * Returns the list of results for a query of multiple tables where returned
+	 * tuples meet the conditions specified by "key = value" for each entry 
+	 * in the passed Map. The entries for the list returned will be the type
+	 * indicated by the first Table of the ones queried.
+	 * @param tables - the list of tables to query.
 	 * @param conditions - conditions "key = value" for tuples returned
-	 * @return The list of tuples fetched. These items are safe to typecast
-	 * to the class representing the table specified.
+	 * @return The result set for this query.
 	 * @throws SQLException
 	 */
-	public static List<AllegroItem> select(Table table, Map<String, Object> conditions) throws SQLException {
+	public static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions) throws SQLException {
 		// REQUIRES: Class names in AllegroItem's package match database's names
 		// Submit the query and fetch the results
-		ResultSet results = select(table.toString(), conditions);
+		
+		StringBuilder from = new StringBuilder();
+		for (Table table : tables)
+			from.append(table.toString() + ", ");
+		int index = from.lastIndexOf(", ");
+		from.replace(index, index+1, "");
+		
+		ResultSet results = select(from.toString(), conditions);
 		
 		// Get the package directory of database items we will instantiate
 		String directory = AllegroItem.class.getPackage().getName() + ".";
@@ -102,7 +110,7 @@ public class JDBCManager {
 			
 			// Generate the list of setters for the class we are instantiating
 			List<Method> setters = new ArrayList<Method>();
-			for (Method method : Class.forName(directory + table.toString()).getMethods()) {
+			for (Method method : Class.forName(directory + tables.get(0).toString()).getMethods()) {
 				if (method.getName().startsWith("set"))
 					setters.add(method);
 			}
@@ -111,7 +119,7 @@ public class JDBCManager {
 			results.first();
 			while(!results.isAfterLast()) {
 				// Instantiate a new class for the type of table we will retrieve
-				AllegroItem entry = (AllegroItem) Class.forName(directory + table.toString()).newInstance();
+				AllegroItem entry = (AllegroItem) Class.forName(directory + tables.get(0).toString()).newInstance();
 				
 				for (Method method : setters) {
 					String column = method.getName().replace("set", "").toLowerCase();
@@ -141,21 +149,18 @@ public class JDBCManager {
 	}
 	
 	/**
-	 * Returns the ResultSet for a query of multiple tables where returned
-	 * tuples meet the conditions specified by "key = value" for each entry 
-	 * in the passed Map.
-	 * @param tables - the list of tables to query.
+	 * Fetches tuples from the indicated table that meet the conditions specified by
+	 * "key = value" for each entry in the passed Map.
+	 * @param table - the table to fetch tuples from.
 	 * @param conditions - conditions "key = value" for tuples returned
-	 * @return The result set for this query.
+	 * @return The list of tuples fetched. These items are safe to typecast
+	 * to the class representing the table specified.
 	 * @throws SQLException
 	 */
-	public static ResultSet select(List<Table> tables, Map<String, Object> conditions) throws SQLException {
-		StringBuilder from = new StringBuilder();
-		for (Table table : tables)
-			from.append(table.toString() + ", ");
-		int index = from.lastIndexOf(", ");
-		from.replace(index, index+1, "");
-		return (select(from.toString(), conditions));
+	public static List<AllegroItem> select(Table table, Map<String, Object> conditions) throws SQLException {
+		List<Table> tables = new ArrayList<Table>();
+		tables.add(table);
+		return select(tables, conditions);
 	}
 	
 	// Helper method for use by all select methods

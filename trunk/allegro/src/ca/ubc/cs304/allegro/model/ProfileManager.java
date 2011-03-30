@@ -25,4 +25,8 @@ public class ProfileManager {
 		profile.setCustomer(access);
 	}
 	
+	public void addItemToCart(Item item) {
+		profile.addToCart(item);
+	}
+	
 }
