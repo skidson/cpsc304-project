@@ -24,7 +24,7 @@
 					<form method="post" action="<c:url value="/j_spring_security_check" />">			
 						<label>Username:</label><input type="text" size = "30" name="j_username" />
 						<label>Password:</label><input type="password" size="30" name="j_password" /> <br />
-						<a href="register.html?error=false">Register</a> | <a href="<c:url value="/basic/forgotPassword"/>">Forgot your password?</a>
+						<a href="<c:url value="/index/register"/>">Register</a> | <a href="<c:url value="/basic/forgotPassword"/>">Forgot your password?</a>
 						<br />
 						<label><input type="checkbox" name="_spring_security_remember_me" /> Remember me</label>
 						<center><input class="button" value="          Login          " type="submit" /></center>

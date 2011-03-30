@@ -8,9 +8,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import ca.ubc.cs304.allegro.jdbc.JDBCManager;
+import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.services.UserService;
 
@@ -25,13 +27,32 @@ public class HomeController {
 		return new ModelAndView("welcome", model);
 	}
 	
-	@RequestMapping("/index/test")
-	public ModelAndView test() {
+	@RequestMapping("/index/register")
+	public ModelAndView register() {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		
-		return new ModelAndView("welcome", model);
+		return new ModelAndView("register", model);
 	}
 	
+	@RequestMapping("/index/completeRegistration")
+	public ModelAndView completeRegistration(@RequestParam("j_name") String name, @RequestParam("j_username") String username,
+								@RequestParam("j_address") String address, @RequestParam("j_phone") int phone, 
+								@RequestParam("j_password") String password) {
+		
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add(username);
+		parameters.add(password);
+		parameters.add(name);
+		parameters.add(address);
+		parameters.add(new Integer(phone));
+		try {
+			JDBCManager.insert(Table.Customer, parameters);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		return new ModelAndView("welcome", model);
+	}
 	
 	@RequestMapping("/manager/home")
 	public ModelAndView managerHome() {

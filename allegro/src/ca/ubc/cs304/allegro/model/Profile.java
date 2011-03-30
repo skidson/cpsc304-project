@@ -1,6 +1,8 @@
 package ca.ubc.cs304.allegro.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Profile implements Serializable {
 	private static final long serialVersionUID = -799432430115623170L;
@@ -8,6 +10,7 @@ public class Profile implements Serializable {
 	private boolean clerk = false;
 	private boolean customer = false;
 	private String username;
+	private List<Item> shoppingCart = new ArrayList<Item>();
 	
 	public String getUsername() {
 		return username;
@@ -17,6 +20,17 @@ public class Profile implements Serializable {
 		this.username = username;
 	}
 
+	public List<Item> getShoppingCart() {
+		return shoppingCart;
+	}
+
+	public void setShoppingCart(List<Item> shoppingCart) {
+		this.shoppingCart = shoppingCart;
+	}
+
+	public void addToCart(Item item){
+		shoppingCart.add(item);
+	}
 	public Profile() {}
 
 	public boolean isManager() {

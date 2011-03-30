@@ -12,19 +12,26 @@
 				
 				<h2>Search</h2>
 				
-				<table><center><form method="post">			
+				<table><center><form method="post" action="/allegro/customer/performSearch">			
 					<tr>
 						<td><label>Category:</label></td>
-						<td colSpan="2"><select>
-							<option>Albums</option>
-							<option>Books</option>
-							<option>DVD</option>
-							<option>Sheet Music</option>
+						<td colSpan="2"><select name="j_category">
+							<option>Rock</option>
+							<option>Country</option>
+							<option>New Age</option>
+							<option>Pop</option>
+							<option>Classical</option>
+							<option>Instrumental</option>
+							<option>Rap</option>
+							<option>All</option>
 						</select></td>
 					</tr>
-					<tr><td><label>Keyword:</label></td><td><input type="text" size="30" name="j_password" /></td>
-						<td colSpan="2"><center><input class="button" value="          Search          " type="submit" /></center></td>
+					<tr><td><label>Title (Optional):</label></td><td><input type="text" size="30" name="j_title" /></td>
 					</tr>
+					<tr>
+					<td><label>Lead Singer(Optional)</label></td><td><input type="text" size="30" name="j_leadSinger" /></td>
+					</tr>
+					<tr><td></td><td><input class="button" value=" Search " type="submit"/></td></tr>
 				</form></center></table>
 				
 				<!-- Search results here -->

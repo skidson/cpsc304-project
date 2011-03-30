@@ -32,4 +32,10 @@ public class ManagerController {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		return new ModelAndView("shipments", model);
 	}
+	
+	@RequestMapping("/manager/updateStock")
+	public ModelAndView updateStock() {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		return new ModelAndView("updateStock", model);
+	}
 }

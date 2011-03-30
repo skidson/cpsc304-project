@@ -12,15 +12,12 @@
 				<h2>Register</h2>
 				
 				<center><table>
-					<form method="post">
-						<tr><td><label>First Name:</label></td><td><input type="text" size = "30" name="j_firstname" /></td></tr>
-						<tr><td><label>Last Name:</label></td><td><input type="text" size = "30" name="j_lastname" /></td></tr>
+					<form method="post" action="/allegro/index/completeRegistration">
+						<tr><td><label>Name:</label></td><td><input type="text" size = "30" name="j_name" /></td></tr>
+						<tr><td><label>Username:</label></td><td><input type="text" size="30" name="j_username" /></td></tr>
 						<tr><td><label>Address:</label></td><td><input type="text" size = "30" name="j_address" /></td></tr>
-						<tr><td><label>Email Address:</label></td><td><input type="text" size = "30" name="j_address" /></td></tr>
-						<tr><td colSpan="2"><br /></td></tr>
-						<tr><td><label>Username:</label></td><td><input type="text" size = "30" name="j_username" /></td></tr>
+						<tr><td><label>Phone:</label></td><td><input type="text" size="30" name="j_phone" /></td></tr>
 						<tr><td><label>Password:</label></td><td><input type="password" size="30" name="j_password" /></td></tr>
-						<tr><td><label>Verify Password:</label></td><td><input type="password" size="30" name="j_password2" /></td></tr>
 						
 						<tr><td colSpan="2"><br /><br /><center><input class="button" value="          Submit          " type="submit" /></center></td><tr>
 					</form>	
