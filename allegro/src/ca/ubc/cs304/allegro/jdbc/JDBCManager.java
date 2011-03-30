@@ -1,5 +1,6 @@
 package ca.ubc.cs304.allegro.jdbc;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -24,20 +25,24 @@ public class JDBCManager {
 	public enum Table { Customer, HasSong, Item, LeadSinger, Purchase, PurchaseItem,
 		ReturnItem, Returns, ShipItem, Shipment, Store, Stored, Supplier};
 	
-	private static Connection connect() throws SQLException {
-		if (!registered) {
-			DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-			registered = true;
-		}
-		Connection connection = DriverManager.getConnection(HOST, USERNAME, PASSWORD);
-		return connection;
-	}
-	
+	/**
+	 * Manually inserts a tuple to the indicated table containing values
+	 * specified by parameters. Parameters are order-dependant; to skip a
+	 * value, set it to null.
+	 * @param table
+	 * @param parameters
+	 * @throws SQLException
+	 */
 	public static void insert(Table table, List<Object> parameters) throws SQLException {
 		modify("INSERT INTO " + table.toString() + 
 				" VALUES " + initParams(parameters.size()), parameters);
 	}
 	
+	/**
+	 * Inserts this item to it's appropriate table.
+	 * @param item
+	 * @throws SQLException
+	 */
 	public static void insert(AllegroItem item) throws SQLException {
 		insert(item.getTable(), item.getParameters());
 	}
@@ -64,16 +69,36 @@ public class JDBCManager {
 				" WHERE " + properties, parameters);
 	}
 	
+	/**
+	 * Fetches the entire table from the database.
+	 * @param table - the table to fetch.
+	 * @return The list of items in the fetched table. These items are safe to typecast
+	 * to the class representing the table specified.
+	 * @throws SQLException
+	 */
 	public static List<AllegroItem> select(Table table) throws SQLException {
 		return select(table, null);
 	}
 	
+	/**
+	 * Fetches tuples from the indicated table that meet the conditions specified by
+	 * "key = value" for each entry in the passed Map.
+	 * @param table - the table to fetch tuples from.
+	 * @param conditions - conditions "key = value" for tuples returned
+	 * @return The list of tuples fetched. These items are safe to typecast
+	 * to the class representing the table specified.
+	 * @throws SQLException
+	 */
 	public static List<AllegroItem> select(Table table, Map<String, Object> conditions) throws SQLException {
+		// REQUIRES: Class names in AllegroItem's package match database's names
+		// Submit the query and fetch the results
 		ResultSet results = select(table.toString(), conditions);
+		
+		// Get the package directory of database items we will instantiate
 		String directory = AllegroItem.class.getPackage().getName() + ".";
+		
 		List<AllegroItem> resultList = new ArrayList<AllegroItem>();
 		try {
-			AllegroItem entry = (AllegroItem) Class.forName(directory + table.toString()).newInstance();
 			
 			// Generate the list of setters for the class we are instantiating
 			List<Method> setters = new ArrayList<Method>();
@@ -82,20 +107,27 @@ public class JDBCManager {
 					setters.add(method);
 			}
 			
+			// For each row in the table, construct an object of type indicated by Table
 			results.first();
 			while(!results.isAfterLast()) {
-				entry = (AllegroItem) Class.forName(directory + table.toString()).newInstance();
+				// Instantiate a new class for the type of table we will retrieve
+				AllegroItem entry = (AllegroItem) Class.forName(directory + table.toString()).newInstance();
+				
 				for (Method method : setters) {
 					String column = method.getName().replace("set", "").toLowerCase();
 					Class paramType = method.getParameterTypes()[0];
-					if (paramType == Integer.class)
-						method.invoke(entry, results.getInt(column));
-					else if (paramType == String.class)
-						method.invoke(entry, results.getString(column));
-					else if (paramType == Long.class)
-						method.invoke(entry, results.getDate(column).getTime());
-					else if (paramType == Float.class)
-						method.invoke(entry, results.getFloat(column));
+					try {
+						if (paramType == Integer.class)
+							method.invoke(entry, results.getInt(column));
+						else if (paramType == String.class)
+							method.invoke(entry, results.getString(column));
+						else if (paramType == Long.class)
+							method.invoke(entry, results.getDate(column).getTime());
+						else if (paramType == Float.class)
+							method.invoke(entry, results.getFloat(column));
+					} catch (InvocationTargetException e2) {
+						// Column did not exist in result, leave null
+					}
 				}
 				resultList.add((AllegroItem)entry);
 				results.next();
@@ -108,6 +140,15 @@ public class JDBCManager {
 		}
 	}
 	
+	/**
+	 * Returns the ResultSet for a query of multiple tables where returned
+	 * tuples meet the conditions specified by "key = value" for each entry 
+	 * in the passed Map.
+	 * @param tables - the list of tables to query.
+	 * @param conditions - conditions "key = value" for tuples returned
+	 * @return The result set for this query.
+	 * @throws SQLException
+	 */
 	public static ResultSet select(List<Table> tables, Map<String, Object> conditions) throws SQLException {
 		StringBuilder from = new StringBuilder();
 		for (Table table : tables)
@@ -135,13 +176,21 @@ public class JDBCManager {
 		return fetch(query, parameters);
 	}
 	
+	private static Connection connect() throws SQLException {
+		if (!registered) {
+			DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+			registered = true;
+		}
+		Connection connection = DriverManager.getConnection(HOST, USERNAME, PASSWORD);
+		return connection;
+	}
+	
 	private static ResultSet fetch(String query, List<Object> parameters) throws SQLException {
 		Connection connection = connect();
 		PreparedStatement statement = connection.prepareStatement(query);
 		if (parameters != null)
 			finalizeParams(statement, parameters);
 		ResultSet result = statement.executeQuery();
-//		connection.close();
 		return result;
 	}
 	
