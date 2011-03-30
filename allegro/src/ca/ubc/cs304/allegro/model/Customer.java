@@ -1,9 +1,24 @@
 package ca.ubc.cs304.allegro.model;
 
-public class Customer {
+import java.util.ArrayList;
+import java.util.List;
+
+import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
+
+public class Customer implements AllegroItem {
 	private String name, cid, password, address;
-	private long phone;
+	private int phone;
 	
+	public Customer(String name, String cid, String password, String address,
+			Integer phone) {
+		super();
+		this.name = name;
+		this.cid = cid;
+		this.password = password;
+		this.address = address;
+		this.phone = phone;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -28,7 +43,7 @@ public class Customer {
 		return phone;
 	}
 
-	public void setPhone(long phone) {
+	public void setPhone(Integer phone) {
 		this.phone = phone;
 	}
 
@@ -42,5 +57,27 @@ public class Customer {
 
 	public void setCid(String cid) {
 		this.cid = cid;
+	}
+	
+	public List<Object> getParameters() {
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add(cid);
+		parameters.add(password);
+		parameters.add(name);
+		parameters.add(address);
+		parameters.add(new Integer(phone));
+		return parameters;
+	}
+	
+	public Table getTable() {
+		return Table.Customer;
+	}
+	
+	public String toString() {
+		return ("cid: " + cid + 
+				"\npassword: " + password + 
+				"\nname: " + name + 
+				"\naddress: " + address + 
+				"\nphone: " + phone);
 	}
 }
