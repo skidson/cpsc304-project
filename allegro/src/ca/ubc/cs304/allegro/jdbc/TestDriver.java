@@ -49,6 +49,7 @@ public class TestDriver {
 			// Test for JDBCManager.select(Table, Map<String, Object>)
 			Map<String, Object> conditions = new HashMap<String, Object>();
 			conditions.put("company", "HMV");
+			conditions.put("category", "Country");
 			List<AllegroItem> results = JDBCManager.select(Table.Item, conditions);
 			for (AllegroItem result : results)
 				System.out.println(result.toString());

@@ -12,6 +12,8 @@ public class Profile implements Serializable {
 	private String username;
 	private List<Item> shoppingCart = new ArrayList<Item>();
 	
+	public Profile() {}
+	
 	public String getUsername() {
 		return username;
 	}
@@ -31,7 +33,6 @@ public class Profile implements Serializable {
 	public void addToCart(Item item){
 		shoppingCart.add(item);
 	}
-	public Profile() {}
 
 	public boolean isManager() {
 		return manager;
