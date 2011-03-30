@@ -2,14 +2,14 @@ package ca.ubc.cs304.allegro.jdbc;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class JDBCManager {
 	private static final String HOST = "jdbc:mysql://128.189.169.25:3306/cs304";
@@ -20,51 +20,78 @@ public class JDBCManager {
 	public enum Table { Customer, HasSong, Item, LeadSinger, Purchase, PurchaseItem,
 		ReturnItem, Returns, ShipItem, Shipment, Store, Stored, Supplier};
 	
-	public static void register() {
-		if (registered)
-			return;
-		
-		try {
+	private static Connection connect() throws SQLException {
+		if (!registered) {
 			DriverManager.registerDriver(new com.mysql.jdbc.Driver());
 			registered = true;
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
-	}
-
-	private static Connection connect() throws SQLException {
-		Connection connection = null;
-		connection = DriverManager.getConnection(HOST, USERNAME, PASSWORD);
+		Connection connection = DriverManager.getConnection(HOST, USERNAME, PASSWORD);
 		return connection;
 	}
 	
-	public static void insert(Table name, List<Object> parameters) throws SQLException {
-		register();
+	public static void insert(Table table, List<Object> parameters) throws SQLException {
+		modify("INSERT INTO " + table.toString() + 
+				" VALUES " + initParams(parameters.size()), parameters);
+	}
+	
+	/**
+	 * Deletes the tuples in the table that match all conditions "key = value" in the passed Map.
+	 * @param table - the table to remove tuples from.
+	 * @param conditions - the conditions for which to delete a given tuple.
+	 * @throws SQLException
+	 */
+	public static void delete(Table table, Map<String, Object> conditions) throws SQLException {
+		StringBuilder properties = new StringBuilder();
+		List<Object> parameters = new ArrayList<Object>();
+		Iterator<Map.Entry<String, Object>> iterator = conditions.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry<String, Object> condition = iterator.next();
+			properties.append(condition.getKey() + " = ?");
+			parameters.add(condition.getValue());
+			if (iterator.hasNext())
+				properties.append(" AND ");
+		}
 		
-		String table = name.toString();
+		modify("DELETE FROM " + table.toString() + 
+				" WHERE " + properties, parameters);
+	}
+	
+	public static ResultSet select(Table table) throws SQLException {
+		return fetch("SELECT * FROM " + table.toString(), null);
+	}
+	
+	public static ResultSet select(Table table, Map<String, Object> conditions) throws SQLException {
+		StringBuilder properties = new StringBuilder();
+		List<Object> parameters = new ArrayList<Object>();
+		Iterator<Map.Entry<String, Object>> iterator = conditions.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Map.Entry<String, Object> condition = iterator.next();
+			properties.append(condition.getKey() + " = ?");
+			parameters.add(condition.getValue());
+			if (iterator.hasNext())
+				properties.append(" AND ");
+		}
+		
+		return fetch("SELECT * FROM " + table.toString() + " WHERE " + properties, parameters);
+	}
+	
+	private static ResultSet fetch(String query, List<Object> parameters) throws SQLException {
 		Connection connection = connect();
+		PreparedStatement statement = connection.prepareStatement(query);
+		if (parameters != null)
+			finalizeParams(statement, parameters);
+		ResultSet result = statement.executeQuery();
+//		connection.close();
+		return result;
+	}
+	
+	private static void modify(String query, List<Object> parameters) throws SQLException {
+		Connection connection = connect();
+		PreparedStatement statement = connection.prepareStatement(query);
 		
-		StringBuilder query = new StringBuilder("INSERT INTO " + table + " VALUES ("); // "INSERT INTO " + Item + " VALUES (?,?,?,?,?,?,?)"
-		for (int i = 0; i < parameters.size(); i++)
-			query.append("?,");
-		int index = query.lastIndexOf(",");
-		query.replace(index, index+1, ")");
-		PreparedStatement statement = connection.prepareStatement(query.toString());
-		
+		// Replace placeholders with SQL appropriate values
 		try {
-			for (int i = 0; i < parameters.size(); i++) {
-				Object parameter = parameters.get(i);
-				if (parameter == null)
-					statement.setNull(i+1, java.sql.Types.NULL);
-				else if (parameter.getClass() == String.class)
-					statement.setString(i+1, (String)parameter);
-				else if (parameter.getClass() == Integer.class)
-					statement.setInt(i+1, (Integer)parameter);
-				else if (parameter.getClass() == BigDecimal.class)
-					statement.setBigDecimal(i+1, (BigDecimal)parameter);
-				else if (parameters.get(i) == Double.class)
-					statement.setDouble(i+1, (Double)parameter);
-			}
+			finalizeParams(statement, parameters);
 			statement.executeUpdate();			
 			statement.close();
 		} catch (Exception e) {
@@ -72,8 +99,31 @@ public class JDBCManager {
 		}
 	}
 	
-	public static void delete() {
-		
+	// Generate a list of placeholders given the number of parameters
+	private static String initParams(int num) {
+		StringBuilder query = new StringBuilder("(");
+		for (int i = 0; i < num; i++)
+			query.append("?,");
+		int index = query.lastIndexOf(",");
+		query.replace(index, index+1, ")");
+		return query.toString();
+	}
+	
+	private static void finalizeParams(PreparedStatement statement, 
+			List<Object> parameters) throws SQLException {
+		for (int i = 0; i < parameters.size(); i++) {
+			Object parameter = parameters.get(i);
+			if (parameter == null)
+				statement.setNull(i+1, java.sql.Types.NULL);
+			else if (parameter.getClass() == String.class)
+				statement.setString(i+1, (String)parameter);
+			else if (parameter.getClass() == Integer.class)
+				statement.setInt(i+1, (Integer)parameter);
+			else if (parameter.getClass() == BigDecimal.class)
+				statement.setBigDecimal(i+1, (BigDecimal)parameter);
+			else if (parameters.get(i) == Double.class)
+				statement.setDouble(i+1, (Double)parameter);
+		}
 	}
 	
 }
