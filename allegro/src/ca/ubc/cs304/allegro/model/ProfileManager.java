@@ -25,8 +25,12 @@ public class ProfileManager {
 		profile.setCustomer(access);
 	}
 	
-	public void addItemToCart(Item item) {
+	public void addToCart(Item item) {
 		profile.addToCart(item);
+	}
+	
+	public void removeFromCart(Item item) {
+		profile.removeFromCart(item);
 	}
 	
 }

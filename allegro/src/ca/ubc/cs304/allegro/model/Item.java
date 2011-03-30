@@ -41,8 +41,8 @@ public class Item implements AllegroItem {
 		this.type = Type.valueOf(type);
 	}
 
-	public Category getCategory() {
-		return category;
+	public String getCategory() {
+		return category.toString();
 	}
 
 	public void setCategory(String category) {
