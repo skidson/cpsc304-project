@@ -21,9 +21,9 @@ public class UserService {
 		return model;
 	}
 	
-	public static void removeFromCart(Item item, Map<String, Object> model) {
+	public static void removeFromCart(int index, Map<String, Object> model) {
 		Profile profile = manager.getProfile();
-		profile.removeFromCart(item);
+		profile.removeFromCart(index);
 		model.put("profile", profile);
 	}
 	
