@@ -158,6 +158,8 @@ public class JDBCManager {
 		String directory = AllegroItem.class.getPackage().getName() + ".";
 		
 		List<AllegroItem> resultList = new ArrayList<AllegroItem>();
+		if (results.getFetchSize() == 0)
+			return resultList;
 		try {
 			
 			// Generate the list of setters for the class we are instantiating

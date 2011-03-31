@@ -20,7 +20,7 @@ public class TestDriver {
 			List<Table> tables = new ArrayList<Table>();
 			tables.add(Table.Item);
 			tables.add(Table.HasSong);
-			conditions.put("HasSong.title", "sonata");
+			conditions.put("category", "country");
 			shared.add("upc");
 			group.add("upc");
 			List<AllegroItem> results = JDBCManager.search(tables, conditions, shared, group);
