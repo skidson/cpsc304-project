@@ -298,11 +298,11 @@ public class JDBCManager {
 				statement.setInt(i+1, (Integer)parameter);
 			else if (parameter.getClass() == BigDecimal.class)
 				statement.setBigDecimal(i+1, (BigDecimal)parameter);
-			else if (parameters.get(i) == Double.class)
+			else if (parameter.getClass() == Double.class)
 				statement.setDouble(i+1, (Double)parameter);
-			else if (parameters.get(i) == Date.class)
+			else if (parameter.getClass() == Date.class)
 				statement.setDate(i+1, (Date)parameter);
-			else if (parameters.get(i) == (Long)parameter)
+			else if (parameter.getClass() == Long.class)
 				statement.setLong(i+1, (Long)parameter);
 		}
 	}
