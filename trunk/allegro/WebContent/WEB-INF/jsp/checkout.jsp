@@ -37,15 +37,15 @@
 				<h2>Payment</h2>
 				<table>
 					<c:if test="${not empty error}"><font color="red">${error}</font></c:if>
-					<tr>
-						<td colSpan="2"><b>Store: </b><select name="in_store">
-						<c:forEach var="store" items="${stores}">
-							<option>${store.sname}</option>
-						</c:forEach>
-						</select></td>
-					</tr>
-					<tr />
 					<form method="post" action="/allegro/clerk/finalize">
+						<tr>
+							<td colSpan="2"><b>Store: </b><select name="in_store">
+							<c:forEach var="store" items="${stores}">
+								<option>${store.sname}</option>
+							</c:forEach>
+							</select></td>
+						</tr>
+						<tr />
 						<tr>
 							<td colSpan="2"><b>Card #: </b><input type="text" size="30" name="in_cardNum" /></td>
 						</tr>
@@ -60,7 +60,7 @@
 							</td>
 							<td><input name="method" class="button" value="   Credit   " type="submit"/></td>
 						</tr>
-					<tr />
+						<tr />
 						<tr>
 							<td><b>Amount: </b><input type="text" size="30" name="in_cash" /></td>
 							<td><input name="method" class="button" value="    Cash    " type="submit" /></td>

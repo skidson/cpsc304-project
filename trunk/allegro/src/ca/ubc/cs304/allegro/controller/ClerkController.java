@@ -16,11 +16,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ca.ubc.cs304.allegro.jdbc.JDBCManager;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
+import ca.ubc.cs304.allegro.model.AllegroItem;
 import ca.ubc.cs304.allegro.model.Item;
 import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.model.Purchase;
 import ca.ubc.cs304.allegro.model.PurchaseItem;
-
 import ca.ubc.cs304.allegro.services.UserService;
 
 @Controller
@@ -49,7 +49,10 @@ public class ClerkController {
 	public ModelAndView checkout() {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		try {
-			model.put("stores", JDBCManager.select(Table.Store));
+			Map<String, Object> conditions = new HashMap<String, Object>();
+			conditions.put("type", "store");
+			List<AllegroItem> stores = JDBCManager.select(Table.Store, conditions);
+			model.put("stores", stores);
 		} catch (SQLException e) {
 			model.put("error", "Error: Could not access store list");
 		}
@@ -98,10 +101,13 @@ public class ClerkController {
 		if (method.trim().equalsIgnoreCase(CASH))
 			model.put("paid", cash);
 		else {
-//			String hiddenCardNum = purchase.getCardNum();
+			String hiddenCardNum = purchase.getCardNum().toString();
+			hiddenCardNum = hiddenCardNum.substring(hiddenCardNum.length()-5);
+			purchase.setCardNum(Long.parseLong(hiddenCardNum));
 		}
 		model.put("purchase", purchase);
 		model.put("items", cart);
+		UserService.clearCart(model);
 		return new ModelAndView("receipt", model);
 	}
 	
