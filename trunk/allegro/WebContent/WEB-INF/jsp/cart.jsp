@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 
 <body>
@@ -9,25 +10,29 @@
 		<div id="content-wrap">
 			<div id="main">
 				<h2>Shopping Cart</h2>
+				<c:set var="totalPrice" value="0"/>
 				<c:choose>
 				<c:when test="${checkout eq 'true'}">
-					<table>
+					<table width="100%">
 					<th>Title</th><th>Price</th><th>Quantity</th>
 					<c:forEach var="item" items="${profile.shoppingCart}">
 						<tr>
 							<td>${item.title}</td>
 							<td>${item.sellPrice}</td>
 							<td>${item.quantity}</td>
+							<c:set var="totalPrice" value="${totalPrice + (item.sellPrice * item.quantity)}"/>
 						</tr>
-						<tr>
-							<td></td><td>Total Price : ${finalPrice}</td><td></td>
-						</tr>
+						
 					</c:forEach>
+					<tr>
+						<c:set var="totalPrice" value="${totalPrice * 100 / 1000 }"/>
+						<td></td><td>Total Price : ${totalPrice}</td><td></td>
+					</tr>
 					</table>
 				<br/>
 				<br/>
 				Please input your credit card number and expiry date to complete this transaction.
-				<table><form action="/allegro/customer/finalize">
+				<table width="100%"><form action="/allegro/customer/finalize">
 				<tr>
 				<td>Card Number: <input type="text" name="j_cardnum"/></td>
 				<td>Expiry Date: 
@@ -50,20 +55,18 @@
 				</c:when>
 				<c:when test="${not empty profile.shoppingCart}">
 				
-				<table><center>		
+				<table width="100%"><center>		
 					<tr>
 						<th>Item Name</th><th>Price</th><th>Quantity</th>
 					</tr>
 					
 										
-					<c:set var="totalPrice" value="0"/>
 					<c:set var="counter" value ="0"/>
 					<c:forEach var="item" items="${profile.shoppingCart}">
 						<tr>
 							<td>${item.title}</td>
 							<td>${item.sellPrice}</td>
 							<td>${item.quantity}</td>
-							<c:set var="totalPrice" value="${totalPrice + (item.sellPrice * item.quantity)}"/>
 							<td><input class="button" size="8%" value=" Remove " onclick="parent.location='/allegro/customer/removeItem?upc=${item.upc}&index=${counter}'" /></td>
 							<c:set var="counter" value="${counter+1}"/>					
 						</tr>
@@ -72,7 +75,7 @@
 					
 				</center></table>
 				
-				<td><input style="float:right" class="button" value=" Checkout " onclick="parent.location='/allegro/customer/checkout?totalPrice=${totalPrice}'"/></td>
+				<td><input style="float:right" class="button" value=" Checkout " onclick="parent.location='/allegro/customer/checkout'"/></td>
 			</c:when>
 			<c:otherwise>
 			Your shopping cart is empty!
