@@ -111,9 +111,12 @@ public class Purchase implements AllegroItem {
 	public String toString() {
 		return ("receiptId: " + receiptId + 
 				"\ndate: " + date + 
-				"\nname: " + name + 
-				"\naddress: " + address + 
-				"\nphone: " + phone);
+				"\ncid: " + cid + 
+				"\nsname: " + sname + 
+				"\ncardNum: " + cardNum +
+				"\nexpire: " + expire + 
+				"\nexpectedDate: " + expectedDate + 
+				"\ndeliveredDate: " + deliveredDate);
 	}
 	
 }
