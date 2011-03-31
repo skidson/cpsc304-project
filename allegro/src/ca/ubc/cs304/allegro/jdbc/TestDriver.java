@@ -19,7 +19,7 @@ public class TestDriver {
 			List<String> group = new ArrayList<String>();
 			List<Table> tables = new ArrayList<Table>();
 			tables.add(Table.Item);
-			conditions.put("category", "country");
+			conditions.put("type", "CD");
 			List<AllegroItem> results = JDBCManager.select(Table.Item, conditions);
 			
 			for (AllegroItem result : results)

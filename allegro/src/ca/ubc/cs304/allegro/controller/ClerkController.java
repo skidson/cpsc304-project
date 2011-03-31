@@ -28,6 +28,7 @@ public class ClerkController {
 	@Autowired
 	private ProfileManager profileManager;
 	public static final int RECEIPT_ID_MAX = 1000000;
+	private static final int CASH = 0, CREDIT = 1;
 	
 	@RequestMapping("/clerk/purchase")
 	public ModelAndView purchase() {
@@ -55,9 +56,13 @@ public class ClerkController {
 		return new ModelAndView("checkout", model);
 	}
 	
-	@RequestMapping("/clerk/finalizeCash")
-	public ModelAndView finalizeCash(@RequestParam("in_cash") String cash, 
-			@RequestParam("in_store") String store) {
+	@RequestMapping("/clerk/finalize")
+	public ModelAndView finalizeCash(@RequestParam("method") int method,
+			@RequestParam(value = "in_cash", required = false) String cash, 
+			@RequestParam(value = "in_store", required = false) String store,
+			@RequestParam(value = "in_cardNum", required = false) String cardNum,
+			@RequestParam(value = "in_expYear", required = false) int expYear,
+			@RequestParam(value = "in_expMonth", required = false) int expMonth) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		List<Item> cart = UserService.getShoppingCart(model);
 		double total = 0;
@@ -73,6 +78,10 @@ public class ClerkController {
 		Purchase purchase = new Purchase(receiptId,
 				null, null, date, null, date, null, store);
 		
+		if (method == CREDIT) {
+			
+		}
+		
 		try {
 			JDBCManager.insert(purchase);
 			for (Item item : cart) {
@@ -87,15 +96,6 @@ public class ClerkController {
 		model.put("purchase", purchase);
 		model.put("items", cart);
 		return new ModelAndView("receipt", model);
-	}
-	
-	@RequestMapping("/clerk/finalizeCredit")
-	public ModelAndView finalizeCredit(@RequestParam("in_cardNum") long cardNum,
-			@RequestParam("in_expYear") int expYear,
-			@RequestParam("in_expMonth") int expMonth) {
-		Map<String, Object> model = UserService.initUserContext(profileManager);
-		
-		return new ModelAndView("purchase", model);
 	}
 	
 	@RequestMapping("/clerk/addPurchase")
