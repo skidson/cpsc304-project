@@ -32,37 +32,43 @@
 						<td />
 					</tr>
 					</c:forEach>
-					<tr>
-						<td colSpan="2"><select>
-						<c:forEach var="store" items="${stores}">
-							<option>${store.sname}</option>
-						</c:forEach>
-						</select></td>
-					</tr>
 				</table>
 				<br />
 				<h2>Payment</h2>
 				<table>
 					<c:if test="${not empty error}"><font color="red">${error}</font></c:if>
-					<tr><form method="post" action="/allegro/clerk/finalizeCredit">
-						<td colSpan="2"><b>Card #: </b><input type="text" size="30" name="in_cardNum" /></td>
-					</tr>
 					<tr>
-						<td><b>Expiry: </b>
-							<select width="125" name="in_expMonth">
-								<c:forEach var="i" begin="1" end="12"><option>${i}</option></c:forEach>
-							</select>
-							<select width="125" name="in_expYear">
-								<c:forEach var="i" begin="2000" end="2020"><option>${i}</option></c:forEach>
-							</select>
-						</td>
-						<td><input class="button" value="   Credit   " type="submit"/></td>
-					</form></tr>
+						<td colSpan="2"><b>Store: </b><select name="in_store">
+						<c:forEach var="store" items="${stores}">
+							<option>${store.sname}</option>
+						</c:forEach>
+						</select></td>
+					</tr>
 					<tr />
-					<tr><form method="post" action="/allegro/clerk/finalizeCash">
-						<td><b>Amount: </b><input type="text" size="30" name="in_cash" /></td>
-						<td><input class="button" value="    Cash    " type="submit"/></td>
-					</form></tr>
+					<form method="post" action="/allegro/clerk/finalizeCredit">
+					<input type="hidden" value=""/>
+						<tr>
+							<td colSpan="2"><b>Card #: </b><input type="text" size="30" name="in_cardNum" /></td>
+						</tr>
+						<tr>
+							<td><b>Expiry: </b>
+								<select width="125" name="in_expMonth">
+									<c:forEach var="i" begin="1" end="12"><option>${i}</option></c:forEach>
+								</select>
+								<select width="125" name="in_expYear">
+									<c:forEach var="i" begin="2000" end="2020"><option>${i}</option></c:forEach>
+								</select>
+							</td>
+							<td><input class="button" value="   Credit   " type="submit"/></td>
+						</tr>
+					</form>
+					<tr />
+					<form method="post" action="/allegro/clerk/finalizeCash">
+						<tr>
+							<td><b>Amount: </b><input type="text" size="30" name="in_cash" /></td>
+							<td><input class="button" value="    Cash    " type="submit"/></td>
+						</tr>
+					</form>
 				</table>
 			</div> <!-- main -->
 		
