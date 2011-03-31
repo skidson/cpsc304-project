@@ -10,10 +10,10 @@
 			<div id="main">
 				
 				<h2>Refund</h2>
-				<center>
-					<img src="http://placekitten.com/500/200"/>
-					<br>I can has refundz?
-				</center>
+				<table width=100%>
+				<tr><td>Please enter the receipt number: <input type="text" name="j_receiptID"/></td>
+				<td><input class="button" value=" Return Item" type="submit"/></td>
+				</table>
 			</div> <!-- main -->
 		
 		</div> <!-- content-wrap -->	

@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%> 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 
 <body>
@@ -25,7 +26,8 @@
 						
 					</c:forEach>
 					<tr>
-						<c:set var="totalPrice" value="${totalPrice * 100 / 1000 }"/>
+						<fmt:formatNumber var="totalPrice" value="${totalPrice}" pattern="0.00"/>
+
 						<td></td><td>Total Price : ${totalPrice}</td><td></td>
 					</tr>
 					</table>
@@ -55,7 +57,7 @@
 				</c:when>
 				<c:when test="${not empty profile.shoppingCart}">
 				
-				<table width="100%"><center>		
+				<table width="100%">		
 					<tr>
 						<th>Item Name</th><th>Price</th><th>Quantity</th>
 					</tr>
@@ -67,13 +69,13 @@
 							<td>${item.title}</td>
 							<td>${item.sellPrice}</td>
 							<td>${item.quantity}</td>
-							<td><input class="button" size="8%" value=" Remove " onclick="parent.location='/allegro/customer/removeItem?upc=${item.upc}&index=${counter}'" /></td>
+							<td><input class="button" size="8%" value=" Remove " onclick="parent.location='/allegro/customer/removeItem?index=${counter}'" /></td>
 							<c:set var="counter" value="${counter+1}"/>					
 						</tr>
 					</c:forEach>
 					
 					
-				</center></table>
+				</table>
 				
 				<td><input style="float:right" class="button" value=" Checkout " onclick="parent.location='/allegro/customer/checkout'"/></td>
 			</c:when>

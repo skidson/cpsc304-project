@@ -1,7 +1,10 @@
 package ca.ubc.cs304.allegro.controller;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +15,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ca.ubc.cs304.allegro.jdbc.JDBCManager;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
+import ca.ubc.cs304.allegro.model.AllegroItem;
 import ca.ubc.cs304.allegro.model.Item;
 import ca.ubc.cs304.allegro.model.ProfileManager;
+import ca.ubc.cs304.allegro.model.Purchase;
 import ca.ubc.cs304.allegro.services.UserService;
 
 @Controller
@@ -45,8 +50,26 @@ public class ClerkController {
 	}
 	
 	@RequestMapping("/clerk/refund")
-	public ModelAndView refund() {
+	public ModelAndView refund(@RequestParam("j_receiptID") int receiptID) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
+		HashMap<String, Object> conditions = new HashMap<String, Object>();
+		
+		Calendar currentDate = Calendar.getInstance();
+		Date date = new Date(currentDate.getTimeInMillis());
+		conditions.put("receiptId", receiptID);
+		try {
+			Purchase purchase = (Purchase)(JDBCManager.select(Table.Purchase, conditions)).get(0);
+			Date purchaseDate = purchase.getDate();
+			if(purchase.getCardNum() == null)
+				model.put("type", "cash");
+			else
+				model.put("type", "credit");
+			
+		//FIXME COMPARE DATES, CALCULATE AMOUNT, SPEW SHIT
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		return new ModelAndView("refund", model);
 	}
 }

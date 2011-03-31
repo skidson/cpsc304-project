@@ -22,6 +22,7 @@ import ca.ubc.cs304.allegro.model.AllegroItem;
 import ca.ubc.cs304.allegro.model.Item;
 import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.model.Purchase;
+import ca.ubc.cs304.allegro.model.PurchaseItem;
 import ca.ubc.cs304.allegro.services.UserService;
 
 @Controller
@@ -102,7 +103,7 @@ public class CustomerController {
 	}
 	
 	@RequestMapping("customer/removeItem")
-	public ModelAndView removeItem(@RequestParam("upc") int upc, @RequestParam("index") int index){
+	public ModelAndView removeItem(@RequestParam("index") int index){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		UserService.removeFromCart(index, model);
 		
@@ -131,8 +132,21 @@ public class CustomerController {
 		
 		Random r = new Random();
 		cal.set(year, month, 1);
-		Purchase purchase = new Purchase(r.nextInt(1000000), cardnum, new Date(cal.getTimeInMillis())
+		int receiptID = r.nextInt(1000000);
+		Purchase purchase = new Purchase(receiptID, cardnum, new Date(cal.getTimeInMillis())
 				, new Date(System.currentTimeMillis()), new Date(expectedDate.getTimeInMillis()), null, profileManager.getProfile().getUsername(), "Warehouse");
+		
+		List<Item> cart = profileManager.getProfile().getShoppingCart();
+		for(int i = 0; i < cart.size(); i++){
+			PurchaseItem items = new PurchaseItem(receiptID, cart.get(i).getUpc(), cart.get(i).getQuantity());
+			try {
+				JDBCManager.insert(items);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 		try {
 			JDBCManager.insert(purchase);
 		} catch (SQLException e) {
