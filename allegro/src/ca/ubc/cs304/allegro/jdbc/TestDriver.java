@@ -19,11 +19,9 @@ public class TestDriver {
 			List<String> group = new ArrayList<String>();
 			List<Table> tables = new ArrayList<Table>();
 			tables.add(Table.Item);
-			tables.add(Table.HasSong);
 			conditions.put("category", "country");
-			shared.add("upc");
-			group.add("upc");
-			List<AllegroItem> results = JDBCManager.search(tables, conditions, shared, group);
+			List<AllegroItem> results = JDBCManager.select(Table.Item, conditions);
+			
 			for (AllegroItem result : results)
 				System.out.println(result.toString() + "\n");
 			

@@ -1,6 +1,5 @@
 package ca.ubc.cs304.allegro.jdbc;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -162,8 +161,7 @@ public class JDBCManager {
 		String directory = AllegroItem.class.getPackage().getName() + ".";
 		
 		List<AllegroItem> resultList = new ArrayList<AllegroItem>();
-		if (results.getFetchSize() == 0)
-			return resultList;
+		
 		try {
 			
 			// Generate the list of setters for the class we are instantiating
@@ -175,6 +173,8 @@ public class JDBCManager {
 			
 			// For each row in the table, construct an object of type indicated by Table
 			results.first();
+			if (results.getRow() < 0)
+				return resultList;
 			while(!results.isAfterLast()) {
 				// Instantiate a new class for the type of table we will retrieve
 				AllegroItem entry = (AllegroItem) Class.forName(directory + tables.get(0).toString()).newInstance();
