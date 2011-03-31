@@ -107,10 +107,28 @@ public class JDBCManager {
 	 * @throws SQLException
 	 */
 	public static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
+		return select(tables, conditions, shared, true);
+	}
+	
+	/**
+	 * Returns the list of results for a query of multiple tables where returned
+	 * tuples meet the conditions specified by "key LIKE value" for each entry 
+	 * in the passed Map. The entries for the list returned will be the type
+	 * indicated by the first Table of the ones queried.
+	 * @param tables - the list of tables to query.
+	 * @param conditions - conditions "key LIKE value" for tuples returned
+	 * @return The result set for this query.
+	 * @throws SQLException
+	 */
+	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
+		return select(tables, conditions, shared, false);
+	}
+	
+	private static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared, boolean exact) throws SQLException {
 		// REQUIRES: Class names in AllegroItem's package match database's names
 		// Submit the query and fetch the results
 		
-		ResultSet results = fetch(tables, conditions, shared);
+		ResultSet results = fetch(tables, conditions, shared, exact);
 		
 		// Get the package directory of database items we will instantiate
 		String directory = AllegroItem.class.getPackage().getName() + ".";
@@ -160,7 +178,7 @@ public class JDBCManager {
 	
 	
 	// Helper for use by all select methods
-	private static ResultSet fetch(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
+	private static ResultSet fetch(List<Table> tables, Map<String, Object> conditions, List<String> shared, boolean exact) throws SQLException {
 		List<Object> parameters = new ArrayList<Object>();
 		
 		// Parse table names
@@ -178,7 +196,10 @@ public class JDBCManager {
 			Iterator<Map.Entry<String, Object>> iterator = conditions.entrySet().iterator();
 			while (iterator.hasNext()) {
 				Map.Entry<String, Object> condition = iterator.next();
-				query.append(condition.getKey() + " = ?");
+				if (exact)
+					query.append(condition.getKey() + " = ?");
+				else
+					query.append(condition.getKey() + " LIKE ?");
 				parameters.add(condition.getValue());
 				if (iterator.hasNext() || (shared != null && !shared.isEmpty()))
 					query.append(" AND ");

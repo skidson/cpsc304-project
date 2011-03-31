@@ -55,9 +55,12 @@ public class Item implements AllegroItem {
 		this.type = Type.valueOf(type.replace(" ", "_").toUpperCase());
 	}
 
-	public String getCategory() {
-		return category.toString();
-	}
+	/*public String getCategory() {
+		String string = category.toString().toLowerCase();
+		String first = string.charAt(0);
+		string.replaceFirst(string.charAt(0), string.charAt(0))
+		return string;
+	}*/
 
 	public void setCategory(String category) {
 		this.category = Category.valueOf(category.replace(" ", "_").toUpperCase());

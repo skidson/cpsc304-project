@@ -1,5 +1,6 @@
 package ca.ubc.cs304.allegro.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
@@ -20,13 +21,15 @@ public class Store implements AllegroItem {
 	}
 
 	public List<Object> getParameters() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add(sname);
+		parameters.add(address);
+		parameters.add(type.toString().toLowerCase());
+		return parameters;
 	}
 
 	public Table getTable() {
-		// TODO Auto-generated method stub
-		return null;
+		return Table.Store;
 	}
 
 	public String getSname() {
