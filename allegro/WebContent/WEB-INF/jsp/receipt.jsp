@@ -48,6 +48,12 @@
 							<td />
 						</tr>
 					</c:if>
+					<c:if test="${not empty purchase.cardNum}" >
+						<tr>
+							<td align="right"><b>Card #: </b></td>
+							<td>${purchase.cardNum}</td>
+						</tr>
+					</c:if>
 				</table>
 			</div> <!-- main -->
 		
