@@ -181,7 +181,7 @@ public class JDBCManager {
 							method.invoke(entry, results.getDate(column).getTime());
 						else if (paramType == Float.class)
 							method.invoke(entry, results.getFloat(column));
-					} catch (InvocationTargetException e2) {
+					} catch (Exception e2) {
 						// Column did not exist in result, leave null
 					}
 				}
@@ -241,7 +241,7 @@ public class JDBCManager {
 		Connection connection = connect();
 		PreparedStatement statement = connection.prepareStatement(query.toString());
 		if (parameters != null)
-			finalizeParams(statement, parameters);
+			finalizeParams(statement, parameters, exact);
 		ResultSet result = statement.executeQuery();
 		return result;
 	}
@@ -255,22 +255,13 @@ public class JDBCManager {
 		return connection;
 	}
 	
-	private static ResultSet fetch(String query, List<Object> parameters) throws SQLException {
-		Connection connection = connect();
-		PreparedStatement statement = connection.prepareStatement(query);
-		if (parameters != null)
-			finalizeParams(statement, parameters);
-		ResultSet result = statement.executeQuery();
-		return result;
-	}
-	
 	private static void modify(String query, List<Object> parameters) throws SQLException {
 		Connection connection = connect();
 		PreparedStatement statement = connection.prepareStatement(query);
 		
 		// Replace placeholders with SQL appropriate values
 		try {
-			finalizeParams(statement, parameters);
+			finalizeParams(statement, parameters, true);
 			statement.executeUpdate();			
 			statement.close();
 		} catch (Exception e) {
@@ -289,14 +280,17 @@ public class JDBCManager {
 	}
 	
 	private static void finalizeParams(PreparedStatement statement, 
-			List<Object> parameters) throws SQLException {
+			List<Object> parameters, boolean exact) throws SQLException {
 		for (int i = 0; i < parameters.size(); i++) {
 			Object parameter = parameters.get(i);
 			if (parameter == null)
 				statement.setNull(i+1, java.sql.Types.NULL);
-			else if (parameter.getClass() == String.class)
-				statement.setString(i+1, (String)parameter);
-			else if (parameter.getClass() == Integer.class)
+			else if (parameter.getClass() == String.class) {
+				if (exact)
+					statement.setString(i+1, (String)parameter);
+				else
+					statement.setString(i+1, "%" + (String)parameter + "%");
+			} else if (parameter.getClass() == Integer.class)
 				statement.setInt(i+1, (Integer)parameter);
 			else if (parameter.getClass() == BigDecimal.class)
 				statement.setBigDecimal(i+1, (BigDecimal)parameter);
