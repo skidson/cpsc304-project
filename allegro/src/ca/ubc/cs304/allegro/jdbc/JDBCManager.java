@@ -187,8 +187,10 @@ public class JDBCManager {
 							method.invoke(entry, results.getInt(column));
 						else if (paramType == String.class)
 							method.invoke(entry, results.getString(column));
+						else if (paramType == Date.class)
+							method.invoke(entry, results.getDate(column));
 						else if (paramType == Long.class)
-							method.invoke(entry, results.getDate(column).getTime());
+							method.invoke(entry, results.getLong(column));
 						else if (paramType == Float.class)
 							method.invoke(entry, results.getFloat(column));
 					} catch (Exception e2) {

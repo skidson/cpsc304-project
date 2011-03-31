@@ -28,7 +28,7 @@ public class ClerkController {
 	@Autowired
 	private ProfileManager profileManager;
 	public static final int RECEIPT_ID_MAX = 1000000;
-	private static final int CASH = 0, CREDIT = 1;
+	private static final String CREDIT = "CREDIT", CASH = "CASH";
 	
 	@RequestMapping("/clerk/purchase")
 	public ModelAndView purchase() {
@@ -57,7 +57,7 @@ public class ClerkController {
 	}
 	
 	@RequestMapping("/clerk/finalize")
-	public ModelAndView finalizeCash(@RequestParam("method") int method,
+	public ModelAndView finalizeCash(@RequestParam("method") String method,
 			@RequestParam(value = "in_cash", required = false) String cash, 
 			@RequestParam(value = "in_store", required = false) String store,
 			@RequestParam(value = "in_cardNum", required = false) String cardNum,
@@ -78,8 +78,11 @@ public class ClerkController {
 		Purchase purchase = new Purchase(receiptId,
 				null, null, date, null, date, null, store);
 		
-		if (method == CREDIT) {
-			
+		if (method.trim().equalsIgnoreCase(CREDIT)) {
+			purchase.setCardNum(Long.parseLong(cardNum));
+			Calendar expiry = Calendar.getInstance();
+			expiry.set(expYear, expMonth, 1);
+			purchase.setExpire(new Date(expiry.getTimeInMillis()));
 		}
 		
 		try {
@@ -92,7 +95,11 @@ public class ClerkController {
 			model.put("error", "Error: Error processing transaction");
 			return new ModelAndView("checkout", model);
 		}
-		model.put("paid", cash);
+		if (method.trim().equalsIgnoreCase(CASH))
+			model.put("paid", cash);
+		else {
+//			String hiddenCardNum = purchase.getCardNum();
+		}
 		model.put("purchase", purchase);
 		model.put("items", cart);
 		return new ModelAndView("receipt", model);
