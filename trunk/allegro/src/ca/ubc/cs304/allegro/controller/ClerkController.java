@@ -131,7 +131,7 @@ public class ClerkController {
 		try {
 			Purchase purchase = (Purchase)(JDBCManager.select(Table.Purchase, conditions)).get(0);
 			
-			Date purchaseDate = purchase.getDate();
+			Date purchaseDate = purchase.getPurchaseDate();
 			if(purchase.getCardNum() == null)
 				model.put("type", "cash");
 			else

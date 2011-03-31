@@ -9,7 +9,7 @@ import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 public class Purchase implements AllegroItem {
 	private Integer receiptId;
 	private Long cardNum;
-	private Date date, expectedDate, deliveredDate, expire;
+	private Date purchaseDate, expectedDate, deliveredDate, expire;
 	private String cid, sname;
 	
 	public Purchase() {}
@@ -20,7 +20,7 @@ public class Purchase implements AllegroItem {
 		this.receiptId = receiptId;
 		this.cardNum = cardNum;
 		this.expire = expire;
-		this.date = date;
+		this.purchaseDate = date;
 		this.expectedDate = expectedDate;
 		this.deliveredDate = deliveredDate;
 		this.cid = cid;
@@ -30,7 +30,7 @@ public class Purchase implements AllegroItem {
 	public List<Object> getParameters() {
 		List<Object> parameters = new ArrayList<Object>();
 		parameters.add(receiptId);
-		parameters.add(date);
+		parameters.add(purchaseDate);
 		parameters.add(cid);
 		parameters.add(sname);
 		parameters.add(cardNum);
@@ -68,12 +68,12 @@ public class Purchase implements AllegroItem {
 		this.expire = expire;
 	}
 	
-	public Date getDate() {
-		return date;
+	public Date getPurchaseDate() {
+		return purchaseDate;
 	}
 	
-	public void setDate(Date date) {
-		this.date = date;
+	public void setPurchaseDate(Date date) {
+		this.purchaseDate = date;
 	}
 	
 	public Date getExpectedDate() {
@@ -110,7 +110,7 @@ public class Purchase implements AllegroItem {
 	
 	public String toString() {
 		return ("receiptId: " + receiptId + 
-				"\ndate: " + date + 
+				"\ndate: " + purchaseDate + 
 				"\ncid: " + cid + 
 				"\nsname: " + sname + 
 				"\ncardNum: " + cardNum +
