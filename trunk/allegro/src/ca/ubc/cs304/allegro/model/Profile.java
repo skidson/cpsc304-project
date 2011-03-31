@@ -37,13 +37,13 @@ public class Profile implements Serializable {
 		else {
 			for(int i = 0; i < shoppingCart.size(); i++) {
 				Item cartItem = shoppingCart.get(i);
-				if(cartItem.getUpc() == item.getUpc())
+				if(cartItem.getUpc().equals(item.getUpc())) {
 					cartItem.setQuantity(cartItem.getQuantity() + item.getQuantity());
-				else
-					shoppingCart.add(item);
+					return;
+				}
 			}
+			shoppingCart.add(item);
 		}
-		
 	}
 	
 	public void clearCart(){
