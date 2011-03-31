@@ -45,7 +45,7 @@
 						</select></td>
 					</tr>
 					<tr />
-					<form method="post" action="/allegro/clerk/finalize?method=${method}">
+					<form method="post" action="/allegro/clerk/finalize">
 						<tr>
 							<td colSpan="2"><b>Card #: </b><input type="text" size="30" name="in_cardNum" /></td>
 						</tr>
@@ -58,12 +58,12 @@
 									<c:forEach var="i" begin="2011" end="2020"><option>${i}</option></c:forEach>
 								</select>
 							</td>
-							<td><input class="button" value="   Credit   " type="submit"/></td>
+							<td><input name="method" class="button" value="   Credit   " type="submit"/></td>
 						</tr>
 					<tr />
 						<tr>
 							<td><b>Amount: </b><input type="text" size="30" name="in_cash" /></td>
-							<td><input class="button" value="    Cash    " type="submit" /></td>
+							<td><input name="method" class="button" value="    Cash    " type="submit" /></td>
 						</tr>
 					</form>
 				</table>
