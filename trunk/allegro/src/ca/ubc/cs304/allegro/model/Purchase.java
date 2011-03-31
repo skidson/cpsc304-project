@@ -11,6 +11,21 @@ public class Purchase implements AllegroItem {
 	private long cardNum, expire, date, expectedDate, deliveredDate;
 	private String cid, sname;
 	
+	public Purchase() {}
+	
+	public Purchase(int receiptId, long cardNum, long expire, long date,
+			long expectedDate, long deliveredDate, String cid, String sname) {
+		super();
+		this.receiptId = receiptId;
+		this.cardNum = cardNum;
+		this.expire = expire;
+		this.date = date;
+		this.expectedDate = expectedDate;
+		this.deliveredDate = deliveredDate;
+		this.cid = cid;
+		this.sname = sname;
+	}
+
 	public List<Object> getParameters() {
 		List<Object> parameters = new ArrayList<Object>();
 		parameters.add(new Integer(receiptId));
