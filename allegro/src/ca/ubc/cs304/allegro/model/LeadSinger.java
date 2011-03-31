@@ -43,5 +43,10 @@ public class LeadSinger implements AllegroItem {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public String toString() {
+		return ("upc: " + upc + 
+				"\nname: " + name);
+	}
 
 }
