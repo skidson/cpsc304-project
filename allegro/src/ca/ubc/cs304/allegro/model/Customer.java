@@ -9,6 +9,8 @@ public class Customer implements AllegroItem {
 	private String name, cid, password, address;
 	private int phone;
 	
+	public Customer() {}
+	
 	public Customer(String name, String cid, String password, String address,
 			Integer phone) {
 		super();

@@ -10,12 +10,26 @@ public class Item implements AllegroItem {
 	public enum Type {CD, DVD};
 	private enum Category {Rock, Pop, Rap, Country, Classical, New_Age, Instrumental};
 	
-	private int upc, year;
+	private int upc, year, quantity = 1;
 	private String title, company;
 	private float sellPrice;
 	
 	private Type type;
 	private Category category;
+	
+	public Item() {}
+	
+	public Item(int upc, int year, String title, String company,
+			float sellPrice, Type type, Category category) {
+		super();
+		this.upc = upc;
+		this.year = year;
+		this.title = title;
+		this.company = company;
+		this.sellPrice = sellPrice;
+		this.type = type;
+		this.category = category;
+	}
 
 	public List<Object> getParameters() {
 		List<Object> parameters = new ArrayList<Object>();
@@ -97,6 +111,14 @@ public class Item implements AllegroItem {
 				"\ncompany: " + company +
 				"\nyear: " + year + 
 				"\nsellPrice: " + sellPrice);
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public int getQuantity() {
+		return quantity;
 	}
 	
 }
