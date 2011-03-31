@@ -33,6 +33,12 @@ public class UserService {
 		model.put("profile", profile);
 	}
 	
+	public static void clearCart(Map<String, Object> model){
+		Profile profile = getProfile(model);
+		profile.clearCart();
+		model.put("profile", profile);
+	}
+	
 	public static void setManagerAccess(boolean access, Map<String, Object> model) {
 		Profile profile = getProfile(model);
 		profile.setManager(access);

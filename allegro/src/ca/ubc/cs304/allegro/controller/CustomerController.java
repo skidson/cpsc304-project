@@ -1,5 +1,6 @@
 package ca.ubc.cs304.allegro.controller;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 import ca.ubc.cs304.allegro.model.AllegroItem;
 import ca.ubc.cs304.allegro.model.Item;
 import ca.ubc.cs304.allegro.model.ProfileManager;
+import ca.ubc.cs304.allegro.model.Purchase;
 import ca.ubc.cs304.allegro.services.UserService;
 
 @Controller
@@ -40,7 +43,7 @@ public class CustomerController {
 		HashMap<String,Object> hm = new HashMap<String,Object>();
 		List<AllegroItem> results = new ArrayList<AllegroItem>();
 
-		if(!category.equals("all"))
+		if(!category.equals("All"))
 			hm.put("category", category);
 		
 		if(!title.equals(""))
@@ -50,7 +53,7 @@ public class CustomerController {
 			hm.put("name", leadSinger);
 		
 		try {
-			if(category.equals("all") && title.equals("") && leadSinger.equals("")){
+			if(category.equals("All") && title.equals("") && leadSinger.equals("")){
 				results = JDBCManager.select(Table.Item);
 			}else if(!leadSinger.equals("")){
 				List<Table> tables = new ArrayList<Table>();
@@ -58,13 +61,12 @@ public class CustomerController {
 				shared.add("upc");
 				tables.add(Table.Item);
 				tables.add(Table.LeadSinger);
-				results = JDBCManager.select(tables, hm, shared);
+				results = JDBCManager.search(tables, hm, shared);
 			}else{
-				results = JDBCManager.select(Table.Item, hm);
+				results = JDBCManager.search(Table.Item, hm);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			results = null;
 		}
 		model.put("itemList", results);
 		return new ModelAndView("searchResults", model);
@@ -92,11 +94,10 @@ public class CustomerController {
 	}
 	
 	@RequestMapping("/customer/checkout")
-	public ModelAndView checkout(@RequestParam("totalPrice") float price){
+	public ModelAndView checkout(){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		boolean checkout = true;
 		model.put("checkout", checkout);
-		model.put("finalPrice", price);
 		return new ModelAndView("cart", model);
 	}
 	
@@ -113,9 +114,33 @@ public class CustomerController {
 										@RequestParam("j_expYear") int year,
 										@RequestParam("j_expMonth") int month){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
+		HashMap<String, Object> conditions = new HashMap<String, Object>();
+		int purchasesProcessedPerDay = 3;
 		Calendar cal = Calendar.getInstance();
+		Calendar expectedDate = Calendar.getInstance();
+		
+		try{
+			conditions.put("deliveredDate", null);
+			List<AllegroItem> purchaseResults = JDBCManager.select(Table.Purchase, conditions);
+			int outstandingDeliveries = purchaseResults.size();
+			expectedDate.setTimeInMillis(expectedDate.getTimeInMillis() +(outstandingDeliveries/purchasesProcessedPerDay)*1000*60*60*24);
+		} catch (SQLException e){
+			e.printStackTrace();
+		}
+		
+		
+		Random r = new Random();
 		cal.set(year, month, 1);
-		cal.getTimeInMillis();
-		return new ModelAndView("receipt", model);
+		Purchase purchase = new Purchase(r.nextInt(1000000), cardnum, new Date(cal.getTimeInMillis())
+				, new Date(System.currentTimeMillis()), new Date(expectedDate.getTimeInMillis()), null, profileManager.getProfile().getUsername(), "Warehouse");
+		try {
+			JDBCManager.insert(purchase);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		UserService.clearCart(model);
+		model.put("date", expectedDate.getTime().toString());
+		return new ModelAndView("checkout", model);
 	}
 }
