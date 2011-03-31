@@ -1,6 +1,7 @@
 package ca.ubc.cs304.allegro.services;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,10 @@ public class UserService {
 		profile.setUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		model.put("profile", profile);
 		return model;
+	}
+	
+	public static List<Item> getShoppingCart(Map<String, Object> model) {
+		return getProfile(model).getShoppingCart();
 	}
 	
 	public static void removeFromCart(int index, Map<String, Object> model) {

@@ -32,7 +32,7 @@ public class Profile implements Serializable {
 	}
 
 	public void addToCart(Item item){
-		if(shoppingCart.size() == 0)
+		if (shoppingCart.size() == 0)
 			shoppingCart.add(item);
 		else {
 			for(int i = 0; i < shoppingCart.size(); i++) {

@@ -10,28 +10,39 @@
 			<div id="main">
 				<h2>Purchase</h2>
 				<table width="100%">
-					<tr><th>UPC</th><th>Item</th><th>Quantity</th><th>Price</th></tr>
+					<tr><th>Item</th><th>UPC</th><th>Quantity</th><th>Price</th></tr>
 					<c:set var="totalPrice" value="0" />
+					<c:set var="index" value ="0"/>
 					<c:forEach var="item" items="${profile.shoppingCart}">
-						<tr>
-							<td>${item.upc}</td>
+						<tr><form method="post" action="/allegro/clerk/removePurchase?index=${index}">
 							<td>${item.title}</td>
+							<td>${item.upc}</td>
 							<td>${item.quantity}</td>
 							<fmt:formatNumber var="subPrice" value="${item.sellPrice * item.quantity}" pattern="0.00"/>
 							<td>$${subPrice}</td>
+							<td><input class="button" value="    Remove   " type="submit"/></td>
+							<c:set var="index" value="${index+1}"/>
 							<c:set var="totalPrice" value="${totalPrice + subPrice}" />
-						</tr>
+						</form></tr>
 					</c:forEach>
-					<tr>
-						<td colSpan="3" />
-						<td><b>Total: $${totalPrice}</b></td>
-					</tr>
 					<tr><form method="post" action="/allegro/clerk/addPurchase">
 						<td />
 						<td><input type="text" size="30" name="in_upc" /></td>
 						<td><input type="text" size="10" name="in_qty" value="1" /></td>
-						<td align="center"><input class="button" value="    Add Item   " type="submit"/></td>
+						<td />
+						<td><input class="button" value="   Add Item   " type="submit"/></td>
 					</form></tr>
+					<tr>
+						<td colSpan="2" />
+						<fmt:formatNumber var="totalPrice" value="${totalPrice}" pattern="0.00"/>
+						<td align="right"><b>Total: </b></td>
+						<td><b>$${totalPrice}</b></td>
+						<td />
+					</tr>
+					<tr />
+					<tr><form  method="post" action="/allegro/clerk/checkout"><td align="center" colSpan="5">
+						<input class="button" value="    Checkout    " type="submit"/>
+					</td></form></tr>
 				</table>
 			</div> <!-- main -->
 		
