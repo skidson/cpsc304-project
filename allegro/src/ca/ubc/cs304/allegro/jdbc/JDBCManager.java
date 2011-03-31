@@ -139,6 +139,12 @@ public class JDBCManager {
 		return select(tables, conditions, null, false);
 	}
 	
+	public static List<AllegroItem> search(Table table, Map<String, Object> conditions) throws SQLException {
+		List<Table> tables = new ArrayList<Table>();
+		tables.add(table);
+		return search(tables, conditions, null);
+	}
+	
 	private static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared, boolean exact) throws SQLException {
 		// REQUIRES: Class names in AllegroItem's package match database's names
 		// Submit the query and fetch the results
