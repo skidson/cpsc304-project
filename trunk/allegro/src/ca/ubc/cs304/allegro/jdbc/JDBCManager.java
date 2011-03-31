@@ -246,6 +246,7 @@ public class JDBCManager {
 		if (parameters != null)
 			finalizeParams(statement, parameters, exact);
 		ResultSet result = statement.executeQuery();
+		connection.close();
 		return result;
 	}
 	

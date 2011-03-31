@@ -108,4 +108,12 @@ public class Purchase implements AllegroItem {
 		this.sname = sname;
 	}
 	
+	public String toString() {
+		return ("receiptId: " + receiptId + 
+				"\ndate: " + date + 
+				"\nname: " + name + 
+				"\naddress: " + address + 
+				"\nphone: " + phone);
+	}
+	
 }
