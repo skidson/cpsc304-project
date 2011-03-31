@@ -173,7 +173,7 @@ public class JDBCManager {
 			
 			// For each row in the table, construct an object of type indicated by Table
 			results.first();
-			if (results.getRow() < 0)
+			if (!results.isFirst())
 				return resultList;
 			while(!results.isAfterLast()) {
 				// Instantiate a new class for the type of table we will retrieve
