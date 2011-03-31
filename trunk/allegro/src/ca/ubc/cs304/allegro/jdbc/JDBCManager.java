@@ -69,6 +69,7 @@ public class JDBCManager {
 				" WHERE " + properties, parameters);
 	}
 	
+	
 	/**
 	 * Fetches the entire table from the database.
 	 * @param table - the table to fetch.
@@ -78,6 +79,21 @@ public class JDBCManager {
 	 */
 	public static List<AllegroItem> select(Table table) throws SQLException {
 		return select(table, null);
+	}
+	
+	/**
+	 * Fetches tuples from the indicated table that meet the conditions specified by
+	 * "key = value" for each entry in the passed Map.
+	 * @param table - the table to fetch tuples from.
+	 * @param conditions - conditions "key = value" for tuples returned
+	 * @return The list of tuples fetched. These items are safe to typecast
+	 * to the class representing the table specified.
+	 * @throws SQLException
+	 */
+	public static List<AllegroItem> select(Table table, Map<String, Object> conditions) throws SQLException {
+		List<Table> tables = new ArrayList<Table>();
+		tables.add(table);
+		return select(tables, conditions, null);
 	}
 	
 	/**
@@ -142,20 +158,6 @@ public class JDBCManager {
 		}
 	}
 	
-	/**
-	 * Fetches tuples from the indicated table that meet the conditions specified by
-	 * "key = value" for each entry in the passed Map.
-	 * @param table - the table to fetch tuples from.
-	 * @param conditions - conditions "key = value" for tuples returned
-	 * @return The list of tuples fetched. These items are safe to typecast
-	 * to the class representing the table specified.
-	 * @throws SQLException
-	 */
-	public static List<AllegroItem> select(Table table, Map<String, Object> conditions) throws SQLException {
-		List<Table> tables = new ArrayList<Table>();
-		tables.add(table);
-		return select(tables, conditions, null);
-	}
 	
 	// Helper for use by all select methods
 	private static ResultSet fetch(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
