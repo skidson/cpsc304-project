@@ -52,7 +52,7 @@ public class Purchase implements AllegroItem {
 		this.receiptId = receiptId;
 	}
 	
-	public long getCardNum() {
+	public Long getCardNum() {
 		return cardNum;
 	}
 	
