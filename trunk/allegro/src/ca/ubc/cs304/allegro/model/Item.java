@@ -10,9 +10,9 @@ public class Item implements AllegroItem {
 	public enum Type {CD, DVD};
 	private enum Category {ROCK, POP, RAP, COUNTRY, CLASSICAL, NEW_AGE, INSTRUMENTAL};
 	
-	private int upc, year, quantity = 1;
+	private Integer upc, year, quantity = 1;
 	private String title, company;
-	private float sellPrice;
+	private Float sellPrice;
 	
 	private Type type;
 	private Category category;

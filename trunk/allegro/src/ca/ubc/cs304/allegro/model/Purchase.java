@@ -8,24 +8,21 @@ import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
 public class Purchase implements AllegroItem {
 	private Integer receiptId;
-	private Long cardNum, expire;
-	private Date date, expectedDate, deliveredDate;
+	private Long cardNum;
+	private Date date, expectedDate, deliveredDate, expire;
 	private String cid, sname;
 	
 	public Purchase() {}
 	
-	public Purchase(Integer receiptId, Long cardNum, Long expire, Long date,
-			Long expectedDate, Long deliveredDate, String cid, String sname) {
+	public Purchase(Integer receiptId, Long cardNum, Date expire, Date date,
+			Date expectedDate, Date deliveredDate, String cid, String sname) {
 		super();
 		this.receiptId = receiptId;
 		this.cardNum = cardNum;
 		this.expire = expire;
-		if (date != null)
-			this.date = new Date(date);
-		if (expectedDate != null)
-			this.expectedDate = new Date(expectedDate);
-		if (deliveredDate != null)
-			this.deliveredDate = new Date(deliveredDate);
+		this.date = date;
+		this.expectedDate = expectedDate;
+		this.deliveredDate = deliveredDate;
 		this.cid = cid;
 		this.sname = sname;
 	}
@@ -63,39 +60,36 @@ public class Purchase implements AllegroItem {
 		this.cardNum = cardNum;
 	}
 	
-	public long getExpire() {
+	public Date getExpire() {
 		return expire;
 	}
 	
-	public void setExpire(Long expire) {
+	public void setExpire(Date expire) {
 		this.expire = expire;
 	}
 	
-	public long getDate() {
-		return date.getTime();
+	public Date getDate() {
+		return date;
 	}
 	
-	public void setDate(Long date) {
-		if (date != null)
-			this.date = new Date(date);
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	
-	public long getExpectedDate() {
-		return expectedDate.getTime();
+	public Date getExpectedDate() {
+		return expectedDate;
 	}
 	
-	public void setExpectedDate(Long expectedDate) {
-		if (expectedDate != null)
-			this.expectedDate = new Date(expectedDate);
+	public void setExpectedDate(Date expectedDate) {
+			this.expectedDate = expectedDate;
 	}
 	
-	public long getDeliveredDate() {
-		return deliveredDate.getTime();
+	public Date getDeliveredDate() {
+		return deliveredDate;
 	}
 	
-	public void setDeliveredDate(Long deliveredDate) {
-		if (deliveredDate != null)
-			this.deliveredDate = new Date(deliveredDate);
+	public void setDeliveredDate(Date deliveredDate) {
+			this.deliveredDate = deliveredDate;
 	}
 	
 	public String getCid() {
@@ -113,7 +107,5 @@ public class Purchase implements AllegroItem {
 	public void setSname(String sname) {
 		this.sname = sname;
 	}
-	
-	
 	
 }

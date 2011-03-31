@@ -7,13 +7,13 @@ import java.util.List;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
 public class Shipment implements AllegroItem {
-	private int sid;
+	private Integer sid;
 	private String supname, sname;
-	private long date;
+	private Date date;
 	
 	public Shipment() {}
 	
-	public Shipment(int sid, String supname, String sname, long date) {
+	public Shipment(Integer sid, String supname, String sname, Date date) {
 		super();
 		this.sid = sid;
 		this.supname = supname;
@@ -23,10 +23,10 @@ public class Shipment implements AllegroItem {
 	
 	public List<Object> getParameters() {
 		List<Object> parameters = new ArrayList<Object>();
-		parameters.add(new Integer(sid));
+		parameters.add(sid);
 		parameters.add(supname);
 		parameters.add(sname);
-		parameters.add(new Date(date));
+		parameters.add(date);
 		return parameters;
 	}
 	public Table getTable() {
@@ -57,11 +57,11 @@ public class Shipment implements AllegroItem {
 		this.sname = sname;
 	}
 	
-	public long getDate() {
+	public Date getDate() {
 		return date;
 	}
 	
-	public void setDate(long date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 	
