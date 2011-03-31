@@ -90,17 +90,11 @@ public class JDBCManager {
 	 * @return The result set for this query.
 	 * @throws SQLException
 	 */
-	public static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions) throws SQLException {
+	public static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
 		// REQUIRES: Class names in AllegroItem's package match database's names
 		// Submit the query and fetch the results
 		
-		StringBuilder from = new StringBuilder();
-		for (Table table : tables)
-			from.append(table.toString() + ", ");
-		int index = from.lastIndexOf(", ");
-		from.replace(index, index+1, "");
-		
-		ResultSet results = select(from.toString(), conditions);
+		ResultSet results = fetch(tables, conditions, shared);
 		
 		// Get the package directory of database items we will instantiate
 		String directory = AllegroItem.class.getPackage().getName() + ".";
@@ -160,25 +154,53 @@ public class JDBCManager {
 	public static List<AllegroItem> select(Table table, Map<String, Object> conditions) throws SQLException {
 		List<Table> tables = new ArrayList<Table>();
 		tables.add(table);
-		return select(tables, conditions);
+		return select(tables, conditions, null);
 	}
 	
-	// Helper method for use by all select methods
-	private static ResultSet select(String tables, Map<String, Object> conditions) throws SQLException {
-		StringBuilder properties = new StringBuilder();
+	// Helper for use by all select methods
+	private static ResultSet fetch(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
 		List<Object> parameters = new ArrayList<Object>();
-		Iterator<Map.Entry<String, Object>> iterator = conditions.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry<String, Object> condition = iterator.next();
-			properties.append(condition.getKey() + " = ?");
-			parameters.add(condition.getValue());
-			if (iterator.hasNext())
-				properties.append(" AND ");
+		
+		// Parse table names
+		StringBuilder from = new StringBuilder();
+		for (Table table : tables)
+			from.append(table.toString() + ", ");
+		int index = from.lastIndexOf(", ");
+		from.replace(index, index+1, "");
+		StringBuilder query = new StringBuilder("SELECT * FROM " + from);
+		if ((conditions !=  null && !conditions.isEmpty()) || (shared != null && !shared.isEmpty()))
+			query.append(" WHERE ");
+		
+		// Parse non-shared key constraints
+		if (conditions != null && !conditions.isEmpty()) {
+			Iterator<Map.Entry<String, Object>> iterator = conditions.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Map.Entry<String, Object> condition = iterator.next();
+				query.append(condition.getKey() + " = ?");
+				parameters.add(condition.getValue());
+				if (iterator.hasNext() || (shared != null && !shared.isEmpty()))
+					query.append(" AND ");
+			}
 		}
-		String query = "SELECT * FROM " + tables;
-		if (conditions !=  null && !conditions.isEmpty())
-			query += " WHERE " + properties;
-		return fetch(query, parameters);
+			
+		if (shared != null && !shared.isEmpty()) {
+			// Parse shared-key constraints
+			for (String key : shared) {
+				for (int i = 1; i < tables.size(); i++) {
+					query.append(tables.get(0).toString() + "." + key + " = " + 
+							tables.get(i) + "." + key);
+					if (i != tables.size()-1)
+						query.append(" AND ");
+				}
+			}
+		}
+		
+		Connection connection = connect();
+		PreparedStatement statement = connection.prepareStatement(query.toString());
+		if (parameters != null)
+			finalizeParams(statement, parameters);
+		ResultSet result = statement.executeQuery();
+		return result;
 	}
 	
 	private static Connection connect() throws SQLException {
