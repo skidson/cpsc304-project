@@ -110,7 +110,8 @@ public class Item implements AllegroItem {
 				"\ncategory: " + category + 
 				"\ncompany: " + company +
 				"\nyear: " + year + 
-				"\nsellPrice: " + sellPrice);
+				"\nsellPrice: " + sellPrice +
+				"\nQuantity: " + quantity);
 	}
 
 	public void setQuantity(int quantity) {

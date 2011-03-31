@@ -12,10 +12,11 @@
 				<h2>Search Results</h2>
 				
 				<table><center>
-					<th>UPC</th><th>Name</th><th>Category</th><th>Lead Singer</th><th>Quantity</th>		
-					<c:forEach var="item" items="${results}">
+					<th>UPC</th><th>Title</th><th>Category</th><th>Lead Singer</th><th>Quantity</th>		
+					<c:forEach var="item" items="${itemList}">
 					<form method="post" action="/allegro/customer/updateCart?upc=${item.upc}">
-						<tr><td>${item.upc}</td><td>${item.name}</td><td>${item.category}</td>
+						<tr><td>${item.upc}</td><td>${item.title}</td><td>${item.category}</td>
+							<td></td>
 							<td><input type="text" name="j_quantity"></input></td>
 							<td><input class="button" type="submit" value='Add to cart'/>  </td>
 						</tr>
