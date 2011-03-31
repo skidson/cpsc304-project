@@ -106,7 +106,11 @@ public class JDBCManager {
 	 * @throws SQLException
 	 */
 	public static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
-		return select(tables, conditions, shared, null, true);
+		return select(tables, conditions, shared, null);
+	}
+	
+	public static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group) throws SQLException {
+		return select(tables, conditions, shared, group, true);
 	}
 	
 	/**
