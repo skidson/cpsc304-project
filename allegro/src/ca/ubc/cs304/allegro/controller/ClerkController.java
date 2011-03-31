@@ -59,6 +59,7 @@ public class ClerkController {
 		conditions.put("receiptId", receiptID);
 		try {
 			Purchase purchase = (Purchase)(JDBCManager.select(Table.Purchase, conditions)).get(0);
+			
 			Date purchaseDate = purchase.getDate();
 			if(purchase.getCardNum() == null)
 				model.put("type", "cash");
