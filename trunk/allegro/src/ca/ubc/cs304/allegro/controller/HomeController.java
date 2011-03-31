@@ -35,7 +35,7 @@ public class HomeController {
 	
 	@RequestMapping("/index/completeRegistration")
 	public ModelAndView completeRegistration(@RequestParam("j_name") String name, @RequestParam("j_username") String username,
-								@RequestParam("j_address") String address, @RequestParam("j_phone") int phone, 
+								@RequestParam("j_address") String address, @RequestParam("j_phone") String phone, 
 								@RequestParam("j_password") String password) {
 		
 		List<Object> parameters = new ArrayList<Object>();
@@ -43,7 +43,7 @@ public class HomeController {
 		parameters.add(password);
 		parameters.add(name);
 		parameters.add(address);
-		parameters.add(new Integer(phone));
+		parameters.add(Long.parseLong((phone)));
 		try {
 			JDBCManager.insert(Table.Customer, parameters);
 		} catch (SQLException e) {

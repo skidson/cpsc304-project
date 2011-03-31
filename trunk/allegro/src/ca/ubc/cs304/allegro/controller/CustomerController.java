@@ -20,6 +20,7 @@ import ca.ubc.cs304.allegro.jdbc.JDBCManager;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 import ca.ubc.cs304.allegro.model.AllegroItem;
 import ca.ubc.cs304.allegro.model.Item;
+import ca.ubc.cs304.allegro.model.LeadSinger;
 import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.model.Purchase;
 import ca.ubc.cs304.allegro.model.PurchaseItem;
@@ -38,7 +39,8 @@ public class CustomerController {
 	
 	@RequestMapping("/customer/performSearch")
 	public ModelAndView performSearch(@RequestParam("j_category") String category, @RequestParam(value="j_title", required=false) String title,
-									@RequestParam(value="j_leadSinger", required=false) String leadSinger) {
+									@RequestParam(value="j_leadSinger", required=false) String leadSinger,
+									@RequestParam(value="j_songName", required=false) String songName) {
 		
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		HashMap<String,Object> hm = new HashMap<String,Object>();
@@ -53,15 +55,33 @@ public class CustomerController {
 		if(!leadSinger.equals(""))
 			hm.put("name", leadSinger);
 		
+		if(!songName.equals(""))
+			hm.put("HasSong.title", songName);
+		
 		try {
-			if(category.equals("All") && title.equals("") && leadSinger.equals("")){
+			if(category.equals("All") && title.equals("") && leadSinger.equals("") && songName.equals("")){
 				results = JDBCManager.select(Table.Item);
+			}else if(!leadSinger.equals("") && !songName.equals("")){
+				List<Table> tables = new ArrayList<Table>();
+				List<String> shared = new ArrayList<String>();
+				shared.add("upc");
+				tables.add(Table.Item);
+				tables.add(Table.LeadSinger);
+				tables.add(Table.HasSong);
+				results = JDBCManager.search(tables, hm, shared);
 			}else if(!leadSinger.equals("")){
 				List<Table> tables = new ArrayList<Table>();
 				List<String> shared = new ArrayList<String>();
 				shared.add("upc");
 				tables.add(Table.Item);
 				tables.add(Table.LeadSinger);
+				results = JDBCManager.search(tables, hm, shared);
+			}else if(!songName.equals("")){
+				List<Table> tables = new ArrayList<Table>();
+				List<String> shared = new ArrayList<String>();
+				shared.add("upc");
+				tables.add(Table.Item);
+				tables.add(Table.HasSong);
 				results = JDBCManager.search(tables, hm, shared);
 			}else{
 				results = JDBCManager.search(Table.Item, hm);
@@ -156,5 +176,28 @@ public class CustomerController {
 		UserService.clearCart(model);
 		model.put("date", expectedDate.getTime().toString());
 		return new ModelAndView("checkout", model);
+	}
+	
+	@RequestMapping("/customer/item")
+	public ModelAndView getItemPage(@RequestParam("j_upc") int upc){
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		HashMap<String, Object> conditions = new HashMap<String, Object>();
+		
+		conditions.put("upc", upc);
+		
+		try {
+			Item item = (Item) JDBCManager.select(Table.Item, conditions).get(0);
+			LeadSinger ls = (LeadSinger) JDBCManager.select(Table.LeadSinger, conditions).get(0);
+			List<AllegroItem> songs = JDBCManager.select(Table.HasSong, conditions);
+			
+			model.put("item", item);
+			model.put("leadSinger", ls);
+			model.put("songs", songs);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return new ModelAndView("itemPage", model);
 	}
 }
