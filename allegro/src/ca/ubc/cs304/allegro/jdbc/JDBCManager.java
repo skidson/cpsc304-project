@@ -117,11 +117,26 @@ public class JDBCManager {
 	 * indicated by the first Table of the ones queried.
 	 * @param tables - the list of tables to query.
 	 * @param conditions - conditions "key LIKE value" for tuples returned
+	 * @param shared - shared keys to match between tables
 	 * @return The result set for this query.
 	 * @throws SQLException
 	 */
 	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
 		return select(tables, conditions, shared, false);
+	}
+	
+	/**
+	 * Returns the list of results for a query of multiple tables where returned
+	 * tuples meet the conditions specified by "key LIKE value" for each entry 
+	 * in the passed Map. The entries for the list returned will be the type
+	 * indicated by the first Table of the ones queried.
+	 * @param tables - the list of tables to query.
+	 * @param conditions - conditions "key LIKE value" for tuples returned
+	 * @return The result set for this query.
+	 * @throws SQLException
+	 */
+	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions) throws SQLException {
+		return select(tables, conditions, null, false);
 	}
 	
 	private static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared, boolean exact) throws SQLException {
