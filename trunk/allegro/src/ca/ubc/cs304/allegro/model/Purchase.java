@@ -7,34 +7,39 @@ import java.util.List;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
 public class Purchase implements AllegroItem {
-	private int receiptId;
-	private long cardNum, expire, date, expectedDate, deliveredDate;
+	private Integer receiptId;
+	private Long cardNum, expire;
+	private Date date, expectedDate, deliveredDate;
 	private String cid, sname;
 	
 	public Purchase() {}
 	
-	public Purchase(int receiptId, long cardNum, long expire, long date,
-			long expectedDate, long deliveredDate, String cid, String sname) {
+	public Purchase(Integer receiptId, Long cardNum, Long expire, Long date,
+			Long expectedDate, Long deliveredDate, String cid, String sname) {
 		super();
 		this.receiptId = receiptId;
 		this.cardNum = cardNum;
 		this.expire = expire;
-		this.date = date;
-		this.expectedDate = expectedDate;
-		this.deliveredDate = deliveredDate;
+		if (date != null)
+			this.date = new Date(date);
+		if (expectedDate != null)
+			this.expectedDate = new Date(expectedDate);
+		if (deliveredDate != null)
+			this.deliveredDate = new Date(deliveredDate);
 		this.cid = cid;
 		this.sname = sname;
 	}
 
 	public List<Object> getParameters() {
 		List<Object> parameters = new ArrayList<Object>();
-		parameters.add(new Integer(receiptId));
-		parameters.add(new Date(date));
+		parameters.add(receiptId);
+		parameters.add(date);
+		parameters.add(cid);
 		parameters.add(sname);
 		parameters.add(cardNum);
-		parameters.add(new Date(expire));
-		parameters.add(new Date(expectedDate));
-		parameters.add(new Date(deliveredDate));
+		parameters.add(expire);
+		parameters.add(expectedDate);
+		parameters.add(deliveredDate);
 		return parameters;
 	}
 	
@@ -67,27 +72,30 @@ public class Purchase implements AllegroItem {
 	}
 	
 	public long getDate() {
-		return date;
+		return date.getTime();
 	}
 	
 	public void setDate(Long date) {
-		this.date = date;
+		if (date != null)
+			this.date = new Date(date);
 	}
 	
 	public long getExpectedDate() {
-		return expectedDate;
+		return expectedDate.getTime();
 	}
 	
 	public void setExpectedDate(Long expectedDate) {
-		this.expectedDate = expectedDate;
+		if (expectedDate != null)
+			this.expectedDate = new Date(expectedDate);
 	}
 	
 	public long getDeliveredDate() {
-		return deliveredDate;
+		return deliveredDate.getTime();
 	}
 	
 	public void setDeliveredDate(Long deliveredDate) {
-		this.deliveredDate = deliveredDate;
+		if (deliveredDate != null)
+			this.deliveredDate = new Date(deliveredDate);
 	}
 	
 	public String getCid() {

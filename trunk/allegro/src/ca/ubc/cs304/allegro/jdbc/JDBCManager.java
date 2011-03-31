@@ -69,7 +69,6 @@ public class JDBCManager {
 				" WHERE " + properties, parameters);
 	}
 	
-	
 	/**
 	 * Fetches the entire table from the database.
 	 * @param table - the table to fetch.

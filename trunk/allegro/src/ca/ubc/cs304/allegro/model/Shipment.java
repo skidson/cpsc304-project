@@ -11,6 +11,16 @@ public class Shipment implements AllegroItem {
 	private String supname, sname;
 	private long date;
 	
+	public Shipment() {}
+	
+	public Shipment(int sid, String supname, String sname, long date) {
+		super();
+		this.sid = sid;
+		this.supname = supname;
+		this.sname = sname;
+		this.date = date;
+	}
+	
 	public List<Object> getParameters() {
 		List<Object> parameters = new ArrayList<Object>();
 		parameters.add(new Integer(sid));
@@ -22,30 +32,37 @@ public class Shipment implements AllegroItem {
 	public Table getTable() {
 		return Table.Shipment;
 	}
+	
 	public int getSid() {
 		return sid;
 	}
+	
 	public void setSid(int sid) {
 		this.sid = sid;
 	}
+	
 	public String getSupname() {
 		return supname;
 	}
+	
 	public void setSupname(String supname) {
 		this.supname = supname;
 	}
+	
 	public String getSname() {
 		return sname;
 	}
+	
 	public void setSname(String sname) {
 		this.sname = sname;
 	}
+	
 	public long getDate() {
 		return date;
 	}
+	
 	public void setDate(long date) {
 		this.date = date;
 	}
-	
 	
 }
