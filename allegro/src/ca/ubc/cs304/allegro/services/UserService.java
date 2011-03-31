@@ -22,15 +22,48 @@ public class UserService {
 	}
 	
 	public static void removeFromCart(int index, Map<String, Object> model) {
-		Profile profile = manager.getProfile();
+		Profile profile = getProfile(model);
 		profile.removeFromCart(index);
 		model.put("profile", profile);
 	}
 	
 	public static void addToCart(Item item, Map<String, Object> model) {
-		Profile profile = manager.getProfile();
+		Profile profile = getProfile(model);
 		profile.addToCart(item);
 		model.put("profile", profile);
+	}
+	
+	public static void setManagerAccess(boolean access, Map<String, Object> model) {
+		Profile profile = getProfile(model);
+		profile.setManager(access);
+		model.put("profile", profile);
+	}
+	
+	public static void setClerkAccess(boolean access, Map<String, Object> model) {
+		Profile profile = getProfile(model);
+		profile.setClerk(access);
+		model.put("profile", profile);
+	}
+	
+	public static void setCustomerAccess(boolean access, Map<String, Object> model) {
+		Profile profile = getProfile(model);
+		profile.setCustomer(access);
+		model.put("profile", profile);
+	}
+	
+	public void setProfileManager(ProfileManager profileManager) {
+		manager = profileManager;
+	}
+	
+	private static Profile getProfile(Map<String, Object> model) {
+		Profile profile = null;
+		try {
+			profile = (Profile) model.get("profile");
+		} catch (Exception e) {
+			model.putAll(initUserContext(manager));
+			profile = (Profile) model.get("profile");
+		}
+		return profile;
 	}
 	
 }

@@ -7,7 +7,6 @@
 		<c:set var="directory" value="shipments"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		<div id="content-wrap">
-			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
 			<div id="main">
 				
 				<h2>Shipments</h2>

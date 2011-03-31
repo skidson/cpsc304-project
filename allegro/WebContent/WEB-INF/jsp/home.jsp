@@ -7,7 +7,6 @@
 		<c:set var="directory" value="home"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		<div id="content-wrap">
-			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
 			<div id="main">
 				<h2>Home</h2>
 				

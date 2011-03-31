@@ -7,12 +7,11 @@
 		<c:set var="directory" value="suppliers"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		<div id="content-wrap">
-			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
 			<div id="main">
 				
 				<h2>Manage Suppliers</h2>
 				
-				<center><table>
+				<table width="100%">
 					<form method="post">
 						<tr><th>Name</th><th>Address</th><th>Phone</th><th>Status</th></tr>
 						<tr><td>Amazon.com</td><td>1516 2nd Ave.<br />Seattle, WA 98101</td><td>(800) 201-7575</td><td>Active</td><td><input class="button" value=" Delete " size="3"/></td><td><input class="button" value=" Update " size="3"/>
@@ -31,7 +30,7 @@
 							<td><input class="button" value=" Add " size="3"/></td>
 						</tr>
 					</form>	
-				</table></center>
+				</table>
 				
 			</div> <!-- main -->
 			

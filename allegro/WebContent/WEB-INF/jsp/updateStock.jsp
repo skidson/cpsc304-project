@@ -4,10 +4,9 @@
 
 <body>
 	<div id="wrap">
-		<c:set var="directory" value="home"/>
+		<c:set var="directory" value="update"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		<div id="content-wrap">
-			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
 			<div id="main">
 				<h2>Home</h2>
 				

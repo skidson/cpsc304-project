@@ -9,8 +9,6 @@
 		
 		<div id="content-wrap">
 		
-			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
-				
 			<div id="main">
 				
 				<h2>Welcome</h2>
