@@ -8,7 +8,7 @@ import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
 public class Item implements AllegroItem {
 	public enum Type {CD, DVD};
-	private enum Category {Rock, Pop, Rap, Country, Classical, New_Age, Instrumental};
+	private enum Category {ROCK, POP, RAP, COUNTRY, CLASSICAL, NEW_AGE, INSTRUMENTAL};
 	
 	private int upc, year, quantity = 1;
 	private String title, company;
@@ -36,7 +36,7 @@ public class Item implements AllegroItem {
 		parameters.add(new Integer(upc));
 		parameters.add(title);
 		parameters.add(type.toString());
-		parameters.add(category.toString());
+		parameters.add(category.toString().toLowerCase());
 		parameters.add(company);
 		parameters.add(new Integer(year));
 		parameters.add(new BigDecimal(sellPrice));
@@ -52,7 +52,7 @@ public class Item implements AllegroItem {
 	}
 
 	public void setType(String type) {
-		this.type = Type.valueOf(type);
+		this.type = Type.valueOf(type.replace(" ", "_").toUpperCase());
 	}
 
 	public String getCategory() {
@@ -60,7 +60,7 @@ public class Item implements AllegroItem {
 	}
 
 	public void setCategory(String category) {
-		this.category = Category.valueOf(category);
+		this.category = Category.valueOf(category.replace(" ", "_").toUpperCase());
 	}
 
 	public int getUpc() {

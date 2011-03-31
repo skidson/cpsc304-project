@@ -49,7 +49,6 @@ public class CustomerController {
 		if(!leadSinger.equals(""))
 			hm.put("name", leadSinger);
 		
-		
 		try {
 			if(category.equals("all") && title.equals("") && leadSinger.equals("")){
 				results = JDBCManager.select(Table.Item);

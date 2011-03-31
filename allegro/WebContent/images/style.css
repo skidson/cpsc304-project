@@ -249,7 +249,7 @@ input.button {
 	background: url(<%=request.getContextPath()%>/images/menu.jpg) repeat-x 0 0;	
 	font: bold 12px/37px Verdana, Arial, Tahoma, Sans-serif;
 	height: 37px;
-	width: 780px;	
+	width: 780px;
 }
 #menu ul {
 	float: left;
