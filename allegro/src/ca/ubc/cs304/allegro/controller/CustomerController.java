@@ -170,12 +170,11 @@ public class CustomerController {
 		try {
 			JDBCManager.insert(purchase);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		UserService.clearCart(model);
 		model.put("date", expectedDate.getTime().toString());
-		return new ModelAndView("checkout", model);
+		return new ModelAndView("echeckout", model);
 	}
 	
 	@RequestMapping("/customer/item")

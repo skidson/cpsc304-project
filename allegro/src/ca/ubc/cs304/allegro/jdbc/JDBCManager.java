@@ -106,7 +106,7 @@ public class JDBCManager {
 	 * @throws SQLException
 	 */
 	public static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
-		return select(tables, conditions, shared, true);
+		return select(tables, conditions, shared, null, true);
 	}
 	
 	/**
@@ -121,7 +121,11 @@ public class JDBCManager {
 	 * @throws SQLException
 	 */
 	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
-		return select(tables, conditions, shared, false);
+		return search(tables, conditions, shared, null);
+	}
+	
+	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group) throws SQLException {
+		return select(tables, conditions, shared, group, false);
 	}
 	
 	/**
@@ -135,7 +139,7 @@ public class JDBCManager {
 	 * @throws SQLException
 	 */
 	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions) throws SQLException {
-		return select(tables, conditions, null, false);
+		return search(tables, conditions, null);
 	}
 	
 	public static List<AllegroItem> search(Table table, Map<String, Object> conditions) throws SQLException {
@@ -144,11 +148,11 @@ public class JDBCManager {
 		return search(tables, conditions, null);
 	}
 	
-	private static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared, boolean exact) throws SQLException {
+	private static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group, boolean exact) throws SQLException {
 		// REQUIRES: Class names in AllegroItem's package match database's names
 		// Submit the query and fetch the results
 		
-		ResultSet results = fetch(tables, conditions, shared, exact);
+		ResultSet results = fetch(tables, conditions, shared, group, exact);
 		
 		// Get the package directory of database items we will instantiate
 		String directory = AllegroItem.class.getPackage().getName() + ".";
@@ -201,7 +205,7 @@ public class JDBCManager {
 	
 	
 	// Helper for use by all select methods
-	private static ResultSet fetch(List<Table> tables, Map<String, Object> conditions, List<String> shared, boolean exact) throws SQLException {
+	private static ResultSet fetch(List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group, boolean exact) throws SQLException {
 		List<Object> parameters = new ArrayList<Object>();
 		
 		// Parse table names
@@ -242,6 +246,14 @@ public class JDBCManager {
 						query.append(" AND ");
 				}
 			}
+		}
+		
+		if (group != null && !group.isEmpty()) {
+			query.append(" GROUP BY ");
+			for (String attribute : group)
+				query.append(attribute + ", ");
+			index = from.lastIndexOf(", ");
+			from.replace(index, index+1, "");
 		}
 		
 		Connection connection = connect();

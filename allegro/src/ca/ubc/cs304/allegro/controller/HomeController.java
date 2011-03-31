@@ -78,6 +78,7 @@ public class HomeController {
 		UserService.setManagerAccess(false, model);
 		UserService.setClerkAccess(false, model);
 		UserService.setCustomerAccess(true, model);
+		UserService.clearCart(model);
 		return new ModelAndView("search", model);
 	}
 	

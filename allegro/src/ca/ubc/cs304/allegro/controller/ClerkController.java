@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,20 +16,85 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ca.ubc.cs304.allegro.jdbc.JDBCManager;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
-import ca.ubc.cs304.allegro.model.AllegroItem;
 import ca.ubc.cs304.allegro.model.Item;
 import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.model.Purchase;
+import ca.ubc.cs304.allegro.model.PurchaseItem;
+
 import ca.ubc.cs304.allegro.services.UserService;
 
 @Controller
 public class ClerkController {
 	@Autowired
 	private ProfileManager profileManager;
+	public static final int RECEIPT_ID_MAX = 1000000;
 	
 	@RequestMapping("/clerk/purchase")
 	public ModelAndView purchase() {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
+		return new ModelAndView("purchase", model);
+	}
+	
+	@RequestMapping("/clerk/removePurchase")
+	public ModelAndView removePurchase(@RequestParam("index") int index) {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		try {
+			UserService.removeFromCart(index, model);
+		} catch (Exception e) {}
+		return new ModelAndView("purchase", model);
+	}
+	
+	@RequestMapping("/clerk/checkout")
+	public ModelAndView checkout() {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		try {
+			model.put("stores", JDBCManager.select(Table.Store));
+		} catch (SQLException e) {
+			model.put("error", "Error: Could not access store list");
+		}
+		return new ModelAndView("checkout", model);
+	}
+	
+	@RequestMapping("/clerk/finalizeCash")
+	public ModelAndView finalizeCash(@RequestParam("in_cash") String cash, 
+			@RequestParam("in_store") String store) {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		List<Item> cart = UserService.getShoppingCart(model);
+		double total = 0;
+		for (Item item : cart)
+			total += item.getSellPrice() * ((double)item.getQuantity());
+		if (Double.parseDouble(cash) < total) {
+			model.put("error", "Error: Tender is less than balance");
+			return new ModelAndView("checkout", model);
+		}
+		
+		Date date = new Date(System.currentTimeMillis());
+		int receiptId = (new Random()).nextInt(RECEIPT_ID_MAX);
+		Purchase purchase = new Purchase(receiptId,
+				null, null, date, null, date, null, store);
+		
+		try {
+			JDBCManager.insert(purchase);
+			for (Item item : cart) {
+				JDBCManager.insert(new PurchaseItem(receiptId, item.getUpc(), 
+						item.getQuantity()));
+			}
+		} catch (SQLException e) {
+			model.put("error", "Error: Error processing transaction");
+			return new ModelAndView("checkout", model);
+		}
+		model.put("paid", cash);
+		model.put("purchase", purchase);
+		model.put("items", cart);
+		return new ModelAndView("receipt", model);
+	}
+	
+	@RequestMapping("/clerk/finalizeCredit")
+	public ModelAndView finalizeCredit(@RequestParam("in_cardNum") long cardNum,
+			@RequestParam("in_expYear") int expYear,
+			@RequestParam("in_expMonth") int expMonth) {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		
 		return new ModelAndView("purchase", model);
 	}
 	
@@ -37,14 +103,12 @@ public class ClerkController {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		if (!upc.equals("") && !qty.equals("")) {
 			Map<String, Object> conditions = new HashMap<String, Object>();
-			conditions.put("upc", Integer.parseInt(upc));
+			conditions.put("upc", Integer.parseInt(upc.trim()));
 			try {
 				Item item = (Item)JDBCManager.select(Table.Item, conditions).get(0);
-				item.setQuantity(Integer.parseInt(qty));
+				item.setQuantity(Integer.parseInt(qty.trim()));
 				UserService.addToCart(item, model);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			} catch (Exception e) {}
 		}
 		return new ModelAndView("purchase", model);
 	}
