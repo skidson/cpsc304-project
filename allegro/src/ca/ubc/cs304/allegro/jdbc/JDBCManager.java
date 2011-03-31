@@ -251,9 +251,9 @@ public class JDBCManager {
 		if (group != null && !group.isEmpty()) {
 			query.append(" GROUP BY ");
 			for (String attribute : group)
-				query.append(attribute + ", ");
-			index = from.lastIndexOf(", ");
-			from.replace(index, index+1, "");
+				query.append("'" + attribute + "'" + ", ");
+			index = query.lastIndexOf(", ");
+			query.replace(index, index+1, "");
 		}
 		
 		Connection connection = connect();
