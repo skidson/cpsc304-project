@@ -34,8 +34,8 @@ public class Profile implements Serializable {
 		shoppingCart.add(item);
 	}
 	
-	public void removeFromCart(Item item) {
-		shoppingCart.remove(item);
+	public void removeFromCart(int index) {
+		shoppingCart.remove(index);
 	}
 
 	public boolean isManager() {
