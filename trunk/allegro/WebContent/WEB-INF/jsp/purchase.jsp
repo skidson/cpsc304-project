@@ -7,9 +7,7 @@
 		<c:set var="directory" value="purchase"/>
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		<div id="content-wrap">
-			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
 			<div id="main">
-				
 				<h2>Purchase</h2>
 				<center>
 					<img src="http://placekitten.com/500/300"/>

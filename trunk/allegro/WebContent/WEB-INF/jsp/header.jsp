@@ -20,7 +20,7 @@
 		<c:if test="${profile.manager}">
 			<li <c:if test="${directory == 'suppliers'}" >id="current"</c:if>><a href="<c:url value="/manager/suppliers"/>">Suppliers</a></li>
 			<li <c:if test="${directory == 'reports'}" >id="current"</c:if>> <a href="<c:url value="/manager/reports"/>">Reports</a></li>
-			<li <c:if test="${directory == 'Update Stock'}" >id="current"</c:if>> <a href="<c:url value="/manager/updateStock"/>">Update Stock</a></li>
+			<li <c:if test="${directory == 'update'}" >id="current"</c:if>> <a href="<c:url value="/manager/updateStock"/>">Update Stock</a></li>
 			<li <c:if test="${directory == 'shipments'}" >id="current"</c:if> <c:if test='${!profile.clerk && !profile.customer}'>class="last"</c:if>> 
 				<a href="<c:url value="/manager/shipments"/>">Shipments</a>
 			</li>

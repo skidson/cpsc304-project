@@ -56,36 +56,28 @@ public class HomeController {
 	
 	@RequestMapping("/manager/home")
 	public ModelAndView managerHome() {
-		profileManager.setManagerAccess(true);
-		profileManager.setClerkAccess(false);
-		profileManager.setCustomerAccess(false);
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		// TODO duplicate supplyController behaviour here
-		
+		UserService.setManagerAccess(true, model);
+		UserService.setClerkAccess(false, model);
+		UserService.setCustomerAccess(false, model);
 		return new ModelAndView("suppliers", model);
 	}
 	
 	@RequestMapping("/clerk/home")
 	public ModelAndView clerkHome() {
-		profileManager.setManagerAccess(false);
-		profileManager.setClerkAccess(true);
-		profileManager.setCustomerAccess(false);
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		
-		// TODO duplicate purchaseController behaviour here
-		
+		UserService.setManagerAccess(false, model);
+		UserService.setClerkAccess(true, model);
+		UserService.setCustomerAccess(false, model);
 		return new ModelAndView("purchase", model);
 	}
 	
 	@RequestMapping("/customer/home")
 	public ModelAndView customerHome() {
-		profileManager.setManagerAccess(false);
-		profileManager.setClerkAccess(false);
-		profileManager.setCustomerAccess(true);
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		
-		// TODO duplicate searchController behaviour here
-		
+		UserService.setManagerAccess(false, model);
+		UserService.setClerkAccess(false, model);
+		UserService.setCustomerAccess(true, model);
 		return new ModelAndView("search", model);
 	}
 	
