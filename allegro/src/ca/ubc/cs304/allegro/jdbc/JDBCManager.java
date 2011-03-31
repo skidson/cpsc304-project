@@ -192,6 +192,9 @@ public class JDBCManager {
 			return(resultList);
 			
 		} catch (Exception e) {
+			try {
+				results.close();
+			} catch (Exception e2) {}
 			throw new SQLException(e);
 		}
 	}
@@ -246,7 +249,6 @@ public class JDBCManager {
 		if (parameters != null)
 			finalizeParams(statement, parameters, exact);
 		ResultSet result = statement.executeQuery();
-		connection.close();
 		return result;
 	}
 	
