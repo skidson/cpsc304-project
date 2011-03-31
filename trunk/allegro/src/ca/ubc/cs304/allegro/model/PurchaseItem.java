@@ -52,5 +52,11 @@ public class PurchaseItem implements AllegroItem {
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
+	
+	public String toString() {
+		return ("recieptId: " + receiptId +
+				"\nupc: " + upc +
+				"\nquantity: " + quantity);
+	}
 
 }

@@ -12,19 +12,13 @@ import ca.ubc.cs304.allegro.model.AllegroItem;
 public class TestDriver {
 
 	public static void main(String[] args) {
-		Integer i = 0;
-		Object o = i;
-		System.out.println(i.getClass() == Integer.class);
-		Long lol = new Long(null);
-		/*try {
+		try {
 			// Test for JDBCManager.select(Table, Map<String, Object>)
 			Map<String, Object> conditions = new HashMap<String, Object>();
 			List<String> shared = new ArrayList<String>();
 			List<Table> tables = new ArrayList<Table>();
 			tables.add(Table.Item);
-			tables.add(Table.LeadSinger);
-			shared.add("upc");
-			conditions.put("name", "Spice");
+			conditions.put("title", "violin");
 			List<AllegroItem> results = JDBCManager.search(tables, conditions, shared);
 			
 			for (AllegroItem result : results)
@@ -32,7 +26,7 @@ public class TestDriver {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}*/
+		}
 	}
 
 }
