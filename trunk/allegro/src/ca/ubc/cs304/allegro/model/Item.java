@@ -35,8 +35,14 @@ public class Item implements AllegroItem {
 		List<Object> parameters = new ArrayList<Object>();
 		parameters.add(upc);
 		parameters.add(title);
-		parameters.add(type.toString());
-		parameters.add(category.toString().toLowerCase());
+		if (type != null)
+			parameters.add(type.toString());
+		else
+			parameters.add(null);
+		if (category != null)
+			parameters.add(category.toString().toLowerCase());
+		else
+			parameters.add(null);
 		parameters.add(company);
 		parameters.add(year);
 		if (sellPrice != null)
@@ -117,7 +123,7 @@ public class Item implements AllegroItem {
 				"\ncompany: " + company +
 				"\nyear: " + year + 
 				"\nsellPrice: " + sellPrice +
-				"\nQuantity: " + quantity);
+				"\nquantity: " + quantity);
 	}
 
 	public void setQuantity(Integer quantity) {

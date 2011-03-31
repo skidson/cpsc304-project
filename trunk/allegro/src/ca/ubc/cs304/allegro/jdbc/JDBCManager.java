@@ -216,10 +216,13 @@ public class JDBCManager {
 			Iterator<Map.Entry<String, Object>> iterator = conditions.entrySet().iterator();
 			while (iterator.hasNext()) {
 				Map.Entry<String, Object> condition = iterator.next();
-				if (exact)
-					query.append(condition.getKey() + " = ?");
+				if (condition.getValue() != null)
+					if (exact)
+						query.append(condition.getKey() + " = ?");
+					else
+						query.append(condition.getKey() + " LIKE ?");
 				else
-					query.append(condition.getKey() + " LIKE ?");
+					query.append(condition.getKey() + " IS ?");
 				parameters.add(condition.getValue());
 				if (iterator.hasNext() || (shared != null && !shared.isEmpty()))
 					query.append(" AND ");

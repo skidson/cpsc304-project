@@ -17,8 +17,8 @@ public class TestDriver {
 			Map<String, Object> conditions = new HashMap<String, Object>();
 			List<String> shared = new ArrayList<String>();
 			List<Table> tables = new ArrayList<Table>();
-			tables.add(Table.Item);
-			conditions.put("title", "violin");
+			tables.add(Table.Purchase);
+			conditions.put("cid", null);
 			List<AllegroItem> results = JDBCManager.search(tables, conditions, shared);
 			
 			for (AllegroItem result : results)
