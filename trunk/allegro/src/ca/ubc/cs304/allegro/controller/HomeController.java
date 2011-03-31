@@ -47,7 +47,6 @@ public class HomeController {
 		try {
 			JDBCManager.insert(Table.Customer, parameters);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Map<String, Object> model = UserService.initUserContext(profileManager);
@@ -69,6 +68,7 @@ public class HomeController {
 		UserService.setManagerAccess(false, model);
 		UserService.setClerkAccess(true, model);
 		UserService.setCustomerAccess(false, model);
+		UserService.clearCart(model);
 		return new ModelAndView("purchase", model);
 	}
 	
