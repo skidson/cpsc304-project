@@ -1,6 +1,7 @@
 package ca.ubc.cs304.allegro.jdbc;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,10 +49,17 @@ public class TestDriver {
 			
 			// Test for JDBCManager.select(Table, Map<String, Object>)
 			Map<String, Object> conditions = new HashMap<String, Object>();
-			conditions.put("category", "Country");
-			List<AllegroItem> results = JDBCManager.select(Table.Item, conditions);
+			List<String> shared = new ArrayList<String>();
+			List<Table> tables = new ArrayList<Table>();
+			tables.add(Table.Item);
+			tables.add(Table.LeadSinger);
+			shared.add("upc");
+			conditions.put("name", "Spice Girls");
+			
+			List<AllegroItem> results = JDBCManager.select(tables, conditions, shared);
 			for (AllegroItem result : results)
 				System.out.println(result.toString() + "\n");
+			
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
