@@ -7,11 +7,11 @@ import java.util.List;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
 public class Returns implements AllegroItem {
-	private int retId, receiptId;
-	private long retDate;
+	private Integer retId, receiptId;
+	private Date retDate;
 	private String name;
 	
-	public Returns(int retId, int receiptId, long retDate, String name) {
+	public Returns(Integer retId, Integer receiptId, Date retDate, String name) {
 		super();
 		this.retId = retId;
 		this.receiptId = receiptId;
@@ -22,8 +22,8 @@ public class Returns implements AllegroItem {
 	public List<Object> getParameters() {
 		List<Object> parameters = new ArrayList<Object>();
 		parameters.add(new Integer(retId));
-		parameters.add(new Date(retDate));
-		parameters.add(new Integer(receiptId));
+		parameters.add(retDate);
+		parameters.add(receiptId);
 		parameters.add(name);
 		return parameters;
 	}
@@ -48,11 +48,11 @@ public class Returns implements AllegroItem {
 		this.receiptId = receiptId;
 	}
 	
-	public long getRetDate() {
+	public Date getRetDate() {
 		return retDate;
 	}
 	
-	public void setRetDate(long retDate) {
+	public void setRetDate(Date retDate) {
 		this.retDate = retDate;
 	}
 	

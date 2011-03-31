@@ -7,7 +7,7 @@ import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
 public class Customer implements AllegroItem {
 	private String name, cid, password, address;
-	private int phone;
+	private Integer phone;
 	
 	public Customer() {}
 	
@@ -41,7 +41,7 @@ public class Customer implements AllegroItem {
 		this.address = address;
 	}
 
-	public long getPhone() {
+	public Integer getPhone() {
 		return phone;
 	}
 
@@ -67,7 +67,7 @@ public class Customer implements AllegroItem {
 		parameters.add(password);
 		parameters.add(name);
 		parameters.add(address);
-		parameters.add(new Integer(phone));
+		parameters.add(phone);
 		return parameters;
 	}
 	

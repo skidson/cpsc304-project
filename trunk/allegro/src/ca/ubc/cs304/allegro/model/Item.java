@@ -19,8 +19,8 @@ public class Item implements AllegroItem {
 	
 	public Item() {}
 	
-	public Item(int upc, int year, String title, String company,
-			float sellPrice, Type type, Category category) {
+	public Item(Integer upc, Integer year, String title, String company,
+			Float sellPrice, Type type, Category category) {
 		super();
 		this.upc = upc;
 		this.year = year;
@@ -33,13 +33,16 @@ public class Item implements AllegroItem {
 
 	public List<Object> getParameters() {
 		List<Object> parameters = new ArrayList<Object>();
-		parameters.add(new Integer(upc));
+		parameters.add(upc);
 		parameters.add(title);
 		parameters.add(type.toString());
 		parameters.add(category.toString().toLowerCase());
 		parameters.add(company);
-		parameters.add(new Integer(year));
-		parameters.add(new BigDecimal(sellPrice));
+		parameters.add(year);
+		if (sellPrice != null)
+			parameters.add(new BigDecimal(sellPrice));
+		else
+			parameters.add(null);
 		return parameters;
 	}
 
@@ -55,18 +58,18 @@ public class Item implements AllegroItem {
 		this.type = Type.valueOf(type.replace(" ", "_").toUpperCase());
 	}
 
-	/*public String getCategory() {
+	public String getCategory() {
 		String string = category.toString().toLowerCase();
-		String first = string.charAt(0);
-		string.replaceFirst(string.charAt(0), string.charAt(0))
+		String first = string.charAt(0) + "";
+		string.replaceFirst(first, first.toUpperCase());
 		return string;
-	}*/
+	}
 
 	public void setCategory(String category) {
 		this.category = Category.valueOf(category.replace(" ", "_").toUpperCase());
 	}
 
-	public int getUpc() {
+	public Integer getUpc() {
 		return upc;
 	}
 
@@ -74,7 +77,7 @@ public class Item implements AllegroItem {
 		this.upc = upc;
 	}
 
-	public int getYear() {
+	public Integer getYear() {
 		return year;
 	}
 
@@ -98,7 +101,7 @@ public class Item implements AllegroItem {
 		this.company = company;
 	}
 
-	public float getSellPrice() {
+	public Float getSellPrice() {
 		return sellPrice;
 	}
 
@@ -117,11 +120,11 @@ public class Item implements AllegroItem {
 				"\nQuantity: " + quantity);
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 
-	public int getQuantity() {
+	public Integer getQuantity() {
 		return quantity;
 	}
 	
