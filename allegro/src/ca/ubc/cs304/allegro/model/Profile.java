@@ -3,6 +3,7 @@ package ca.ubc.cs304.allegro.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class Profile implements Serializable {
 	private static final long serialVersionUID = -799432430115623170L;
@@ -10,7 +11,7 @@ public class Profile implements Serializable {
 	private boolean clerk = false;
 	private boolean customer = false;
 	private String username;
-	private List<Item> shoppingCart = new ArrayList<Item>();
+	private List<Item> shoppingCart = new Vector<Item>();
 	
 	public Profile() {}
 	
@@ -33,9 +34,10 @@ public class Profile implements Serializable {
 	public void addToCart(Item item){
 		if(shoppingCart.size() == 0)
 			shoppingCart.add(item);
-		else{
-			for(Item cartItem : shoppingCart){
-				if(cartItem.getUpc().equals(item.getUpc()))
+		else {
+			for(int i = 0; i < shoppingCart.size(); i++) {
+				Item cartItem = shoppingCart.get(i);
+				if(cartItem.getUpc() == item.getUpc())
 					cartItem.setQuantity(cartItem.getQuantity() + item.getQuantity());
 				else
 					shoppingCart.add(item);
