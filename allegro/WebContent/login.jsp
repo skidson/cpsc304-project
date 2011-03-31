@@ -10,8 +10,6 @@
 		<!-- content-wrap starts here -->
 		<div id="content-wrap">
 		
-			<%@ include file="/WEB-INF/jsp/sidebar.jsp" %>
-				
 			<div id="main">
 				
 				<h2>Login</h2>

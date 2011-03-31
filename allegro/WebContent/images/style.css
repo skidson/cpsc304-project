@@ -279,7 +279,7 @@ input.button {
 /* Main Column */
 #main {
 	float: left;
-	width: 98%;
+	width: 96%;
 	padding: 0; margin: 5px 0 0 5px;
 	display: inline;
 }

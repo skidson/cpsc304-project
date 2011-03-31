@@ -9,7 +9,7 @@
 		<div id="content-wrap">
 			<div id="main">
 				<h2>Shopping Cart</h2>
-				<table><center><form method="post">			
+				<table width="100%"><form method="post">			
 				
 					<tr>
 						<th>Image</th><th>Item Name</th><th>Price</th><th>Quantity</th><th />
@@ -44,7 +44,7 @@
 						<td><input class="button" value=" Checkout " type="submit" /></td>
 					</tr>
 					
-				</form></center></table>
+				</form></table>
 				
 			</div> <!-- main -->
 		

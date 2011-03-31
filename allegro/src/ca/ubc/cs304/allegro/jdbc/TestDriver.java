@@ -22,7 +22,7 @@ public class TestDriver {
 			parameters.add(new Integer(12345623));
 			parameters.add("Justin Beiber: My World 2.0");
 			parameters.add("CD");
-			parameters.add("Faggotry");
+			parameters.add("Pop");
 			parameters.add("Homo Records Inc.");
 			parameters.add(new Integer(2010));
 			parameters.add(new BigDecimal(8.99));
