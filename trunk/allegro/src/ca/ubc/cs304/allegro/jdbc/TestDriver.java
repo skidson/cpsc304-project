@@ -17,46 +17,18 @@ public class TestDriver {
 		System.out.println(i.getClass() == Integer.class);
 		
 		try {
-			// Test for JDBCManager.insert()
-			/*List<Object> parameters = new ArrayList<Object>();
-			parameters.add(new Integer(12345623));
-			parameters.add("Justin Beiber: My World 2.0");
-			parameters.add("CD");
-			parameters.add("Pop");
-			parameters.add("Homo Records Inc.");
-			parameters.add(new Integer(2010));
-			parameters.add(new BigDecimal(8.99));
-			
-			JDBCManager.insert(Table.Item, parameters);*/
-			
-			// Test for JDBCManager.delete()
-			/*Map<String, Object> conditions = new HashMap<String, Object>();
-			conditions.put("cid", "steve");
-			JDBCManager.delete(Table.Customer, conditions);*/
-			
-			// Test for JDBCManager.select()
-			/*ResultSet results = JDBCManager.select(Table.Customer);
-			results.first();
-			while(!results.isAfterLast()) {
-				System.out.println("[" + results.getString("cid") + ", " + 
-						results.getString("password") + ", " +
-						results.getString("name") + ", " + 
-						results.getString("address") + ", " + 
-						results.getString("phone") + "]");
-				results.next();
-			}
-			results.close();*/
-			
 			// Test for JDBCManager.select(Table, Map<String, Object>)
-			Map<String, Object> conditions = new HashMap<String, Object>();
+			/*Map<String, Object> conditions = new HashMap<String, Object>();
 			List<String> shared = new ArrayList<String>();
 			List<Table> tables = new ArrayList<Table>();
 			tables.add(Table.Item);
 			tables.add(Table.LeadSinger);
 			shared.add("upc");
 			conditions.put("name", "Spice Girls");
+			List<AllegroItem> results = JDBCManager.select(tables, conditions, shared);*/
 			
-			List<AllegroItem> results = JDBCManager.select(tables, conditions, shared);
+			List<AllegroItem> results = JDBCManager.select(Table.Item);
+			
 			for (AllegroItem result : results)
 				System.out.println(result.toString() + "\n");
 			

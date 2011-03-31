@@ -1,5 +1,7 @@
 package ca.ubc.cs304.allegro.model;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
@@ -9,15 +11,16 @@ public class Shipment implements AllegroItem {
 	private String supname, sname;
 	private long date;
 	
-	
-	
 	public List<Object> getParameters() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add(new Integer(sid));
+		parameters.add(supname);
+		parameters.add(sname);
+		parameters.add(new Date(date));
+		return parameters;
 	}
 	public Table getTable() {
-		// TODO Auto-generated method stub
-		return null;
+		return Table.Shipment;
 	}
 	public int getSid() {
 		return sid;
