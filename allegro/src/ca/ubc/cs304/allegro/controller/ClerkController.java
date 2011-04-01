@@ -190,7 +190,9 @@ public class ClerkController {
 			Date purchaseDate = purchase.getPurchaseDate();
 			System.out.println(purchaseDate.toString());
 			if((date.getTime() - purchaseDate.getTime()*1000*60*60*24) > 15){
-				model.put("expired", true);
+				
+				model.put("error", "Sorry, your purchase is more than 15 days old and can no longer be returned!");
+				return new ModelAndView("refund", model);
 			}
 			if(purchase.getCardNum() == null)
 				model.put("type", "cash");

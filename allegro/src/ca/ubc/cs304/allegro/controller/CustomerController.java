@@ -24,6 +24,7 @@ import ca.ubc.cs304.allegro.model.LeadSinger;
 import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.model.Purchase;
 import ca.ubc.cs304.allegro.model.PurchaseItem;
+import ca.ubc.cs304.allegro.services.TransactionService;
 import ca.ubc.cs304.allegro.services.UserService;
 
 @Controller
@@ -124,33 +125,26 @@ public class CustomerController {
 	@RequestMapping("/customer/checkout")
 	public ModelAndView checkout(){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		HashMap<String, Object> conditions = new HashMap<String, Object>();
 		
 		List<Item> cart = UserService.getShoppingCart(model);
-		conditions.put("sname", "Fraser HighWay");
-		try {
-			List<AllegroItem> stock = JDBCManager.select(Table.Stored, conditions);
-			for(AllegroItem item: stock){
-				for(Item cartItem : cart){
-					if(item.getParameters().get(1).equals(cartItem.getUpc())){
-						if((Integer)item.getParameters().get(2) < cartItem.getQuantity()){
-							if((Integer)(item.getParameters().get(2)) == 0){
-								model.put("error", "Sorry " + cartItem.getTitle() + "is out of stock!");
-								return new ModelAndView("cart", model);
-							}else{
-								UserService.updateQuantity(model, (Integer)(item.getParameters().get(2)), cartItem);
-								
-							}
-								
-						}
-					}
+		for (Item item : cart) {
+			int inStock = TransactionService.checkQuantity(item, "Fraser Highway");
+			if (inStock < item.getQuantity()) {
+				if(inStock > 0){
+					UserService.updateQuantity(model, inStock, item);
+					model.put("error", "Error: Current quantity of '" + item.getTitle() + "'(" + 
+							item.getUpc() + ") is " + inStock + ". You have been giving all the remaining quantity");
+					boolean checkout = true;
+					model.put("checkout", checkout);
+					return new ModelAndView("cart", model);
 				}
+				model.put("error", "Error: Current quantity of '" + item.getTitle() + "'(" + 
+						item.getUpc() + ") is " + inStock);
+				return new ModelAndView("cart", model);
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			
 		
+		}
 		
 		boolean checkout = true;
 		model.put("checkout", checkout);
@@ -198,6 +192,7 @@ public class CustomerController {
 			try {
 				JDBCManager.insert(purchase);
 				JDBCManager.insert(items);
+				TransactionService.updateStock(cart.get(i), "Fraser HighWay", cart.get(i).getQuantity());
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
