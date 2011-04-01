@@ -168,31 +168,30 @@ public class CustomerController {
 		int purchasesProcessedPerDay = 3;
 		Calendar cal = Calendar.getInstance();
 		Calendar expectedDate = Calendar.getInstance();
-		
+		int receiptID =  new Random().nextInt(1000000);
 		try{
 			conditions.put("deliveredDate", null);
 			conditions.put("sname", "Warehouse");
 			List<AllegroItem> purchaseResults = JDBCManager.select(Table.Purchase, conditions);
 			int outstandingDeliveries = purchaseResults.size();
 			expectedDate.setTimeInMillis(expectedDate.getTimeInMillis() +(outstandingDeliveries/purchasesProcessedPerDay)*1000*60*60*24);
+			cal.set(year, month, 1);
+			Purchase purchase = new Purchase(receiptID, cardnum, new Date(cal.getTimeInMillis())
+					, new Date(System.currentTimeMillis()), new Date(expectedDate.getTimeInMillis()), null, profileManager.getProfile().getUsername(), "Fraser Highway");
+			JDBCManager.insert(purchase);
 		} catch (SQLException e){
 			e.printStackTrace();
 		}
 		
 		
-		Random r = new Random();
-		cal.set(year, month, 1);
-		int receiptID = r.nextInt(1000000);
-		Purchase purchase = new Purchase(receiptID, cardnum, new Date(cal.getTimeInMillis())
-				, new Date(System.currentTimeMillis()), new Date(expectedDate.getTimeInMillis()), null, profileManager.getProfile().getUsername(), "Fraser Highway");
-		
+
 		List<Item> cart = profileManager.getProfile().getShoppingCart();
+		
 		for(int i = 0; i < cart.size(); i++){
 			PurchaseItem items = new PurchaseItem(receiptID, cart.get(i).getUpc(), cart.get(i).getQuantity());
 			try {
-				JDBCManager.insert(purchase);
 				JDBCManager.insert(items);
-				TransactionService.updateStock(cart.get(i), "Fraser HighWay", cart.get(i).getQuantity());
+				TransactionService.updateStock(cart.get(i), "Fraser HighWay", (TransactionService.checkQuantity(cart.get(i), "Fraser HighWay") - cart.get(i).getQuantity()));
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
