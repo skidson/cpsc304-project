@@ -163,8 +163,15 @@ public class ClerkController {
 		return new ModelAndView("purchase", model);
 	}
 	
+	
 	@RequestMapping("/clerk/refund")
-	public ModelAndView refund(@RequestParam("j_receiptID") int receiptID) {
+	public ModelAndView refund(){
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		model.put("basic", true);
+		return new ModelAndView("refund", model);
+	}
+	@RequestMapping("/clerk/finalizeRefund")
+	public ModelAndView finalizeRefund(@RequestParam("j_receiptID") int receiptID) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		HashMap<String, Object> conditions = new HashMap<String, Object>();
 		
@@ -174,7 +181,12 @@ public class ClerkController {
 		try {
 			Purchase purchase = (Purchase)(JDBCManager.select(Table.Purchase, conditions)).get(0);
 			
+
 			Date purchaseDate = purchase.getPurchaseDate();
+			System.out.println(purchaseDate.toString());
+			if((date.getTime() - purchaseDate.getTime()*1000*60*60*24) > 15){
+				model.put("expired", true);
+			}
 			if(purchase.getCardNum() == null)
 				model.put("type", "cash");
 			else

@@ -31,7 +31,7 @@
 					<td><label>Lead Singer(Optional)</label></td><td><input type="text" size="30" name="j_leadSinger" /></td>
 					</tr>
 					<tr>
-					<td><label>Song Name(Optional)</label></td><td><input type="text" size ="30" name="j_songname"/></td>
+					<td><label>Song Name(Optional)</label></td><td><input type="text" size ="30" name="j_songName"/></td>
 					</tr>
 					<tr><td></td><td><input class="button" value=" Search " type="submit"/></td></tr>
 				</form></center></table>

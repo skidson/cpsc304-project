@@ -45,7 +45,7 @@ public class HasSong implements AllegroItem {
 	}
 	
 	public String toString() {
-		return ("upc: " + upc + 
+		return ("\nupc: " + upc + 
 				"\ntitle: " + title);
 	}
 
