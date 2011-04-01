@@ -9,7 +9,7 @@ import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 public class Shipment implements AllegroItem {
 	private Integer sid;
 	private String supname, sname;
-	private Date date;
+	private Date orderDate;
 	
 	public Shipment() {}
 	
@@ -18,7 +18,7 @@ public class Shipment implements AllegroItem {
 		this.sid = sid;
 		this.supname = supname;
 		this.sname = sname;
-		this.date = date;
+		this.orderDate = date;
 	}
 	
 	public List<Object> getParameters() {
@@ -26,7 +26,7 @@ public class Shipment implements AllegroItem {
 		parameters.add(sid);
 		parameters.add(supname);
 		parameters.add(sname);
-		parameters.add(date);
+		parameters.add(orderDate);
 		return parameters;
 	}
 	public Table getTable() {
@@ -37,7 +37,7 @@ public class Shipment implements AllegroItem {
 		return sid;
 	}
 	
-	public void setSid(int sid) {
+	public void setSid(Integer sid) {
 		this.sid = sid;
 	}
 	
@@ -57,12 +57,19 @@ public class Shipment implements AllegroItem {
 		this.sname = sname;
 	}
 	
-	public Date getDate() {
-		return date;
+	public Date getOrderDate() {
+		return orderDate;
 	}
 	
-	public void setDate(Date date) {
-		this.date = date;
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
+	}
+	
+	public String toString() {
+		return ("sid: " + sid + 
+				"\nsupname: " + supname + 
+				"\nsname: " + sname + 
+				"\norderDate: " + orderDate);
 	}
 	
 }
