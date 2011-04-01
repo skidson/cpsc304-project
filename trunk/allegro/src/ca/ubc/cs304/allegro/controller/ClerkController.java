@@ -118,7 +118,6 @@ public class ClerkController {
 		}
 		
 		try {
-			JDBCManager.insert(purchase);
 			for (Item item : cart) {
 				int inStock = TransactionService.checkQuantity(item, store);
 				if (inStock < item.getQuantity()) {
@@ -126,9 +125,15 @@ public class ClerkController {
 							item.getUpc() + ") is " + inStock);
 					return new ModelAndView("checkout", model);
 				}
+			}
+			
+			// Store the purchase and its items
+			JDBCManager.insert(purchase);
+			for (Item item : cart) {
 				JDBCManager.insert(new PurchaseItem(receiptId, item.getUpc(), 
 						item.getQuantity()));
 			}
+			
 		} catch (SQLException e) {
 			model.put("error", "Error: Error processing transaction");
 			return new ModelAndView("checkout", model);

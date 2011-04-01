@@ -8,8 +8,8 @@
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		<div id="content-wrap">
 			<div id="main">
-				
 				<h2>Shipments</h2>
+				<h3>Pending</h3>
 				<center>
 					<img src="http://placekitten.com/450/300"/>
 					<br>I can has shipmentz?

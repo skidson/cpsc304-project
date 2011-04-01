@@ -46,6 +46,26 @@ public class JDBCManager {
 		insert(item.getTable(), item.getParameters());
 	}
 	
+	public static void update(Table table, String attribute, Object value,
+			 Map<String, Object> conditions) throws SQLException {
+		List<Object> parameters = new ArrayList<Object>();
+		parameters.add(value);
+		StringBuilder query = new StringBuilder("UPDATE " + table.toString() + 
+				" SET " + attribute + " = ?");
+		if (conditions != null && !conditions.isEmpty()) {
+			query.append(" WHERE ");
+			Iterator<Map.Entry<String, Object>> iterator = conditions.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Map.Entry<String, Object> entry = iterator.next();
+				query.append(entry.getKey() + " = ?");
+				parameters.add(entry.getValue());
+				if(iterator.hasNext())
+					query.append(" AND ");
+			}
+		}
+		modify(query.toString(), parameters);
+	}
+	
 	/**
 	 * Deletes the tuples in the table that match all conditions "key = value" in the passed Map.
 	 * @param table - the table to remove tuples from.
@@ -216,7 +236,6 @@ public class JDBCManager {
 			throw new SQLException(e);
 		}
 	}
-	
 	
 	// Helper for use by all select methods
 	private static ResultSet fetch(List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group, boolean exact) throws SQLException {
