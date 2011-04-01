@@ -14,28 +14,24 @@ import ca.ubc.cs304.allegro.services.TransactionService;
 public class TestDriver {
 
 	public static void main(String[] args) {
-		/*try {
+		try {
 			// Test for JDBCManager.select(Table, Map<String, Object>)
 			Map<String, Object> conditions = new HashMap<String, Object>();
 			List<String> shared = new ArrayList<String>();
 			List<String> group = new ArrayList<String>();
 			List<Table> tables = new ArrayList<Table>();
 			
-			conditions.put("upc", 100000004);
-			List<AllegroItem> results = JDBCManager.select(Table.Stored, conditions);
+			conditions.put("supname", "Bob Jones");
+			JDBCManager.update(Table.Supplier, "address", 
+					"123 Apple Avenue", conditions);
 			
-			for (AllegroItem result : results)
-				System.out.println(result.toString() + "\n");
+			/*for (AllegroItem result : results)
+				System.out.println(result.toString() + "\n");*/
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}*/
-		
-		try {
-			long cardNum = TransactionService.sanitizeCardNum("4221891933732217");
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+		
 	}
 
 }
