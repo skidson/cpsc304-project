@@ -5,12 +5,12 @@ import java.util.List;
 
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
-public class ReturnItem implements AllegroItem {
+public class RefundItem implements AllegroItem {
 	private Integer retid, upc, quantity;
 
-	public ReturnItem() {}
+	public RefundItem() {}
 	
-	public ReturnItem(Integer retid, Integer upc, Integer quantity) {
+	public RefundItem(Integer retid, Integer upc, Integer quantity) {
 		super();
 		this.retid = retid;
 		this.upc = upc;
@@ -26,7 +26,7 @@ public class ReturnItem implements AllegroItem {
 	}
 
 	public Table getTable() {
-		return Table.ReturnItem;
+		return Table.RefundItem;
 	}
 
 	public Integer getRetid() {

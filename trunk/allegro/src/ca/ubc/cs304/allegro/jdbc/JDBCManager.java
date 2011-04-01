@@ -22,7 +22,7 @@ public class JDBCManager {
 	private static boolean registered = false;
 	
 	public enum Table { Customer, HasSong, Item, LeadSinger, Purchase, PurchaseItem,
-		ReturnItem, Returns, ShipItem, Shipment, Store, Stored, Supplier};
+		RefundItem, Refund, ShipItem, Shipment, Store, Stored, Supplier};
 	
 	/**
 	 * Manually inserts a tuple to the indicated table containing values
