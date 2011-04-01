@@ -9,16 +9,16 @@
 		<div id="content-wrap">
 			<div id="main">
 				<h2>${item.title}</h2>
-				<table><th>Artist</th><th>Price</th><th></th>
+				<table><th>Artist</th><th>Price</th><th>Category</th>
 				<tr>
-				<td>${leadSinger.name}</td><td>${item.sellPrice}</td>
+				<td>${leadSinger.name}</td><td>${item.sellPrice}</td><td>${item.category}</td>
 				</tr>
 				</table>
 				
 				<table><th>Track List</th>
-				<c:forEach var="song" items="songs">
+				<c:forEach var="song" items="${songs}">
 				<tr>
-				${song.name}
+				<td>${song.title}</td>
 				</tr>
 				</c:forEach>
 				</table>

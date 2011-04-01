@@ -44,6 +44,12 @@ public class UserService {
 		model.put("profile", profile);
 	}
 	
+	public static void updateQuantity(Map<String, Object> model, int quantity, Item item){
+		Profile profile = getProfile(model);
+		profile.updateQuantity(quantity, item);
+		model.put("profile", profile);
+	}
+	
 	public static void setManagerAccess(boolean access, Map<String, Object> model) {
 		Profile profile = getProfile(model);
 		profile.setManager(access);

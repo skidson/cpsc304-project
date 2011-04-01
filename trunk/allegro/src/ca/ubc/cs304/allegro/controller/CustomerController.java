@@ -45,7 +45,11 @@ public class CustomerController {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		HashMap<String,Object> hm = new HashMap<String,Object>();
 		List<AllegroItem> results = new ArrayList<AllegroItem>();
-
+		System.out.println(category);
+		System.out.println(title);
+		System.out.println(songName);
+		System.out.println(leadSinger);
+		
 		if(!category.equals("All"))
 			hm.put("category", category);
 		
@@ -79,16 +83,19 @@ public class CustomerController {
 			}else if(!songName.equals("")){
 				List<Table> tables = new ArrayList<Table>();
 				List<String> shared = new ArrayList<String>();
+				List<String> groupBy = new ArrayList<String>();
+				groupBy.add("upc");
 				shared.add("upc");
 				tables.add(Table.Item);
 				tables.add(Table.HasSong);
-				results = JDBCManager.search(tables, hm, shared);
+				results = JDBCManager.search(tables, hm, shared, groupBy);
 			}else{
 				results = JDBCManager.search(Table.Item, hm);
 			}
 		} catch (SQLException e) {
-			results = null;
+			e.printStackTrace();
 		}
+		System.out.println(results.toString());
 		model.put("itemList", results);
 		return new ModelAndView("searchResults", model);
 	}
@@ -117,6 +124,34 @@ public class CustomerController {
 	@RequestMapping("/customer/checkout")
 	public ModelAndView checkout(){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
+		HashMap<String, Object> conditions = new HashMap<String, Object>();
+		
+		List<Item> cart = UserService.getShoppingCart(model);
+		conditions.put("sname", "Fraser HighWay");
+		try {
+			List<AllegroItem> stock = JDBCManager.select(Table.Stored, conditions);
+			for(AllegroItem item: stock){
+				for(Item cartItem : cart){
+					if(item.getParameters().get(1).equals(cartItem.getUpc())){
+						if((Integer)item.getParameters().get(2) < cartItem.getQuantity()){
+							if((Integer)(item.getParameters().get(2)) == 0){
+								model.put("error", "Sorry " + cartItem.getTitle() + "is out of stock!");
+								return new ModelAndView("cart", model);
+							}else{
+								UserService.updateQuantity(model, (Integer)(item.getParameters().get(2)), cartItem);
+								
+							}
+								
+						}
+					}
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		boolean checkout = true;
 		model.put("checkout", checkout);
 		return new ModelAndView("cart", model);
@@ -142,6 +177,7 @@ public class CustomerController {
 		
 		try{
 			conditions.put("deliveredDate", null);
+			conditions.put("sname", "Warehouse");
 			List<AllegroItem> purchaseResults = JDBCManager.select(Table.Purchase, conditions);
 			int outstandingDeliveries = purchaseResults.size();
 			expectedDate.setTimeInMillis(expectedDate.getTimeInMillis() +(outstandingDeliveries/purchasesProcessedPerDay)*1000*60*60*24);
@@ -154,31 +190,27 @@ public class CustomerController {
 		cal.set(year, month, 1);
 		int receiptID = r.nextInt(1000000);
 		Purchase purchase = new Purchase(receiptID, cardnum, new Date(cal.getTimeInMillis())
-				, new Date(System.currentTimeMillis()), new Date(expectedDate.getTimeInMillis()), null, profileManager.getProfile().getUsername(), "Warehouse");
+				, new Date(System.currentTimeMillis()), new Date(expectedDate.getTimeInMillis()), null, profileManager.getProfile().getUsername(), "Fraser Highway");
 		
 		List<Item> cart = profileManager.getProfile().getShoppingCart();
 		for(int i = 0; i < cart.size(); i++){
 			PurchaseItem items = new PurchaseItem(receiptID, cart.get(i).getUpc(), cart.get(i).getQuantity());
 			try {
+				JDBCManager.insert(purchase);
 				JDBCManager.insert(items);
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 		}
-		try {
-			JDBCManager.insert(purchase);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		
 		UserService.clearCart(model);
 		model.put("date", expectedDate.getTime().toString());
 		return new ModelAndView("echeckout", model);
 	}
 	
 	@RequestMapping("/customer/item")
-	public ModelAndView getItemPage(@RequestParam("j_upc") int upc){
+	public ModelAndView getItemPage(@RequestParam("upc") int upc){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		HashMap<String, Object> conditions = new HashMap<String, Object>();
 		
@@ -188,6 +220,9 @@ public class CustomerController {
 			Item item = (Item) JDBCManager.select(Table.Item, conditions).get(0);
 			LeadSinger ls = (LeadSinger) JDBCManager.select(Table.LeadSinger, conditions).get(0);
 			List<AllegroItem> songs = JDBCManager.select(Table.HasSong, conditions);
+			System.out.println(item.toString());
+			System.out.println(ls.toString());
+			System.out.println(songs.toString());
 			
 			model.put("item", item);
 			model.put("leadSinger", ls);

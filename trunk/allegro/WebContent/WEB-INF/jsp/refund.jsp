@@ -9,11 +9,11 @@
 		<div id="content-wrap">
 			<div id="main">
 				
-				<h2>Refund</h2>
+				<h2>Refund</h2><form action="/allegro/clerk/finalizeRefund">
 				<table width=100%>
 				<tr><td>Please enter the receipt number: <input type="text" name="j_receiptID"/></td>
 				<td><input class="button" value=" Return Item" type="submit"/></td>
-				</table>
+				</table></form>
 			</div> <!-- main -->
 		
 		</div> <!-- content-wrap -->	
