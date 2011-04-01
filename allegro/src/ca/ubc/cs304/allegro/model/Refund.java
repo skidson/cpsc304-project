@@ -6,12 +6,12 @@ import java.util.List;
 
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
-public class Returns implements AllegroItem {
+public class Refund implements AllegroItem {
 	private Integer retId, receiptId;
 	private Date retDate;
 	private String name;
 	
-	public Returns(Integer retId, Integer receiptId, Date retDate, String name) {
+	public Refund(Integer retId, Integer receiptId, Date retDate, String name) {
 		super();
 		this.retId = retId;
 		this.receiptId = receiptId;
@@ -29,7 +29,7 @@ public class Returns implements AllegroItem {
 	}
 
 	public Table getTable() {
-		return Table.Returns;
+		return Table.Refund;
 	}
 
 	public int getRetId() {

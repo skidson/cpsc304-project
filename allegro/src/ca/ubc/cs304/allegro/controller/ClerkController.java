@@ -22,6 +22,7 @@ import ca.ubc.cs304.allegro.model.Item;
 import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.model.Purchase;
 import ca.ubc.cs304.allegro.model.PurchaseItem;
+import ca.ubc.cs304.allegro.model.Refund;
 import ca.ubc.cs304.allegro.services.TransactionService;
 import ca.ubc.cs304.allegro.services.UserService;
 
@@ -173,24 +174,31 @@ public class ClerkController {
 	public ModelAndView refund(){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		model.put("basic", true);
+		try {
+			Map<String, Object> conditions = new HashMap<String, Object>();
+			conditions.put("type", "store");
+			List<AllegroItem> stores = JDBCManager.select(Table.Store, conditions);
+			model.put("stores", stores);
+		} catch (SQLException e) {
+			model.put("error", "Error: Could not access store list");
+		}
 		return new ModelAndView("refund", model);
 	}
 	@RequestMapping("/clerk/finalizeRefund")
-	public ModelAndView finalizeRefund(@RequestParam("j_receiptID") int receiptID) {
+	public ModelAndView finalizeRefund(@RequestParam("j_receiptID") int receiptID,
+										@RequestParam("j_store") String sname) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		HashMap<String, Object> conditions = new HashMap<String, Object>();
-		
+
 		Calendar currentDate = Calendar.getInstance();
 		Date date = new Date(currentDate.getTimeInMillis());
 		conditions.put("receiptId", receiptID);
 		try {
 			Purchase purchase = (Purchase)(JDBCManager.select(Table.Purchase, conditions)).get(0);
-			
+			List<AllegroItem> purchaseItems = JDBCManager.select(Table.PurchaseItem, conditions);
 
 			Date purchaseDate = purchase.getPurchaseDate();
-			System.out.println(purchaseDate.toString());
-			if((date.getTime() - purchaseDate.getTime()*1000*60*60*24) > 15){
-				
+			if((date.getTime() - purchaseDate.getTime()*1000*60*60*24) > 15) {
 				model.put("error", "Sorry, your purchase is more than 15 days old and can no longer be returned!");
 				return new ModelAndView("refund", model);
 			}
@@ -198,8 +206,18 @@ public class ClerkController {
 				model.put("type", "cash");
 			else
 				model.put("type", "credit");
+			double totalPrice = 0;
+			conditions.clear();
 			
-		//FIXME COMPARE DATES, CALCULATE AMOUNT, SPEW SHIT
+			for(AllegroItem item : purchaseItems){
+				conditions.put("upc", item.getParameters().get(1));
+				Item dbItem = (Item)JDBCManager.select(Table.Item, conditions).get(0);
+				totalPrice+= dbItem.getSellPrice() * (Integer)item.getParameters().get(2);
+				conditions.clear();
+			}
+			model.put("totalPrice", totalPrice);
+			int retid = new Random().nextInt(RECEIPT_ID_MAX);
+			JDBCManager.insert(new Refund(new Integer(retid), new Integer(receiptID), new Date(Calendar.getInstance().getTimeInMillis()), sname));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

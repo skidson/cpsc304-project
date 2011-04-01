@@ -9,11 +9,25 @@
 		<div id="content-wrap">
 			<div id="main">
 				
-				<h2>Refund</h2><form action="/allegro/clerk/finalizeRefund">
-				<table width=100%>
-				<tr><td>Please enter the receipt number: <input type="text" name="j_receiptID"/></td>
-				<td><input class="button" value=" Return Item" type="submit"/></td>
-				</table></form>
+				<h2>Refund</h2>
+
+				<c:choose>
+					<c:when test="${not empty error}">
+						${error}
+					</c:when>
+					<c:otherwise>
+						<table width=100%><form action="/allegro/clerk/finalizeRefund">
+						<tr><td>Please enter the receipt number: <input type="text" name="j_receiptID"/></td>
+						<td><b>Store: </b><select name="j_store">
+							<c:forEach var="store" items="${stores}">
+								<option>${store.sname}</option>
+							</c:forEach>
+							</select></td>
+						<td><input class="button" value=" Return Item" type="submit"/></td>
+						</tr>
+						</form></table>
+					</c:otherwise>
+				</c:choose>
 			</div> <!-- main -->
 		
 		</div> <!-- content-wrap -->	
