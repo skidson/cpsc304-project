@@ -49,7 +49,6 @@ public class TransactionService {
 	}
 	
 	public static int checkQuantity(Item item, String store) {
-		List<Table> tables = new ArrayList<Table>();
 		Map<String, Object> conditions = new HashMap<String, Object>();
 		List<String> shared = new ArrayList<String>();
 		conditions.put("upc", item.getUpc());
@@ -57,6 +56,16 @@ public class TransactionService {
 			return ((Stored)JDBCManager.select(Table.Stored, conditions, shared).get(0)).getStock();
 		} catch (Exception e) {
 			return 0;
+		}
+	}
+	
+	public static void updateStock(Item item, String store, int quantity){
+		Map<String, Object> conditions = new HashMap<String, Object>();
+		conditions.put("upc", item.getUpc());
+		try {
+			JDBCManager.update(Table.Stored, "stock", new Integer(quantity), conditions);
+		} catch (Exception e) {
+			
 		}
 	}
 	
