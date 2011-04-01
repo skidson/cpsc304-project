@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ca.ubc.cs304.allegro.jdbc.JDBCManager;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
+import ca.ubc.cs304.allegro.model.AllegroItem;
 import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.services.UserService;
 
@@ -59,6 +60,14 @@ public class HomeController {
 		UserService.setManagerAccess(true, model);
 		UserService.setClerkAccess(false, model);
 		UserService.setCustomerAccess(false, model);
+		
+		try {
+			List<AllegroItem> suppliers = JDBCManager.select(Table.Supplier);
+			model.put("suppliers", suppliers);
+		} catch (SQLException e) {
+			model.put("error", "Error: Could not load suppliers");
+		}
+		
 		return new ModelAndView("suppliers", model);
 	}
 	
