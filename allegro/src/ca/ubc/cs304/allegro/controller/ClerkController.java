@@ -3,6 +3,7 @@ package ca.ubc.cs304.allegro.controller;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.model.Purchase;
 import ca.ubc.cs304.allegro.model.PurchaseItem;
 import ca.ubc.cs304.allegro.model.Refund;
+import ca.ubc.cs304.allegro.model.RefundItem;
 import ca.ubc.cs304.allegro.services.TransactionService;
 import ca.ubc.cs304.allegro.services.UserService;
 
@@ -216,12 +218,27 @@ public class ClerkController {
 				conditions.clear();
 			}
 			model.put("totalPrice", totalPrice);
+			
 			int retid = new Random().nextInt(RECEIPT_ID_MAX);
 			JDBCManager.insert(new Refund(new Integer(retid), new Integer(receiptID), new Date(Calendar.getInstance().getTimeInMillis()), sname));
+			model.put("retID", retid);
+			
+			List<Item> returnedItems = new ArrayList<Item>();
+			for(AllegroItem item : purchaseItems){
+				conditions.put("upc", item.getParameters().get(1));
+				Item dbItem = (Item)JDBCManager.select(Table.Item, conditions).get(0);
+				returnedItems.add(dbItem);
+				JDBCManager.insert(new RefundItem(new Integer(retid), dbItem.getUpc(), (Integer)item.getParameters().get(2)));
+				
+				TransactionService.updateStock(dbItem, sname, (TransactionService.checkQuantity(dbItem, "sname") + (Integer)item.getParameters().get(2)));
+				conditions.clear();
+			}
+			model.put("items", returnedItems);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
+		model.put("basic", false);
 		return new ModelAndView("refund", model);
 	}
 	
