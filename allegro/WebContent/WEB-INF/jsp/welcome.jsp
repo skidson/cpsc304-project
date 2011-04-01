@@ -12,7 +12,6 @@
 			<div id="main">
 				
 				<h2>Welcome</h2>
-				<a href="<c:url value="/index/test"/>">Test</a>
 				<center><table>
 					<tr>
 						<td><a href="<c:url value="/customer/home"/>"><img src="<c:url value="/images/customer_logo.png"/>" width="128" height="128" /></a></td>

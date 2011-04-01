@@ -1,5 +1,6 @@
 package ca.ubc.cs304.allegro.controller;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -21,6 +22,7 @@ import ca.ubc.cs304.allegro.model.Item;
 import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.model.Purchase;
 import ca.ubc.cs304.allegro.model.PurchaseItem;
+import ca.ubc.cs304.allegro.services.TransactionService;
 import ca.ubc.cs304.allegro.services.UserService;
 
 @Controller
@@ -60,7 +62,7 @@ public class ClerkController {
 	}
 	
 	@RequestMapping("/clerk/finalize")
-	public ModelAndView finalizeCash(@RequestParam("method") String method,
+	public ModelAndView finalize(@RequestParam("method") String method,
 			@RequestParam(value = "in_cash", required = false) String cash, 
 			@RequestParam(value = "in_store", required = false) String store,
 			@RequestParam(value = "in_cardNum", required = false) String cardNum,
@@ -68,21 +70,48 @@ public class ClerkController {
 			@RequestParam(value = "in_expMonth", required = false) int expMonth) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		List<Item> cart = UserService.getShoppingCart(model);
+		
+		try {
+			Map<String, Object> conditions = new HashMap<String, Object>();
+			conditions.put("type", "store");
+			List<AllegroItem> stores = JDBCManager.select(Table.Store, conditions);
+			model.put("stores", stores);
+		} catch (SQLException e) {
+			model.put("error", "Error: Could not access store list");
+		}
+		
+		// Persist unused text field entries
+		if (cash != null)
+			model.put("cash", cash);
+		
 		double total = 0;
 		for (Item item : cart)
 			total += item.getSellPrice() * ((double)item.getQuantity());
-		if (Double.parseDouble(cash) < total) {
-			model.put("error", "Error: Tender is less than balance");
+		
+		try {
+			if (method.trim().equalsIgnoreCase(CASH) && TransactionService.sanitizeMoney(cash) < total) {
+				model.put("error", "Error: Tender is less than balance");
+				return new ModelAndView("checkout", model);
+			}
+		} catch (IOException e) {
+			model.put("error", "Error: Invalid cash amount");
+			model.put("cash", cash);
 			return new ModelAndView("checkout", model);
 		}
 		
 		Date date = new Date(System.currentTimeMillis());
 		int receiptId = (new Random()).nextInt(RECEIPT_ID_MAX);
+		
 		Purchase purchase = new Purchase(receiptId,
 				null, null, date, null, date, null, store);
 		
 		if (method.trim().equalsIgnoreCase(CREDIT)) {
-			purchase.setCardNum(Long.parseLong(cardNum));
+			try {
+				purchase.setCardNum(TransactionService.sanitizeCardNum(cardNum));
+			} catch (IOException e) {
+				model.put("error", "Error: Invalid Card #");
+				return new ModelAndView("checkout", model);
+			}
 			Calendar expiry = Calendar.getInstance();
 			expiry.set(expYear, expMonth, 1);
 			purchase.setExpire(new Date(expiry.getTimeInMillis()));
@@ -91,6 +120,12 @@ public class ClerkController {
 		try {
 			JDBCManager.insert(purchase);
 			for (Item item : cart) {
+				int inStock = TransactionService.checkQuantity(item, store);
+				if (inStock < item.getQuantity()) {
+					model.put("error", "Error: Current quantity of '" + item.getTitle() + "'(" + 
+							item.getUpc() + ") is " + inStock);
+					return new ModelAndView("checkout", model);
+				}
 				JDBCManager.insert(new PurchaseItem(receiptId, item.getUpc(), 
 						item.getQuantity()));
 			}
@@ -98,6 +133,7 @@ public class ClerkController {
 			model.put("error", "Error: Error processing transaction");
 			return new ModelAndView("checkout", model);
 		}
+		
 		if (method.trim().equalsIgnoreCase(CASH))
 			model.put("paid", cash);
 		else {
@@ -105,6 +141,7 @@ public class ClerkController {
 			hiddenCardNum = hiddenCardNum.substring(hiddenCardNum.length()-5);
 			purchase.setCardNum(Long.parseLong(hiddenCardNum));
 		}
+		
 		model.put("purchase", purchase);
 		model.put("items", cart);
 		UserService.clearCart(model);
@@ -150,4 +187,5 @@ public class ClerkController {
 		
 		return new ModelAndView("refund", model);
 	}
+	
 }

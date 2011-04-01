@@ -2,7 +2,7 @@
 <div id="header">
 	<jsp:useBean id="profile" class="ca.ubc.cs304.allegro.model.Profile" scope="session" />
 	
-	<h1 id="logo-text"><a href="<c:url value="/basic/home"/>">Allegro</a></h1>		
+	<h1 id="logo-text"><a href="<c:url value="/index/welcome"/>">Allegro</a></h1>		
 	<p id="slogan">Music Store</p>		
 	
 	<c:if test="${profile.manager || profile.clerk || profile.customer}" >
