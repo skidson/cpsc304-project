@@ -23,20 +23,21 @@
 							<c:set var="index" value="${index+1}"/>
 							<c:set var="totalPrice" value="${totalPrice + subPrice}" />
 						</tr>
-						<tr />
-						<tr>
+					</c:forEach>
+					<tr />
+					<tr>
 						<td colSpan="2" />
 						<fmt:formatNumber var="totalPrice" value="${totalPrice}" pattern="0.00"/>
 						<td align="right"><b>Total: </b></td>
 						<td><b>$${totalPrice}</b></td>
 						<td />
 					</tr>
-					</c:forEach>
 				</table>
-				<br />
 				<h2>Payment</h2>
 				<table>
-					<c:if test="${not empty error}"><font color="red">${error}</font></c:if>
+					<c:if test="${not empty error}">
+						<tr><td colSpan="2"><font color="red"><b>${error}</b></font></td></tr>
+					</c:if>
 					<form method="post" action="/allegro/clerk/finalize">
 						<tr>
 							<td colSpan="2"><b>Store: </b><select name="in_store">
@@ -62,7 +63,7 @@
 						</tr>
 						<tr />
 						<tr>
-							<td><b>Amount: </b><input type="text" size="30" name="in_cash" /></td>
+							<td><b>Amount: </b><input type="text" size="30" name="in_cash" value="${cash}"/></td>
 							<td><input name="method" class="button" value="    Cash    " type="submit" /></td>
 						</tr>
 					</form>

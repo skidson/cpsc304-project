@@ -54,4 +54,10 @@ public class Stored implements AllegroItem {
 		this.stock = stock;
 	}
 	
+	public String toString() {
+		return ("sname: " + sname + 
+				"\nupc: " + upc + 
+				"\nstock: " + stock);
+	}
+	
 }
