@@ -128,7 +128,7 @@ public class CustomerController {
 		
 		List<Item> cart = UserService.getShoppingCart(model);
 		for (Item item : cart) {
-			int inStock = TransactionService.checkQuantity(item, "Fraser Highway");
+			int inStock = TransactionService.checkStock(item, "Fraser Highway");
 			if (inStock < item.getQuantity()) {
 				if(inStock > 0){
 					UserService.updateQuantity(model, inStock, item);
@@ -191,7 +191,7 @@ public class CustomerController {
 			PurchaseItem items = new PurchaseItem(receiptID, cart.get(i).getUpc(), cart.get(i).getQuantity());
 			try {
 				JDBCManager.insert(items);
-				TransactionService.updateStock(cart.get(i), "Fraser HighWay", (TransactionService.checkQuantity(cart.get(i), "Fraser HighWay") - cart.get(i).getQuantity()));
+				TransactionService.updateStock(cart.get(i), "Fraser HighWay", (TransactionService.checkStock(cart.get(i), "Fraser HighWay") - cart.get(i).getQuantity()));
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

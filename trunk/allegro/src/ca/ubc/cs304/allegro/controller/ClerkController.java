@@ -122,7 +122,7 @@ public class ClerkController {
 		
 		try {
 			for (Item item : cart) {
-				int inStock = TransactionService.checkQuantity(item, store);
+				int inStock = TransactionService.checkStock(item, store);
 				if (inStock < item.getQuantity()) {
 					model.put("error", "Error: Current quantity of '" + item.getTitle() + "'(" + 
 							item.getUpc() + ") is " + inStock);
@@ -230,7 +230,7 @@ public class ClerkController {
 				returnedItems.add(dbItem);
 				JDBCManager.insert(new RefundItem(new Integer(retid), dbItem.getUpc(), (Integer)item.getParameters().get(2)));
 				
-				TransactionService.updateStock(dbItem, sname, (TransactionService.checkQuantity(dbItem, "sname") + (Integer)item.getParameters().get(2)));
+				TransactionService.updateStock(dbItem, sname, (TransactionService.checkStock(dbItem, "sname") + (Integer)item.getParameters().get(2)));
 				conditions.clear();
 			}
 			model.put("items", returnedItems);

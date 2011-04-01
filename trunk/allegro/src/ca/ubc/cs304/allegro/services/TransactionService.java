@@ -48,10 +48,14 @@ public class TransactionService {
 		return false;
 	}
 	
-	public static int checkQuantity(Item item, String store) {
+	public static int checkStock(Item item, String store) {
+		return checkStock(item.getUpc(), store);
+	}
+	
+	public static int checkStock(Integer upc, String store) {
 		Map<String, Object> conditions = new HashMap<String, Object>();
 		List<String> shared = new ArrayList<String>();
-		conditions.put("upc", item.getUpc());
+		conditions.put("upc", upc);
 		try {
 			return ((Stored)JDBCManager.select(Table.Stored, conditions, shared).get(0)).getStock();
 		} catch (Exception e) {
@@ -59,14 +63,18 @@ public class TransactionService {
 		}
 	}
 	
-	public static void updateStock(Item item, String store, int quantity){
+	public static void updateStock(Integer upc, String store, Integer quantity) {
 		Map<String, Object> conditions = new HashMap<String, Object>();
-		conditions.put("upc", item.getUpc());
+		conditions.put("upc", upc);
 		try {
 			JDBCManager.update(Table.Stored, "stock", new Integer(quantity), conditions);
 		} catch (Exception e) {
 			
 		}
+	}
+	
+	public static void updateStock(Item item, String store, int quantity){
+		updateStock(item.getUpc(), store, quantity);
 	}
 	
 }
