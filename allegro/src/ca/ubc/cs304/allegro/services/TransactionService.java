@@ -27,6 +27,18 @@ public class TransactionService {
 		throw new IOException();
 	}
 	
+	public static int sanitizeReceiptID(String receiptID) throws IOException {
+		if (receiptID != null) {
+			receiptID = receiptID.trim();
+			try {
+				return Integer.parseInt(receiptID);
+			} catch (NumberFormatException e) {
+				throw new IOException(e);
+			}
+		}
+		throw new IOException();
+	}
+	
 	public static double sanitizeMoney(String value) throws IOException {
 		if (value != null) {
 			if (value.equals(""))

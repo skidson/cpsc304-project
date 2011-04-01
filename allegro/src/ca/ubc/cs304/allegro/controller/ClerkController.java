@@ -187,16 +187,28 @@ public class ClerkController {
 		return new ModelAndView("refund", model);
 	}
 	@RequestMapping("/clerk/finalizeRefund")
-	public ModelAndView finalizeRefund(@RequestParam("j_receiptID") int receiptID,
+	public ModelAndView finalizeRefund(@RequestParam("j_receiptID") String in_receiptID,
 										@RequestParam("j_store") String sname) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		HashMap<String, Object> conditions = new HashMap<String, Object>();
-
+		
+		int receiptID = 0;
+		try {
+			receiptID = TransactionService.sanitizeReceiptID(in_receiptID);
+		} catch (IOException e1) {
+			model.put("error", "Invalid receiptID enetered");
+			return new ModelAndView("refund", model);
+		}
+		
 		Calendar currentDate = Calendar.getInstance();
 		Date date = new Date(currentDate.getTimeInMillis());
 		conditions.put("receiptId", receiptID);
 		try {
 			Purchase purchase = (Purchase)(JDBCManager.select(Table.Purchase, conditions)).get(0);
+			if(purchase == null){
+				model.put("error", "Sorry, no purchase was found with the receiptID entered");
+				return new ModelAndView("refund", model);
+			}
 			List<AllegroItem> purchaseItems = JDBCManager.select(Table.PurchaseItem, conditions);
 
 			Date purchaseDate = purchase.getPurchaseDate();
