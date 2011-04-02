@@ -98,6 +98,7 @@ public class TransactionService {
 		Map<String, Object> conditions = new HashMap<String, Object>();
 		List<String> shared = new ArrayList<String>();
 		conditions.put("upc", upc);
+		conditions.put("sname", store);
 		try {
 			return ((Stored)JDBCManager.select(Table.Stored, conditions, shared).get(0)).getStock();
 		} catch (Exception e) {

@@ -109,6 +109,7 @@ public class ManagerController {
 			Map<String, Object> conditions = new HashMap<String, Object>();
 			conditions.put("sname", sname);
 			conditions.put("Item.upc", "PurchaseItem.upc");
+			conditions.put("PurchaseItem.receiptId", "Purchase.receiptId");
 			conditions.put("Purchase.purchaseDate", new Date(calendar.getTimeInMillis()));
 			List<AllegroItem> allItems = JDBCManager.select(tables, conditions, null);
 			
@@ -128,21 +129,20 @@ public class ManagerController {
 			for(AllegroItem allItem : allItems) {
 				Item item = (Item)allItem;
 				for (Item processed : items) {
-					if (processed.getUpc() == item.getUpc()) {
+					if (processed.getUpc().equals(item.getUpc())) {
 						item.setQuantity(item.getQuantity()+processed.getQuantity());
 						items.remove(processed);
 						break;
 					}
 				}
 				items.add(item);
-				System.out.println(item);
 			}
-			
 			// Generate a list of grouped item lists
 			List<List<Item>> groups = new ArrayList<List<Item>>();
 			List<Item> group = new ArrayList<Item>();
 			groups.add(group);
 			group.add(items.remove(0));
+			
 			for (Item item : items) {
 				boolean match = false;
 				for (List<Item> groupList : groups) {
@@ -153,6 +153,7 @@ public class ManagerController {
 					}
 				}
 				if (!match) {
+					group = new ArrayList<Item>();
 					group.add(item);
 					groups.add(group);
 				}

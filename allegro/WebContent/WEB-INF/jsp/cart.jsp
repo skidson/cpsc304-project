@@ -22,7 +22,7 @@
 							<c:forEach var="item" items="${profile.shoppingCart}">
 								<tr>
 									<td>${item.title}</td>
-									<td>${item.sellPrice}</td>
+									<td>$${item.sellPrice}</td>
 									<td>${item.quantity}</td>
 									<c:set var="totalPrice" value="${totalPrice + (item.sellPrice * item.quantity)}"/>
 								</tr>
@@ -31,7 +31,7 @@
 							<tr>
 								<fmt:formatNumber var="totalPrice" value="${totalPrice}" pattern="0.00"/>
 		
-								<td></td><td>Total Price : ${totalPrice}</td><td></td>
+								<td></td><td>Total Price : $${totalPrice}</td><td></td>
 							</tr>
 							</table>
 						<br/>
@@ -70,7 +70,7 @@
 							<c:forEach var="item" items="${profile.shoppingCart}">
 								<tr>
 									<td>${item.title}</td>
-									<td>${item.sellPrice}</td>
+									<td>$${item.sellPrice}</td>
 									<td>${item.quantity}</td>
 									<td><input class="button" size="8%" value=" Remove " onclick="parent.location='/allegro/customer/removeItem?index=${counter}'" /></td>
 									<c:set var="counter" value="${counter+1}"/>					
