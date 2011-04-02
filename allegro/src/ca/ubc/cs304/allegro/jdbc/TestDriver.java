@@ -22,7 +22,8 @@ public class TestDriver {
 			List<String> group = new ArrayList<String>();
 			List<Table> tables = new ArrayList<Table>();
 			
-			conditions.put("receiptId", new Integer(874564));
+			conditions.put("RefundItem.upc", 100000001);
+			conditions.put("receiptId", 424632);
 			tables.add(Table.RefundItem);
 			tables.add(Table.Refund);
 			shared.add("retid");
