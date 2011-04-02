@@ -1,5 +1,6 @@
 package ca.ubc.cs304.allegro.controller;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,30 @@ public class HomeController {
 								@RequestParam("j_password") String password) {
 		
 		List<Object> parameters = new ArrayList<Object>();
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		if(name.equals("")){
+			model.put("error", "Error: name was null");
+			return new ModelAndView("register", model);
+		}
+		if(username.equals("")){
+			model.put("error", "Error: username was null");
+			return new ModelAndView("register", model);
+		}
+		if(address.equals("")){
+			model.put("error", "Error: address was null");
+			return new ModelAndView("register", model);
+		}
+		try{
+			Long.parseLong(phone);
+		}catch(NumberFormatException e){
+			model.put("error", "Error: Phone contained invalid characters");
+			return new ModelAndView("register", model);
+		}
+		if(password.equals("")){
+			model.put("error", "Error: password was null");
+			return new ModelAndView("register", model);
+		}
+		
 		parameters.add(username);
 		parameters.add(password);
 		parameters.add(name);
@@ -50,7 +75,6 @@ public class HomeController {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		Map<String, Object> model = UserService.initUserContext(profileManager);
 		return new ModelAndView("welcome", model);
 	}
 	

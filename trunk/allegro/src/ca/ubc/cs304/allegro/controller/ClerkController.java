@@ -117,7 +117,12 @@ public class ClerkController {
 			}
 			Calendar expiry = Calendar.getInstance();
 			expiry.set(expYear, expMonth, 1);
-			purchase.setExpire(new Date(expiry.getTimeInMillis()));
+			if(TransactionService.validCardExpiry(expiry))
+				purchase.setExpire(new Date(expiry.getTimeInMillis()));
+			else{
+				model.put("error", "Error: Card Expired");
+				return new ModelAndView("checkout", model);
+			}
 		}
 		
 		try {
@@ -157,12 +162,13 @@ public class ClerkController {
 	}
 	
 	@RequestMapping("/clerk/addPurchase")
-	public ModelAndView addPurchase(@RequestParam("in_upc") String upc, @RequestParam("in_qty") String qty) {
+	public ModelAndView addPurchase(@RequestParam("in_upc") String in_upc, @RequestParam("in_qty") String qty) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		if (!upc.equals("") && !qty.equals("")) {
+		if (!in_upc.equals("") && !qty.equals("")) {
 			Map<String, Object> conditions = new HashMap<String, Object>();
-			conditions.put("upc", Integer.parseInt(upc.trim()));
 			try {
+				Integer upc = TransactionService.sanitizeInt(in_upc);
+				conditions.put("upc", upc);
 				Integer quantity = TransactionService.sanitizeInt(qty);
 				Item item = (Item)JDBCManager.select(Table.Item, conditions).get(0);
 				item.setQuantity(quantity);
@@ -178,7 +184,6 @@ public class ClerkController {
 	@RequestMapping("/clerk/refund")
 	public ModelAndView refund(){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		model.put("basic", true);
 		try {
 			Map<String, Object> conditions = new HashMap<String, Object>();
 			conditions.put("type", "store");
@@ -189,71 +194,200 @@ public class ClerkController {
 		}
 		return new ModelAndView("refund", model);
 	}
-	@RequestMapping("/clerk/finalizeRefund")
-	public ModelAndView finalizeRefund(@RequestParam("j_receiptID") String in_receiptID,
-										@RequestParam("j_store") String sname) {
+	
+	@RequestMapping("/clerk/getPurchase")
+	public ModelAndView getPurchase(@RequestParam("in_receiptID") String in_receiptID,
+									@RequestParam("in_store") String in_store){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		HashMap<String, Object> conditions = new HashMap<String, Object>();
+		List<String> shared = new ArrayList<String>();
+		List<Table> tables = new ArrayList<Table>();
+		List<AllegroItem> stores = new ArrayList<AllegroItem>();
 		
+		try {
+			Map<String, Object> conditions = new HashMap<String, Object>();
+			conditions.put("type", "store");
+			stores = JDBCManager.select(Table.Store, conditions);
+			model.put("stores", stores);
+		} catch (SQLException e) {
+			model.put("error", "Error: Could not access store list");
+		}
 		int receiptID = 0;
 		try {
 			receiptID = TransactionService.sanitizeReceiptID(in_receiptID);
 		} catch (IOException e1) {
-			model.put("error", "Invalid receiptID enetered");
+			model.put("error", "Invalid receiptID entered");
+			model.put("stores", stores);
 			return new ModelAndView("refund", model);
 		}
+		
+		HashMap<String, Object> conditions = new HashMap<String, Object>();
+		
 		
 		Calendar currentDate = Calendar.getInstance();
 		Date date = new Date(currentDate.getTimeInMillis());
 		conditions.put("receiptId", receiptID);
 		try {
-			Purchase purchase = (Purchase)(JDBCManager.select(Table.Purchase, conditions)).get(0);
-			if(purchase == null){
+			Purchase purchase = null;
+			try{
+				purchase = (Purchase)(JDBCManager.select(Table.Purchase, conditions)).get(0);
+			}catch (Exception e){
 				model.put("error", "Sorry, no purchase was found with the receiptID entered");
 				return new ModelAndView("refund", model);
 			}
 			List<AllegroItem> purchaseItems = JDBCManager.select(Table.PurchaseItem, conditions);
 
 			Date purchaseDate = purchase.getPurchaseDate();
-			if((date.getTime() - purchaseDate.getTime()*1000*60*60*24) > 15) {
+			if(((date.getTime() - purchaseDate.getTime()) > 15*1000*60*60*24)) {
 				model.put("error", "Sorry, your purchase is more than 15 days old and can no longer be returned!");
 				return new ModelAndView("refund", model);
 			}
-			if(purchase.getCardNum() == null)
-				model.put("type", "cash");
-			else
-				model.put("type", "credit");
-			double totalPrice = 0;
 			conditions.clear();
-			
-			for(AllegroItem item : purchaseItems){
-				conditions.put("upc", item.getParameters().get(1));
-				Item dbItem = (Item)JDBCManager.select(Table.Item, conditions).get(0);
-				totalPrice+= dbItem.getSellPrice() * (Integer)item.getParameters().get(2);
-				conditions.clear();
-			}
-			model.put("totalPrice", totalPrice);
-			
-			int retid = new Random().nextInt(RECEIPT_ID_MAX);
-			JDBCManager.insert(new Refund(new Integer(retid), new Integer(receiptID), new Date(Calendar.getInstance().getTimeInMillis()), sname));
-			model.put("retID", retid);
-			
 			List<Item> returnedItems = new ArrayList<Item>();
 			for(AllegroItem item : purchaseItems){
 				conditions.put("upc", item.getParameters().get(1));
 				Item dbItem = (Item)JDBCManager.select(Table.Item, conditions).get(0);
-				returnedItems.add(dbItem);
-				JDBCManager.insert(new RefundItem(new Integer(retid), dbItem.getUpc(), (Integer)item.getParameters().get(2)));
-				
-				TransactionService.updateStock(dbItem, sname, (TransactionService.checkStock(dbItem, "sname") + (Integer)item.getParameters().get(2)));
 				conditions.clear();
+				conditions.put("receiptId", item.getParameters().get(0));
+				tables.add(Table.RefundItem);
+				tables.add(Table.Refund);
+				shared.add("retid");
+				List<AllegroItem> refItemList = JDBCManager.select(tables, conditions, shared);
+				int refQuantity = 0;
+				for(AllegroItem refItem : refItemList){
+					refQuantity += (Integer)refItem.getParameters().get(2);
+				}
+				dbItem.setQuantity(new Integer((Integer)item.getParameters().get(2))- refQuantity);
+				returnedItems.add(dbItem);
+				conditions.clear();
+				tables.clear();
+				shared.clear();
+				refQuantity =0;
 			}
 			model.put("items", returnedItems);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		model.put("receiptID", receiptID);
+		model.put("store", in_store);
+		return new ModelAndView("refund", model);
 
-		model.put("basic", false);
+	}
+	@RequestMapping("/clerk/refundItem")
+	public ModelAndView finalizeRefund(@RequestParam("upc") String in_upc,
+										@RequestParam("j_receiptID") String in_receiptID,
+										@RequestParam("in_store") String sname,
+										@RequestParam("in_quantity") String in_quantity) {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		HashMap<String, Object> conditions = new HashMap<String, Object>();
+		List<String> shared = new ArrayList<String>();
+		List<Table> tables = new ArrayList<Table>();
+		List<AllegroItem> stores = new ArrayList<AllegroItem>();
+		try {
+			conditions.put("type", "store");
+			stores = JDBCManager.select(Table.Store, conditions);
+			model.put("stores", stores);
+			conditions.clear();
+		} catch (SQLException e) {
+			model.put("error", "Error: Could not access store list");
+		}
+		int receiptID = 0;
+		int quantity = 0;
+		int upc = 0;
+		try{
+			receiptID = TransactionService.sanitizeReceiptID(in_receiptID);
+			quantity = TransactionService.sanitizeInt(in_quantity);
+			upc = TransactionService.sanitizeInt(in_upc);
+		}catch (Exception e){
+			model.put("error", "Invalid input!");
+			model.put("receiptID", receiptID);
+			model.put("stores", stores);
+			return new ModelAndView("refund", model);
+		}
+		try{
+			conditions.put("upc", upc);
+			conditions.put("receiptID", receiptID);
+			PurchaseItem item = (PurchaseItem)JDBCManager.select(Table.PurchaseItem, conditions).get(0);
+			
+			if(new Integer(quantity) > item.getQuantity()){
+				model.put("error", "You entered a quantity that was greater than the original!");
+				model.put("receiptID", receiptID);
+				conditions.clear();
+				
+				conditions.put("receiptId", receiptID);
+				List<AllegroItem> purchaseItems = JDBCManager.select(Table.PurchaseItem, conditions);
+				List<Item> returnedItems = new ArrayList<Item>();
+				conditions.clear();
+				
+				for(AllegroItem allgitem : purchaseItems){
+					conditions.put("upc", allgitem.getParameters().get(1));
+					Item dbItem = (Item)JDBCManager.select(Table.Item, conditions).get(0);
+					conditions.clear();
+					conditions.put("receiptId", item.getParameters().get(0));
+					tables.add(Table.RefundItem);
+					tables.add(Table.Refund);
+					shared.add("retid");
+					List<AllegroItem> refItemList = JDBCManager.select(tables, conditions, shared);
+					int refQuantity = 0;
+					for(AllegroItem refItem : refItemList){
+						refQuantity += (Integer)refItem.getParameters().get(2);
+					}
+					dbItem.setQuantity(new Integer((Integer)item.getParameters().get(2))- refQuantity);
+					refQuantity = 0;
+					tables.clear();
+					shared.clear();
+					returnedItems.add(dbItem);
+				}
+				model.put("store", sname);
+				model.put("stores", stores);
+				model.put("items", returnedItems);
+				return new ModelAndView("refund", model);
+			}
+			int retid = new Random().nextInt(1000000);
+			
+			Refund refund = new Refund(new Integer(retid), new Integer(receiptID), new Date(Calendar.getInstance().getTimeInMillis()), sname);
+			JDBCManager.insert(refund);
+			RefundItem refItem = new RefundItem(new Integer(retid), new Integer(upc), new Integer(quantity));
+			JDBCManager.insert(refItem);
+			TransactionService.updateStock(upc, sname, item.getQuantity() + quantity);
+		}catch(SQLException e){
+			
+		}
+		try{
+			conditions.clear();
+			conditions.put("receiptId", receiptID);
+			List<AllegroItem> purchaseItems = JDBCManager.select(Table.PurchaseItem, conditions);
+			List<Item> returnedItems = new ArrayList<Item>();
+			conditions.clear();
+			
+			for(AllegroItem allgitem : purchaseItems){
+				conditions.put("upc", allgitem.getParameters().get(1));
+				Item dbItem = (Item)JDBCManager.select(Table.Item, conditions).get(0);
+				conditions.clear();
+				conditions.put("receiptId", allgitem.getParameters().get(0));
+				tables.add(Table.RefundItem);
+				tables.add(Table.Refund);
+				shared.add("retid");
+				List<AllegroItem> refItemList = JDBCManager.select(tables, conditions, shared);
+				int refQuantity = 0;
+				for(AllegroItem refItem : refItemList){
+					refQuantity += (Integer)refItem.getParameters().get(2);
+				}
+				dbItem.setQuantity(new Integer((Integer)allgitem.getParameters().get(2))- refQuantity);
+				refQuantity = 0;
+				tables.clear();
+				shared.clear();
+				returnedItems.add(dbItem);
+			}
+			model.put("store", sname);
+			model.put("items", returnedItems);
+			model.put("stores", stores);
+			System.out.println(returnedItems.toString());
+			model.put("receiptID", receiptID);
+		}catch (Exception e){
+			
+		}
+		model.put("message", "Successfully returned the item");
 		return new ModelAndView("refund", model);
 	}
 	

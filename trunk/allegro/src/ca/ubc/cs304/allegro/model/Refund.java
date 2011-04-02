@@ -7,13 +7,13 @@ import java.util.List;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
 public class Refund implements AllegroItem {
-	private Integer retId, receiptId;
+	private Integer retid, receiptId;
 	private Date retDate;
 	private String name;
 	
-	public Refund(Integer retId, Integer receiptId, Date retDate, String name) {
+	public Refund(Integer retid, Integer receiptId, Date retDate, String name) {
 		super();
-		this.retId = retId;
+		this.retid = retid;
 		this.receiptId = receiptId;
 		this.retDate = retDate;
 		this.name = name;
@@ -21,7 +21,7 @@ public class Refund implements AllegroItem {
 	
 	public List<Object> getParameters() {
 		List<Object> parameters = new ArrayList<Object>();
-		parameters.add(new Integer(retId));
+		parameters.add(new Integer(retid));
 		parameters.add(retDate);
 		parameters.add(receiptId);
 		parameters.add(name);
@@ -32,12 +32,12 @@ public class Refund implements AllegroItem {
 		return Table.Refund;
 	}
 
-	public int getRetId() {
-		return retId;
+	public int getRetid() {
+		return retid;
 	}
 	
-	public void setRetId(int retId) {
-		this.retId = retId;
+	public void setRetid(int retid) {
+		this.retid = retid;
 	}
 	
 	public int getReceiptId() {
