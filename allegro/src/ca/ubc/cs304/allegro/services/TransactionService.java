@@ -2,6 +2,7 @@ package ca.ubc.cs304.allegro.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,11 @@ public class TransactionService {
 	public static int sanitizeInt(String value) throws IOException {
 		if (value != null) {
 			try {
-				return Integer.parseInt(value);
+				Integer parsed = Integer.parseInt(value);
+				if(parsed > 0)
+					return parsed;
+				else
+					throw new IOException();
 			} catch (NumberFormatException e) {
 				throw new IOException(e);
 			}
@@ -25,6 +30,14 @@ public class TransactionService {
 		throw new IOException();
 	}
 	
+	
+	public static boolean validCardExpiry(Calendar cal){
+		Calendar currentDate = Calendar.getInstance();
+		if(currentDate.after(cal)){
+			return false;
+		}
+		return true;
+	}
 	public static long sanitizeCardNum(String cardNum) throws IOException {
 		if (cardNum != null) {
 			cardNum = cardNum.trim();
@@ -48,6 +61,12 @@ public class TransactionService {
 			}
 		}
 		throw new IOException();
+	}
+	
+	public static String formatDate(String date){
+		String[] split = date.split(" ");
+		String formatted = split[0] + " " + split[1] + " " + split[2];
+		return formatted;
 	}
 	
 	public static double sanitizeMoney(String value) throws IOException {

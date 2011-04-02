@@ -1,5 +1,6 @@
 package ca.ubc.cs304.allegro.controller;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,10 +47,6 @@ public class CustomerController {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		HashMap<String,Object> hm = new HashMap<String,Object>();
 		List<AllegroItem> results = new ArrayList<AllegroItem>();
-		System.out.println(category);
-		System.out.println(title);
-		System.out.println(songName);
-		System.out.println(leadSinger);
 		
 		if(!category.equals("All"))
 			hm.put("category", category);
@@ -96,14 +93,21 @@ public class CustomerController {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println(results.toString());
 		model.put("itemList", results);
-		return new ModelAndView("searchResults", model);
+		model.put("result", true);
+		return new ModelAndView("search", model);
 	}
 	@RequestMapping("/customer/updateCart")
-	public ModelAndView updateCart(@RequestParam("j_quantity") int quantity, @RequestParam("upc") int upc){
+	public ModelAndView updateCart(@RequestParam("j_quantity") String in_quantity, @RequestParam("upc") int upc){
 	Map<String, Object> model = UserService.initUserContext(profileManager);
 	HashMap<String,Object> params = new HashMap<String, Object>();
+	int quantity = 0;
+	try{
+		quantity = TransactionService.sanitizeInt(in_quantity);
+	}catch(IOException e){
+		model.put("error", "Error: Please enter a valid quantity");
+		return new ModelAndView("search", model);
+	}
 	params.put("upc", upc);
 	try {
 		Item item = (Item)(JDBCManager.select(Table.Item, params).get(0));
@@ -133,7 +137,7 @@ public class CustomerController {
 				if(inStock > 0){
 					UserService.updateQuantity(model, inStock, item);
 					model.put("error", "Error: Current quantity of '" + item.getTitle() + "'(" + 
-							item.getUpc() + ") is " + inStock + ". You have been giving all the remaining quantity");
+							item.getUpc() + ") is " + inStock + ". You have been given all the remaining quantity");
 					boolean checkout = true;
 					model.put("checkout", checkout);
 					return new ModelAndView("cart", model);
@@ -159,7 +163,7 @@ public class CustomerController {
 	}
 	
 	@RequestMapping("customer/finalize")
-	public ModelAndView finalizePurchase(@RequestParam("j_cardnum") long cardnum, 
+	public ModelAndView finalizePurchase(@RequestParam("j_cardnum") String in_cardnum, 
 										@RequestParam("j_expYear") int year,
 										@RequestParam("j_expMonth") int month){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
@@ -167,17 +171,42 @@ public class CustomerController {
 		int purchasesProcessedPerDay = 3;
 		Calendar cal = Calendar.getInstance();
 		Calendar expectedDate = Calendar.getInstance();
-		int receiptID =  new Random().nextInt(1000000);
+		
+		cal.set(year, month, 1);
+		if(!TransactionService.validCardExpiry(cal)){
+			model.put("error", "Error: Your card has expired!");
+			List<Item> cart = UserService.getShoppingCart(model);
+			model.put("checkout", true);
+			return new ModelAndView("cart", model);
+		}
+			
+		Long cardnum= null;
+		try {
+			cardnum = TransactionService.sanitizeCardNum(in_cardnum);
+		} catch (IOException e1) {
+			model.put("error", "Error: Please enter a valid cardnum");
+			List<Item> cart = UserService.getShoppingCart(model);
+			model.put("checkout", true);
+			return new ModelAndView("cart", model);
+		}
+
+		Integer receiptID =  new Random().nextInt(1000000);
 		try{
 			conditions.put("deliveredDate", null);
-			conditions.put("sname", "Warehouse");
+			conditions.put("sname", null);
 			List<AllegroItem> purchaseResults = JDBCManager.select(Table.Purchase, conditions);
 			int outstandingDeliveries = purchaseResults.size();
-			expectedDate.setTimeInMillis(expectedDate.getTimeInMillis() +(outstandingDeliveries/purchasesProcessedPerDay)*1000*60*60*24);
-			cal.set(year, month, 1);
+			long daysToDelivery = (outstandingDeliveries/purchasesProcessedPerDay)*1000*60*60*24;
+			if(daysToDelivery == 0) daysToDelivery = 1000*60*60*24;
+			expectedDate.setTimeInMillis(expectedDate.getTimeInMillis() + daysToDelivery);
+
 			Purchase purchase = new Purchase(receiptID, cardnum, new Date(cal.getTimeInMillis())
-					, new Date(System.currentTimeMillis()), new Date(expectedDate.getTimeInMillis()), null, profileManager.getProfile().getUsername(), "Fraser Highway");
+					, new Date(System.currentTimeMillis()), new Date(expectedDate.getTimeInMillis()), null, profileManager.getProfile().getUsername(), null);
+			model.put("purchase", purchase);
 			JDBCManager.insert(purchase);
+			String hiddenCardNum = purchase.getCardNum().toString();
+			hiddenCardNum = hiddenCardNum.substring(hiddenCardNum.length()-5);
+			purchase.setCardNum(Long.parseLong(hiddenCardNum));
 		} catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -196,10 +225,11 @@ public class CustomerController {
 				e.printStackTrace();
 			}
 		}
-		
+		model.put("items", cart);
+
 		UserService.clearCart(model);
-		model.put("date", expectedDate.getTime().toString());
-		return new ModelAndView("echeckout", model);
+		model.put("date", TransactionService.formatDate(expectedDate.getTime().toString()));
+		return new ModelAndView("receipt", model);
 	}
 	
 	@RequestMapping("/customer/item")

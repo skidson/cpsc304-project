@@ -22,9 +22,12 @@ public class TestDriver {
 			List<String> group = new ArrayList<String>();
 			List<Table> tables = new ArrayList<Table>();
 			
-			conditions.put("status", new Integer(0));
+			conditions.put("receiptId", new Integer(874564));
+			tables.add(Table.RefundItem);
+			tables.add(Table.Refund);
+			shared.add("retid");
 			
-			List<AllegroItem> results = JDBCManager.select(Table.Supplier, conditions);
+			List<AllegroItem> results = JDBCManager.select(tables, conditions, shared);
 			for (AllegroItem result : results)
 				System.out.println(result.toString() + "\n");
 			

@@ -47,6 +47,11 @@
 						<td />
 					</tr>
 					<tr />
+					<c:if test="${not empty date }">
+						<tr>
+						<td>Your item will be delivered on ${date}</td>
+						</tr>
+					</c:if>
 					<c:if test="${not empty paid}">
 						<tr>
 							<td colSpan="2" />

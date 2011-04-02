@@ -12,11 +12,9 @@
 			<div id="main">
 				<h2>Shopping Cart</h2>
 				<c:set var="totalPrice" value="0"/>
-				<c:choose>
-				<c:when test="${not empty error}">
-				${error}
-				</c:when>
-				<c:otherwise>
+				<c:if test="${not empty error}">
+						<center><font color="red"><b>${error}</b></font></center>
+				</c:if>
 					<c:choose>
 						<c:when test="${checkout eq 'true'}">
 							<table width="100%">
@@ -49,7 +47,7 @@
 							</c:forEach>
 						</select>
 						<select width="125" name="j_expYear">
-							<c:forEach var="i" begin="2000" end="2020">
+							<c:forEach var="i" begin="2011" end="2025">
 							<option>${i}</option>
 							</c:forEach>
 						</select><br></td> 
@@ -88,8 +86,6 @@
 					Your shopping cart is empty!
 					</c:otherwise>
 				</c:choose>
-			</c:otherwise>
-			</c:choose>
 			</div> <!-- main -->
 		
 		</div> <!-- content-wrap -->	

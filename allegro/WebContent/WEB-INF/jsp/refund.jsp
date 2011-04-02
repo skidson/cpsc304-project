@@ -10,42 +10,48 @@
 			<div id="main">
 				
 				<h2>Refund</h2>
-
-				<c:choose>
-					<c:when test="${not empty error}">
-						${error}
-					</c:when>
-					<c:otherwise>
-						<c:choose>
-						<c:when test="${basic eq 'true'}">
-							<table width="100%"> <form action="/allegro/clerk/finalizeRefund">
-							<tr><td>Please enter the receipt number: <input type="text" name="j_receiptID"/></td>
-							<td><b>Store: </b><select name="j_store">
-								<c:forEach var="store" items="${stores}">
-									<option>${store.sname}</option>
-								</c:forEach>
-								</select></td>
-							<td><input class="button" value=" Return Item" type="submit"/></td>
-							</tr>
-							</form></table>
-						</c:when>
-						<c:otherwise>
-							Sorry for whatever was wrong!<c:if test="${type eq 'credit'}"> Your credit card has been credited ${totalPrice} </c:if> 
-							<c:if test="${type eq 'cash'}">Here is ${totalPrice} in cash back. The following items were successfully returned :</c:if>
-							<br/>
-							<table width="100%"><th>Title</th><th>UPC</th><th>Quantity</th>
-							<c:forEach var="item" items="${items}">
-								<tr>
-									<td>${item.title}</td>
-									<td>${item.upc}</td>
-									<td>${item.quantity}</td>
-								</tr>
+				<c:if test="${not empty error}">
+						<tr><td colSpan="2"><font color="red"><b>${error}</b></font></td></tr>
+				</c:if>
+				<c:if test="${not empty message}">
+						<tr><td colSpan="2"><font color="green"><b>${message}</b></font></td></tr>
+				</c:if>
+				<table><form action="/allegro/clerk/getPurchase">
+					<tr>
+						<td>Please enter a receipt ID</td>
+						<td><input type="text" name="in_receiptID"/></td>
+						<td><select name="in_store">
+						<c:forEach var="store" items="${stores}">
+							<option>${store.sname}</option>
 						</c:forEach>
-							</table>
-						</c:otherwise>
-						</c:choose>
-					</c:otherwise>
-				</c:choose>
+						</select>
+				</td>
+						<td><input class="button" type="submit" value=" Get Purchase "/></td>
+					</tr>
+				</form></table>
+				<c:if test="${not empty receiptID}">
+				<h2>Items : </h2>
+				<table width="100%">
+				<tr>
+				
+				</tr>
+					<tr><th>UPC</th><th>Title</th><th>Price</th><th>Quantity</th><th>Refund Quantity</th></tr>
+					<c:forEach var="item" items="${items}">
+						<c:if test="${item.quantity ne 0}">
+							<form method="post" action="/allegro/clerk/refundItem?upc=${item.upc}&j_receiptID=${receiptID}&in_store=${store}">
+								<tr>
+									<td>${item.upc}</td>
+									<td>${item.title}</td>
+									<td>${item.sellPrice}</td>
+									<td>${item.quantity}</td>
+									<td><input type="text" name="in_quantity"/></td>
+									<td><input class="button" value=" Refund this item " type="submit"/></td>
+								</tr>
+							</form>
+						</c:if>
+					</c:forEach>
+				</table>
+				</c:if>
 			</div> <!-- main -->
 		
 		</div> <!-- content-wrap -->	

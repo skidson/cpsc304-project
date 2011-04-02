@@ -10,6 +10,10 @@
 			<div id="main">
 				<h2>Register</h2>
 				
+				<c:if test="${not empty error}">
+						<center><font color="red"><b>${error}</b></font></center>
+				</c:if>
+				
 				<center><table>
 					<form method="post" action="/allegro/index/completeRegistration">
 						<tr><td><label>Name:</label></td><td><input type="text" size = "30" name="j_name" /></td></tr>
