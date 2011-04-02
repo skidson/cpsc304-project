@@ -22,12 +22,9 @@ public class TestDriver {
 			List<String> group = new ArrayList<String>();
 			List<Table> tables = new ArrayList<Table>();
 			
-			conditions.put("sname", "Granville");
-			conditions.put("upc", 100000002);
-			Integer stock = ((Stored)JDBCManager.select(Table.Stored, conditions)
-					.get(0)).getStock();
+			conditions.put("status", new Integer(0));
 			
-			List<AllegroItem> results = JDBCManager.select(Table.ShipItem, conditions);
+			List<AllegroItem> results = JDBCManager.select(Table.Supplier, conditions);
 			for (AllegroItem result : results)
 				System.out.println(result.toString() + "\n");
 			

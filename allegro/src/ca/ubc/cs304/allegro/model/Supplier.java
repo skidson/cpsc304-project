@@ -63,5 +63,12 @@ public class Supplier implements AllegroItem {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
+	
+	public String toString() {
+		return ("ssupname: " + supname + 
+				"\naddress: " + address + 
+				"\ncity: " + city +
+				"\nstatus: " + status);
+	}
 
 }

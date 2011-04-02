@@ -155,7 +155,6 @@ public class CustomerController {
 	public ModelAndView removeItem(@RequestParam("index") int index){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		UserService.removeFromCart(index, model);
-		
 		return new ModelAndView("redirect:/customer/cart", model);
 	}
 	
