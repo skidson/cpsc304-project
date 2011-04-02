@@ -65,7 +65,7 @@ public class Supplier implements AllegroItem {
 	}
 	
 	public String toString() {
-		return ("ssupname: " + supname + 
+		return ("supname: " + supname + 
 				"\naddress: " + address + 
 				"\ncity: " + city +
 				"\nstatus: " + status);

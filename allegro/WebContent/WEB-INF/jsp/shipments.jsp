@@ -31,7 +31,7 @@
 					<tr />
 					<form method="post" action="/allegro/manager/createShipment"><tr>
 						<td />
-						<td><select name="in_store">
+						<td><select name="in_sname">
 							<c:forEach var="store" items="${stores}">
 								<option>${store.sname}</option>
 							</c:forEach>
@@ -47,8 +47,8 @@
 								<c:forEach var="i" begin="1" end="31"><option>${i}</option></c:forEach>
 							</select>
 						</td>
-						<td><select name="in_supplier">
-							<c:forEach var="supplier" items="suppliers">
+						<td><select name="in_supname">
+							<c:forEach var="supplier" items="${suppliers}">
 								<option>${supplier.supname}</option>
 							</c:forEach>
 						</select></td>
@@ -59,19 +59,41 @@
 				<c:choose>
 					<c:when test="${not empty sid}">
 						<h2>Shipment #${sid}</h2>
-						<table width="100%"><form method="post" action="/allegro/manager/receiveShipment?sid=${sid}">
-							<tr><th>UPC</th><th>Quantity</th><th>Supply Price</th></tr>
-							<c:forEach var="shipItem" items="${shipItems}">
-								<tr>
-									<td>${shipItem.upc}</td>
-									<td>${shipItem.quantity}</td>
-									<fmt:formatNumber var="supPrice" value="${shipItem.supPrice}" pattern="0.00"/>
-									<td>$${supPrice}</td>
-								</tr>
-							</c:forEach>
-							<tr />
-							<tr><td align="center" colSpan="3"><input class="button" value=" Receive " type="submit"/></td></tr>
-						</form></table>
+						<table width="100%">
+							<form method="post" action="/allegro/manager/receiveShipment?sid=${sid}">
+								<tr><th>UPC</th><th>Quantity</th><th>Supply Price</th></tr>
+								<c:forEach var="shipItem" items="${shipItems}">
+									<tr>
+										<td>${shipItem.upc}</td>
+										<td>${shipItem.quantity}</td>
+										<fmt:formatNumber var="supPrice" value="${shipItem.supPrice}" pattern="0.00"/>
+										<td>$${supPrice}</td>
+									</tr>
+								</c:forEach>
+								<c:choose>
+									<c:when test="${edit}">
+							</form>
+										<form method="post" action="/allegro/manager/addShipItem">
+											<tr>
+												<td><input type="text" size="30" name="in_upc" value="000000000"/></td>
+												<td><input type="text" size="10" name="in_quantity" value="1" /></td>
+												<td>$<input type="text" size="15" name="in_supPrice" value="" /></td>
+												<input type="hidden" name="in_sid" value="${sid}"/>
+												<td><input class="button" value="   Add Item   " type="submit"/></td>
+											</tr>
+										</form>
+										<form method="post" action="/allegro/manager/viewShipItem?sid=${sid}">
+											<tr />
+											<tr><td align="center" colSpan="3"><input class="button" value="    Done    " type="submit"/></td></tr>
+										</form>
+									</c:when>
+									<c:otherwise>
+								<tr />
+								<tr><td align="center" colSpan="3"><input class="button" value=" Receive " type="submit"/></td></tr>
+							</form>
+									</c:otherwise>
+								</c:choose>
+						</table>
 					</c:when>
 					<c:otherwise>
 					
