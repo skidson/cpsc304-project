@@ -269,14 +269,21 @@ public class JDBCManager {
 			Iterator<Map.Entry<String, Object>> iterator = conditions.entrySet().iterator();
 			while (iterator.hasNext()) {
 				Map.Entry<String, Object> condition = iterator.next();
-				if (condition.getValue() != null)
+				if (condition.getValue() != null) {
 					if (exact)
-						query.append(condition.getKey() + " = ?");
+						query.append(condition.getKey() + " = ");
 					else
-						query.append(condition.getKey() + " LIKE ?");
-				else
+						query.append(condition.getKey() + " LIKE ");
+					if (condition.getValue().toString().contains("."))
+						query.append(condition.getValue());
+					else {
+						query.append("?");
+						parameters.add(condition.getValue());
+					}
+				} else {
 					query.append(condition.getKey() + " IS ?");
-				parameters.add(condition.getValue());
+					parameters.add(condition.getValue());
+				}
 				if (iterator.hasNext() || (shared != null && !shared.isEmpty()))
 					query.append(" AND ");
 			}
@@ -296,8 +303,12 @@ public class JDBCManager {
 		
 		if (group != null && !group.isEmpty()) {
 			query.append(" GROUP BY ");
-			for (String attribute : group)
-				query.append("'" + attribute + "'" + ", ");
+			for (String attribute : group) {
+				if (attribute.contains("."))
+					query.append(attribute + ", ");
+				else
+					query.append("'" + attribute + "'" + ", ");
+			}
 			index = query.lastIndexOf(", ");
 			query.replace(index, index+1, "");
 		}

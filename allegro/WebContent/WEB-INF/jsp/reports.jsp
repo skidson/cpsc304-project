@@ -8,6 +8,41 @@
 		<%@ include file="/WEB-INF/jsp/header.jsp" %>
 		<div id="content-wrap">
 			<div id="main">
+				<c:if test="${not empty error}">
+					<center><font color="red"><b>${error}</b></font></center>
+				</c:if>
+				
+				<!-- Store Report -->
+				<c:if test="${not empty store}">
+					<h2>${store}: ${reportDate}</h2>
+					<table>
+						<tr><th>UPC</th><th>Category</th><th>Price</th><th>Sold</th><th>Total Value</th></tr>
+						<c:forEach var="group" items="${groups}">
+							<c:forEach var="item" items="${group}">
+								<tr>
+									<td>${item.upc}</td>
+									<td>${item.category}</td>
+									<td>$${item.sellPrice}</td>
+									<td>${item.quantity}</td>
+									<fmt:formatNumber var="subPrice" value="${item.sellPrice * item.quantity}" pattern="0.00"/>
+									<td>$${subPrice}</td>
+									<c:set var="catQuantity" value="${catQuantity + item.quantity}"/>
+									<c:set var="catPrice" value="${catPrice + item.sellPrice}"/>
+								</tr>
+							</c:forEach>
+							<fmt:formatNumber var="subPrice" value="${catPrice}" pattern="0.00"/>
+							<tr><td colspan="3" align="right"><b>Total:</b></td><td>${catQuantity}</td><td>$${subPrice}</td></tr>
+							<tr />
+							<c:set var="totalQuantity" value="${totalQuantity + catQuantity}"/>
+							<c:set var="totalPrice" value="${totalPrice + catPrice}" />
+							<c:set var="catQuantity" value="0"/>
+							<c:set var="catPrice" value="0"/>
+						</c:forEach>
+						<tr />
+						<fmt:formatNumber var="subPrice" value="${totalPrice}" pattern="0.00"/>
+						<tr><td colspan="3" align="right"><b>Total Daily Sales:</b></td><td>${totalQuantity}</td><td>$${subPrice}</td></tr>
+					</table>
+				</c:if>
 				
 				<h2>Generate Store Report</h2>
 				<table><form method="post" action="/allegro/manager/storeReport">
@@ -58,27 +93,8 @@
 					</tr>
 				</form></table>
 				
-				<c:if test="${not empty store}">
-					<h2>${store.sname} - ${reportDate}</h2>
-					<table>
-						<tr><th>UPC</th><th>Category</th><th>Price</th><th>Sold</th></tr>
-						<c:forEach var="item" items="${items}">
-							<tr>
-								<td>${item.upc}</td>
-								<td>${item.category}</td>
-								<td>${item.sellPrice}</td>
-								<td>${item.quantity}</td>
-								<fmt:formatNumber var="subPrice" value="${item.sellPrice * item.quantity}" pattern="0.00"/>
-								<td>$${subPrice}</td>
-								<c:set var="totalQuantity" value="${totalQuantity + item.quantity}"/>
-								<c:set var="totalPrice" value="${totalPrice + subPrice}" />
-							</tr>
-						</c:forEach>
-					</table>
-				</c:if>
-				
 				<c:if test="${not empty numEntry}">
-					<h2>Top ${numEntry} Item Sales - ${reportDate}</h2>
+					<h2>Top ${numEntry} Item Sales: ${reportDate}</h2>
 					<table>
 						<tr><th>Item</th><th>Company</th><th>Current Stock</th><th>Sold</th></tr>
 						<c:forEach var="item" items="${items}">
