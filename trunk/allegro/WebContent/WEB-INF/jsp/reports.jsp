@@ -27,7 +27,7 @@
 									<fmt:formatNumber var="subPrice" value="${item.sellPrice * item.quantity}" pattern="0.00"/>
 									<td>$${subPrice}</td>
 									<c:set var="catQuantity" value="${catQuantity + item.quantity}"/>
-									<c:set var="catPrice" value="${catPrice + item.sellPrice}"/>
+									<c:set var="catPrice" value="${catPrice + subPrice}"/>
 								</tr>
 							</c:forEach>
 							<fmt:formatNumber var="subPrice" value="${catPrice}" pattern="0.00"/>

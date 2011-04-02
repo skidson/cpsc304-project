@@ -82,7 +82,7 @@
 												<td><input class="button" value="   Add Item   " type="submit"/></td>
 											</tr>
 										</form>
-										<form method="post" action="/allegro/manager/viewShipItem?sid=${sid}">
+										<form method="post" action="/allegro/manager/viewShipment?sid=${sid}">
 											<tr />
 											<tr><td align="center" colSpan="3"><input class="button" value="    Done    " type="submit"/></td></tr>
 										</form>
