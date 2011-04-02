@@ -1,6 +1,11 @@
 package ca.ubc.cs304.allegro.controller;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +40,7 @@ public class ManagerController {
 	public ModelAndView suppliers() {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		try {
-			List<AllegroItem> suppliers = JDBCManager.select(Table.Supplier);
-			model.put("suppliers", suppliers);
+			model.put("suppliers", JDBCManager.select(Table.Supplier));
 		} catch (SQLException e) {
 			model.put("error", "Error: Could not load suppliers");
 		}
@@ -77,6 +81,43 @@ public class ManagerController {
 	@RequestMapping("/manager/reports")
 	public ModelAndView reports() {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
+		try {
+			Map<String, Object> conditions = new HashMap<String, Object>();
+			conditions.put("type", "store");
+			model.put("stores", JDBCManager.select(Table.Store, conditions));
+		} catch (SQLException e) {
+			model.put("error", "Error: Could not load suppliers");
+		}
+		return new ModelAndView("reports", model);
+	}
+	
+	@RequestMapping("/manager/storeReport")
+	public ModelAndView generateReport(@RequestParam("in_sname") String sname,
+			@RequestParam("in_year") Integer year,
+			@RequestParam("in_year") Integer month,
+			@RequestParam("in_year") Integer day) {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		try {
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(year, month, day);
+			List<Table> tables = new ArrayList<Table>();
+			tables.add(Table.Item);
+			tables.add(Table.PurchaseItem);
+			tables.add(Table.Purchase);
+			Map<String, Object> conditions = new HashMap<String, Object>();
+			conditions.put("Item.upc", "PurchaseItem.upc");
+			conditions.put("Purchase.purchaseDate", new Date(calendar.getTimeInMillis()));
+			List<String> group = new ArrayList<String>();
+			group.add("Item.upc");
+			model.put("items", JDBCManager.select(tables, conditions, null, group));
+			conditions.clear();
+			conditions.put("type", "store");
+			model.put("stores", JDBCManager.select(Table.Store, conditions));
+			model.put("store", sname);
+			model.put("reportDate", year + "-" + month + "-" + day);
+		} catch (SQLException e) {
+			model.put("error", "Error: Could not generate report");
+		}
 		return new ModelAndView("reports", model);
 	}
 	
@@ -99,36 +140,84 @@ public class ManagerController {
 	
 	// TODO
 	@RequestMapping("/manager/createShipment")
-	public ModelAndView createShipment() {
+	public ModelAndView createShipment(@RequestParam("in_supname") String supname,
+			@RequestParam("in_sname") String sname,
+			@RequestParam("in_year") int year,
+			@RequestParam("in_month") int month,
+			@RequestParam("in_day") int day) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		Integer sid = (new Random()).nextInt(MAX_SHIPMENT_NUM);
-		model.put("sid", sid);
-		
-		/*Shipment shipment = new Shipment(sid, )
-		
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(year, month, day);
 		try {
+			JDBCManager.insert(new Shipment(sid, supname, sname, new Date(calendar.getTimeInMillis())));
 			model.put("shipments", JDBCManager.select(Table.Shipment));
-			conditions.clear();
+			Map<String, Object> conditions = new HashMap<String, Object>();
 			conditions.put("status", 0);
 			model.put("suppliers", JDBCManager.select(Table.Supplier, conditions));
+			conditions.clear();
+			conditions.put("type", "store");
+			model.put("stores", JDBCManager.select(Table.Store, conditions));
+			model.put("sid", sid);
 		} catch (SQLException e) {
 			model.put("error", "Error: Could not load shipments");
-		}*/
+		}
+		model.put("edit", true);
+		return new ModelAndView("shipments", model);
+	}
+	
+	@RequestMapping("/manager/addShipItem")
+	public ModelAndView addShipItem(@RequestParam("in_sid") Integer sid,
+			@RequestParam("in_upc") String upc,
+			@RequestParam("in_supPrice") String supPrice,
+			@RequestParam("in_quantity") String quantity) {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		
+		try {
+			JDBCManager.insert(new ShipItem(sid, TransactionService.sanitizeInt(upc),
+					TransactionService.sanitizeMoney(supPrice),
+					TransactionService.sanitizeInt(quantity)));
+			Map<String, Object> conditions = new HashMap<String, Object>();
+			
+			model.put("shipments", JDBCManager.select(Table.Shipment));
+			
+			model.put("stores", JDBCManager.select(Table.Store, conditions));
+			
+			conditions.clear();
+			conditions.put("status", ACTIVE);
+			model.put("suppliers", JDBCManager.select(Table.Supplier, conditions));
+			
+			conditions.clear();
+			conditions.put("sid", sid);
+			model.put("shipItems", JDBCManager.select(Table.ShipItem, conditions));
+			
+		} catch (SQLException e) {
+			model.put("error", "Error: Could not load shipments");
+		} catch (IOException e) {
+			model.put("error", "Error: Could not add item to shipment");
+		}
+		model.put("edit", true);
+		model.put("sid", sid);
 		return new ModelAndView("shipments", model);
 	}
 	
 	@RequestMapping("/manager/viewShipment")
-	public ModelAndView viewShipment(@RequestParam("sid") String sid) {
+	public ModelAndView viewShipment(@RequestParam("sid") Integer sid) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		try {
 			model.put("shipments", JDBCManager.select(Table.Shipment));
 			model.put("sid", sid);
+			
 			Map<String, Object> conditions = new HashMap<String, Object>();
-			conditions.put("sid", Integer.parseInt(sid));
+			conditions.put("sid", sid);
 			model.put("shipItems", JDBCManager.select(Table.ShipItem, conditions));
+			
 			conditions.clear();
 			conditions.put("status", ACTIVE);
 			model.put("suppliers", JDBCManager.select(Table.Supplier, conditions));
+			
+			conditions.clear();
+			model.put("stores", JDBCManager.select(Table.Store));
 		} catch (SQLException e) {
 			model.put("error", "Error: Could not load shipment");
 		}
@@ -161,8 +250,8 @@ public class ManagerController {
 				conditions = new HashMap<String, Object>();
 				conditions.put("upc", shipItem.getUpc());
 				Item item = (Item)JDBCManager.select(Table.Item, conditions).get(0);
-				if (item.getSellPrice() < shipItem.getSupPrice()*1.2)
-					JDBCManager.update(Table.Item, "sellPrice", (shipItem.getSupPrice()*1.2), conditions);
+				if (item.getSellPrice() < shipItem.getSupPrice().doubleValue()*1.2)
+					JDBCManager.update(Table.Item, "sellPrice", new BigDecimal(shipItem.getSupPrice().doubleValue()*1.2), conditions);
 			}
 			
 			// Delete shipment data from database
@@ -171,6 +260,10 @@ public class ManagerController {
 			JDBCManager.delete(Table.ShipItem, conditions);
 			JDBCManager.delete(Table.Shipment, conditions);
 			
+			model.put("stores", JDBCManager.select(Table.Store));
+			conditions.clear();
+			conditions.put("status", ACTIVE);
+			model.put("suppliers", JDBCManager.select(Table.Supplier, conditions));
 			model.put("shipments", JDBCManager.select(Table.Shipment));
 			model.put("message", "Shipment #" + shipment.getSid() + " successfully received");
 			

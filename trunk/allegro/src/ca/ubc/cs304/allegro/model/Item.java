@@ -12,7 +12,7 @@ public class Item implements AllegroItem {
 	
 	private Integer upc, year, quantity = 1;
 	private String title, company;
-	private Float sellPrice;
+	private Double sellPrice;
 	
 	private Type type;
 	private Category category;
@@ -20,7 +20,7 @@ public class Item implements AllegroItem {
 	public Item() {}
 	
 	public Item(Integer upc, Integer year, String title, String company,
-			Float sellPrice, Type type, Category category) {
+			Double sellPrice, Type type, Category category) {
 		super();
 		this.upc = upc;
 		this.year = year;
@@ -107,11 +107,11 @@ public class Item implements AllegroItem {
 		this.company = company;
 	}
 
-	public Float getSellPrice() {
+	public Double getSellPrice() {
 		return sellPrice;
 	}
 
-	public void setSellPrice(Float sellPrice) {
+	public void setSellPrice(Double sellPrice) {
 		this.sellPrice = sellPrice;
 	}
 	

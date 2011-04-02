@@ -89,6 +89,46 @@ public class JDBCManager {
 	}
 	
 	/**
+	 * Returns the list of results for a query of multiple tables where returned
+	 * tuples meet the conditions specified by "key LIKE value" for each entry 
+	 * in the passed Map. The entries for the list returned will be the type
+	 * indicated by the first Table of the ones queried.
+	 * @param tables - the list of tables to query.
+	 * @param conditions - conditions "key LIKE value" for tuples returned
+	 * @return The result set for this query.
+	 * @throws SQLException
+	 */
+	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions) throws SQLException {
+		return search(tables, conditions, null);
+	}
+	
+	/**
+	 * Returns the list of results for a query of multiple tables where returned
+	 * tuples meet the conditions specified by "key LIKE value" for each entry 
+	 * in the passed Map. The entries for the list returned will be the type
+	 * indicated by the first Table of the ones queried.
+	 * @param tables - the list of tables to query.
+	 * @param conditions - conditions "key LIKE value" for tuples returned
+	 * @param shared - shared keys to match between tables
+	 * @return The result set for this query.
+	 * @throws SQLException
+	 */
+	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
+		return search(tables, conditions, shared, null);
+	}
+	
+	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group) throws SQLException {
+		return select(null, tables, conditions, shared, group, false);
+	}
+	
+	public static List<AllegroItem> search(Table table, Map<String, Object> conditions) throws SQLException {
+		List<Table> tables = new ArrayList<Table>();
+		tables.add(table);
+		return search(tables, conditions, null);
+	}
+	
+	
+	/**
 	 * Fetches the entire table from the database.
 	 * @param table - the table to fetch.
 	 * @return The list of items in the fetched table. These items are safe to typecast
@@ -134,54 +174,22 @@ public class JDBCManager {
 		return select(tables, conditions, shared, null);
 	}
 	
-	public static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group) throws SQLException {
-		return select(tables, conditions, shared, group, true);
+	public static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, 
+			List<String> shared, List<String> group) throws SQLException {
+		return select(null, tables, conditions, shared, group, true);
 	}
 	
-	/**
-	 * Returns the list of results for a query of multiple tables where returned
-	 * tuples meet the conditions specified by "key LIKE value" for each entry 
-	 * in the passed Map. The entries for the list returned will be the type
-	 * indicated by the first Table of the ones queried.
-	 * @param tables - the list of tables to query.
-	 * @param conditions - conditions "key LIKE value" for tuples returned
-	 * @param shared - shared keys to match between tables
-	 * @return The result set for this query.
-	 * @throws SQLException
-	 */
-	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions, List<String> shared) throws SQLException {
-		return search(tables, conditions, shared, null);
+	public static List<AllegroItem> select(String select, List<Table> tables, Map<String, Object> conditions, 
+			List<String> shared, List<String> group) throws SQLException {
+		return select(select, tables, conditions, shared, group, true);
 	}
 	
-	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group) throws SQLException {
-		return select(tables, conditions, shared, group, false);
-	}
-	
-	/**
-	 * Returns the list of results for a query of multiple tables where returned
-	 * tuples meet the conditions specified by "key LIKE value" for each entry 
-	 * in the passed Map. The entries for the list returned will be the type
-	 * indicated by the first Table of the ones queried.
-	 * @param tables - the list of tables to query.
-	 * @param conditions - conditions "key LIKE value" for tuples returned
-	 * @return The result set for this query.
-	 * @throws SQLException
-	 */
-	public static List<AllegroItem> search(List<Table> tables, Map<String, Object> conditions) throws SQLException {
-		return search(tables, conditions, null);
-	}
-	
-	public static List<AllegroItem> search(Table table, Map<String, Object> conditions) throws SQLException {
-		List<Table> tables = new ArrayList<Table>();
-		tables.add(table);
-		return search(tables, conditions, null);
-	}
-	
-	private static List<AllegroItem> select(List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group, boolean exact) throws SQLException {
+	private static List<AllegroItem> select(String select, List<Table> tables, Map<String, Object> conditions, 
+			List<String> shared, List<String> group, boolean exact) throws SQLException {
 		// REQUIRES: Class names in AllegroItem's package match database's names
 		// Submit the query and fetch the results
 		
-		ResultSet results = fetch(tables, conditions, shared, group, exact);
+		ResultSet results = fetch(select, tables, conditions, shared, group, exact);
 		
 		// Get the package directory of database items we will instantiate
 		String directory = AllegroItem.class.getPackage().getName() + ".";
@@ -219,6 +227,10 @@ public class JDBCManager {
 							method.invoke(entry, results.getLong(column));
 						else if (paramType == Float.class)
 							method.invoke(entry, results.getFloat(column));
+						else if (paramType == Double.class)
+							method.invoke(entry, results.getDouble(column));
+						else if (paramType == BigDecimal.class)
+							method.invoke(entry, results.getBigDecimal(column));
 					} catch (Exception e2) {
 						// Column did not exist in result, leave null
 					}
@@ -238,16 +250,17 @@ public class JDBCManager {
 	}
 	
 	// Helper for use by all select methods
-	private static ResultSet fetch(List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group, boolean exact) throws SQLException {
+	private static ResultSet fetch(String select, List<Table> tables, Map<String, Object> conditions, List<String> shared, List<String> group, boolean exact) throws SQLException {
 		List<Object> parameters = new ArrayList<Object>();
-		
+		if (select == null)
+			select = "*";
 		// Parse table names
 		StringBuilder from = new StringBuilder();
 		for (Table table : tables)
 			from.append(table.toString() + ", ");
 		int index = from.lastIndexOf(", ");
 		from.replace(index, index+1, "");
-		StringBuilder query = new StringBuilder("SELECT * FROM " + from);
+		StringBuilder query = new StringBuilder("SELECT " + select + " FROM " + from);
 		if ((conditions !=  null && !conditions.isEmpty()) || (shared != null && !shared.isEmpty()))
 			query.append(" WHERE ");
 		
@@ -297,7 +310,7 @@ public class JDBCManager {
 		return result;
 	}
 	
-	private static Connection connect() throws SQLException {
+	protected static Connection connect() throws SQLException {
 		if (!registered) {
 			DriverManager.registerDriver(new com.mysql.jdbc.Driver());
 			registered = true;

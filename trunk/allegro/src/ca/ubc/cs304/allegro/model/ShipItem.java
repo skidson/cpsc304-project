@@ -8,26 +8,24 @@ import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
 public class ShipItem implements AllegroItem {
 	private Integer sid, upc, quantity;
-	private Float supPrice;
+	private BigDecimal supPrice;
 	
 	public ShipItem() {}
 	
-	public ShipItem(Integer sid, Integer upc, Integer quantity, Float supPrice) {
+	public ShipItem(Integer sid, Integer upc, Double supPrice, Integer quantity) {
 		super();
 		this.sid = sid;
 		this.upc = upc;
 		this.quantity = quantity;
-		this.supPrice = supPrice;
+		if (supPrice != null)
+			this.supPrice = new BigDecimal(supPrice);
 	}
 
 	public List<Object> getParameters() {
 		List<Object> parameters = new ArrayList<Object>();
 		parameters.add(sid);
 		parameters.add(upc);
-		if (supPrice != null)
-			parameters.add(new BigDecimal(supPrice));
-		else
-			parameters.add(null);
+		parameters.add(supPrice);
 		parameters.add(quantity);
 		return parameters;
 	}
@@ -60,12 +58,19 @@ public class ShipItem implements AllegroItem {
 		this.quantity = quantity;
 	}
 
-	public Float getSupPrice() {
-		return supPrice;
+	public Double getSupPrice() {
+		return supPrice.doubleValue();
 	}
 
-	public void setSupPrice(Float supPrice) {
+	public void setSupPrice(BigDecimal supPrice) {
 		this.supPrice = supPrice;
 	}
-
+	
+	public String toString() {
+		return ("sid: " + sid + 
+				"\nupc: " + upc + 
+				"\nquantity: " + quantity +
+				"\nsupPrice: " + supPrice);
+	}
+	
 }
