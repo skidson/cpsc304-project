@@ -14,6 +14,17 @@ import ca.ubc.cs304.allegro.model.Stored;
 public class TransactionService {
 	private static final int NUM_CREDIT_CARD_DIGITS = 16;
 	
+	public static int sanitizeInt(String value) throws IOException {
+		if (value != null) {
+			try {
+				return Integer.parseInt(value);
+			} catch (NumberFormatException e) {
+				throw new IOException(e);
+			}
+		}
+		throw new IOException();
+	}
+	
 	public static long sanitizeCardNum(String cardNum) throws IOException {
 		if (cardNum != null) {
 			cardNum = cardNum.trim();

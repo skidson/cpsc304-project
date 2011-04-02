@@ -163,10 +163,13 @@ public class ClerkController {
 			Map<String, Object> conditions = new HashMap<String, Object>();
 			conditions.put("upc", Integer.parseInt(upc.trim()));
 			try {
+				Integer quantity = TransactionService.sanitizeInt(qty);
 				Item item = (Item)JDBCManager.select(Table.Item, conditions).get(0);
-				item.setQuantity(Integer.parseInt(qty.trim()));
+				item.setQuantity(quantity);
 				UserService.addToCart(item, model);
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				model.put("error", "Error: Invalid entry");
+			}
 		}
 		return new ModelAndView("purchase", model);
 	}
