@@ -247,6 +247,7 @@ public class ClerkController {
 				conditions.put("upc", item.getParameters().get(1));
 				Item dbItem = (Item)JDBCManager.select(Table.Item, conditions).get(0);
 				conditions.clear();
+				conditions.put("RefundItem.upc", item.getParameters().get(1));
 				conditions.put("receiptId", item.getParameters().get(0));
 				tables.add(Table.RefundItem);
 				tables.add(Table.Refund);
@@ -256,6 +257,7 @@ public class ClerkController {
 				for(AllegroItem refItem : refItemList){
 					refQuantity += (Integer)refItem.getParameters().get(2);
 				}
+				System.out.println("TEST : Setting item upc of " + dbItem.getUpc() + " to : " + (new Integer((Integer)item.getParameters().get(2))- refQuantity));
 				dbItem.setQuantity(new Integer((Integer)item.getParameters().get(2))- refQuantity);
 				returnedItems.add(dbItem);
 				conditions.clear();
@@ -278,11 +280,14 @@ public class ClerkController {
 										@RequestParam("j_receiptID") String in_receiptID,
 										@RequestParam("in_store") String sname,
 										@RequestParam("in_quantity") String in_quantity) {
+		
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		HashMap<String, Object> conditions = new HashMap<String, Object>();
 		List<String> shared = new ArrayList<String>();
 		List<Table> tables = new ArrayList<Table>();
 		List<AllegroItem> stores = new ArrayList<AllegroItem>();
+		List<Item> returnedItems = new ArrayList<Item>();
+		
 		try {
 			conditions.put("type", "store");
 			stores = JDBCManager.select(Table.Store, conditions);
@@ -291,6 +296,7 @@ public class ClerkController {
 		} catch (SQLException e) {
 			model.put("error", "Error: Could not access store list");
 		}
+		
 		int receiptID = 0;
 		int quantity = 0;
 		int upc = 0;
@@ -304,6 +310,7 @@ public class ClerkController {
 			model.put("stores", stores);
 			return new ModelAndView("refund", model);
 		}
+		
 		try{
 			conditions.put("upc", upc);
 			conditions.put("receiptID", receiptID);
@@ -316,14 +323,14 @@ public class ClerkController {
 				
 				conditions.put("receiptId", receiptID);
 				List<AllegroItem> purchaseItems = JDBCManager.select(Table.PurchaseItem, conditions);
-				List<Item> returnedItems = new ArrayList<Item>();
+				returnedItems = new ArrayList<Item>();
 				conditions.clear();
-				
 				for(AllegroItem allgitem : purchaseItems){
 					conditions.put("upc", allgitem.getParameters().get(1));
 					Item dbItem = (Item)JDBCManager.select(Table.Item, conditions).get(0);
 					conditions.clear();
-					conditions.put("receiptId", item.getParameters().get(0));
+					conditions.put("RefundItem.upc", allgitem.getParameters().get(1));
+					conditions.put("receiptId", allgitem.getParameters().get(0));
 					tables.add(Table.RefundItem);
 					tables.add(Table.Refund);
 					shared.add("retid");
@@ -332,15 +339,17 @@ public class ClerkController {
 					for(AllegroItem refItem : refItemList){
 						refQuantity += (Integer)refItem.getParameters().get(2);
 					}
-					dbItem.setQuantity(new Integer((Integer)item.getParameters().get(2))- refQuantity);
-					refQuantity = 0;
+					dbItem.setQuantity(new Integer((Integer)allgitem.getParameters().get(2))- refQuantity);
+					returnedItems.add(dbItem);
+					conditions.clear();
 					tables.clear();
 					shared.clear();
-					returnedItems.add(dbItem);
+					refQuantity =0;
 				}
+				model.put("items", returnedItems);
 				model.put("store", sname);
 				model.put("stores", stores);
-				model.put("items", returnedItems);
+				model.put("receiptI", receiptID);
 				return new ModelAndView("refund", model);
 			}
 			int retid = new Random().nextInt(1000000);
@@ -353,18 +362,21 @@ public class ClerkController {
 		}catch(SQLException e){
 			
 		}
+		
+		returnedItems = new ArrayList<Item>();
+		
 		try{
 			conditions.clear();
 			conditions.put("receiptId", receiptID);
 			List<AllegroItem> purchaseItems = JDBCManager.select(Table.PurchaseItem, conditions);
-			List<Item> returnedItems = new ArrayList<Item>();
-			conditions.clear();
 			
-			for(AllegroItem allgitem : purchaseItems){
-				conditions.put("upc", allgitem.getParameters().get(1));
+			conditions.clear();
+			for(AllegroItem item : purchaseItems){
+				conditions.put("upc", item.getParameters().get(1));
 				Item dbItem = (Item)JDBCManager.select(Table.Item, conditions).get(0);
 				conditions.clear();
-				conditions.put("receiptId", allgitem.getParameters().get(0));
+				conditions.put("RefundItem.upc", item.getParameters().get(1));
+				conditions.put("receiptId", item.getParameters().get(0));
 				tables.add(Table.RefundItem);
 				tables.add(Table.Refund);
 				shared.add("retid");
@@ -373,21 +385,22 @@ public class ClerkController {
 				for(AllegroItem refItem : refItemList){
 					refQuantity += (Integer)refItem.getParameters().get(2);
 				}
-				dbItem.setQuantity(new Integer((Integer)allgitem.getParameters().get(2))- refQuantity);
-				refQuantity = 0;
+				dbItem.setQuantity(new Integer((Integer)item.getParameters().get(2))- refQuantity);
+				returnedItems.add(dbItem);
+				conditions.clear();
 				tables.clear();
 				shared.clear();
-				returnedItems.add(dbItem);
+				refQuantity =0;
 			}
-			model.put("store", sname);
 			model.put("items", returnedItems);
-			model.put("stores", stores);
-			System.out.println(returnedItems.toString());
-			model.put("receiptID", receiptID);
 		}catch (Exception e){
 			
 		}
+		model.put("store", sname);
+		model.put("stores", stores);
+		model.put("receiptID", receiptID);
 		model.put("message", "Successfully returned the item");
+		
 		return new ModelAndView("refund", model);
 	}
 	
