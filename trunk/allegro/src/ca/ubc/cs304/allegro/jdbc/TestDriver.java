@@ -21,16 +21,18 @@ public class TestDriver {
 			List<String> group = new ArrayList<String>();
 			List<Table> tables = new ArrayList<Table>();
 			Calendar calendar = Calendar.getInstance();
-			calendar.set(2011, 4, 1);
+			calendar.set(2011, 3, 2);
+			String select = "Item.upc AS upc, category, sellPrice, SUM( quantity ) AS quantity";
 			tables.add(Table.Item);
 			tables.add(Table.PurchaseItem);
 			tables.add(Table.Purchase);
+			conditions.put("sname", "Granville");
 			conditions.put("Item.upc", "PurchaseItem.upc");
+			conditions.put("Purchase.receiptId", "PurchaseItem.receiptId");
 			conditions.put("Purchase.purchaseDate", new Date(calendar.getTimeInMillis()));
-			group.add("Item.upc");
+			group.add("upc");
 			
-			List<AllegroItem> results = JDBCManager.select("Item.upc AS upc,title,type,category,company,year,sellPrice,SUM(PurchaseItem.quantity) AS quantity",
-					tables, conditions, null, group);
+			List<AllegroItem> results = JDBCManager.select(select, tables, conditions, null, group);
 			for (AllegroItem result : results)
 				System.out.println(result.toString() + "\n");
 			

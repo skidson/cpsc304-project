@@ -94,27 +94,71 @@ public class ManagerController {
 	@RequestMapping("/manager/storeReport")
 	public ModelAndView generateReport(@RequestParam("in_sname") String sname,
 			@RequestParam("in_year") Integer year,
-			@RequestParam("in_year") Integer month,
-			@RequestParam("in_year") Integer day) {
+			@RequestParam("in_month") Integer month,
+			@RequestParam("in_day") Integer day) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		try {
 			Calendar calendar = Calendar.getInstance();
-			calendar.set(year, month, day);
+			calendar.set(year, month-1, day);
+			
 			List<Table> tables = new ArrayList<Table>();
 			tables.add(Table.Item);
 			tables.add(Table.PurchaseItem);
 			tables.add(Table.Purchase);
+			
 			Map<String, Object> conditions = new HashMap<String, Object>();
+			conditions.put("sname", sname);
 			conditions.put("Item.upc", "PurchaseItem.upc");
 			conditions.put("Purchase.purchaseDate", new Date(calendar.getTimeInMillis()));
-			List<String> group = new ArrayList<String>();
-			group.add("Item.upc");
-			model.put("items", JDBCManager.select(tables, conditions, null, group));
+			List<AllegroItem> allItems = JDBCManager.select(tables, conditions, null);
+			
 			conditions.clear();
 			conditions.put("type", "store");
 			model.put("stores", JDBCManager.select(Table.Store, conditions));
-			model.put("store", sname);
 			model.put("reportDate", year + "-" + month + "-" + day);
+			
+			if (allItems.isEmpty()) {
+				model.put("error", "No purchases found");
+				return new ModelAndView("reports", model);
+			} else
+				model.put("store", sname);
+			
+			// Group items by UPC and sum their quantities
+			List<Item> items = new ArrayList<Item>();
+			for(AllegroItem allItem : allItems) {
+				Item item = (Item)allItem;
+				for (Item processed : items) {
+					if (processed.getUpc() == item.getUpc()) {
+						item.setQuantity(item.getQuantity()+processed.getQuantity());
+						items.remove(processed);
+						break;
+					}
+				}
+				items.add(item);
+				System.out.println(item);
+			}
+			
+			// Generate a list of grouped item lists
+			List<List<Item>> groups = new ArrayList<List<Item>>();
+			List<Item> group = new ArrayList<Item>();
+			groups.add(group);
+			group.add(items.remove(0));
+			for (Item item : items) {
+				boolean match = false;
+				for (List<Item> groupList : groups) {
+					if (item.getCategory().equalsIgnoreCase(groupList.get(0).getCategory())) {
+						groupList.add(item);
+						match = true;
+						break;
+					}
+				}
+				if (!match) {
+					group.add(item);
+					groups.add(group);
+				}
+			}
+			model.put("groups", groups);
+			
 		} catch (SQLException e) {
 			model.put("error", "Error: Could not generate report");
 		}
@@ -148,7 +192,7 @@ public class ManagerController {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		Integer sid = (new Random()).nextInt(MAX_SHIPMENT_NUM);
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(year, month, day);
+		calendar.set(year, month-1, day);
 		try {
 			JDBCManager.insert(new Shipment(sid, supname, sname, new Date(calendar.getTimeInMillis())));
 			model.put("shipments", JDBCManager.select(Table.Shipment));
