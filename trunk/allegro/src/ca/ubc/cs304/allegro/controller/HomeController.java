@@ -35,6 +35,32 @@ public class HomeController {
 		return new ModelAndView("register", model);
 	}
 	
+	@RequestMapping("/index/debug")
+	public ModelAndView debug() {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		return new ModelAndView("debug", model);
+	}
+	
+	@RequestMapping("/index/getTable")
+	public ModelAndView getTable(@RequestParam("j_table") String table) {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+
+		Table fetch = JDBCManager.getTable(table);
+		if(JDBCManager.getTable(table) == null){
+			model.put("error", "Error : Could not find table");
+			return new ModelAndView("debug", model);
+		} else{
+			try {
+				model.put("rows", JDBCManager.select(JDBCManager.getTable(table)));
+				model.put("val", true);
+			} catch (SQLException e) {
+				model.put("error", "Error : Could not fetch table");
+				return new ModelAndView("debug", model);
+			}
+		}
+		return new ModelAndView("debug", model);
+	}
+	
 	@RequestMapping("/index/completeRegistration")
 	public ModelAndView completeRegistration(@RequestParam("j_name") String name, @RequestParam("j_username") String username,
 								@RequestParam("j_address") String address, @RequestParam("j_phone") String phone, 

@@ -321,6 +321,16 @@ public class JDBCManager {
 		return result;
 	}
 	
+	public static Table getTable(String table){
+		
+		for(Table c : Table.values()){
+			if(c.name().equals(table))
+				return c;
+		}
+		
+		return null;
+	}
+	
 	protected static Connection connect() throws SQLException {
 		if (!registered) {
 			DriverManager.registerDriver(new com.mysql.jdbc.Driver());
@@ -377,4 +387,6 @@ public class JDBCManager {
 				statement.setLong(i+1, (Long)parameter);
 		}
 	}
+	
+	
 }

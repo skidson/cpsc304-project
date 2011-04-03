@@ -18,6 +18,7 @@
 					<tr>
 						<td><label>Category:</label></td>
 						<td colSpan="2"><select name="j_category">
+							<option>All</option>
 							<option>Rock</option>
 							<option>Country</option>
 							<option>New Age</option>
@@ -25,7 +26,6 @@
 							<option>Classical</option>
 							<option>Instrumental</option>
 							<option>Rap</option>
-							<option>All</option>
 						</select></td>
 					</tr>
 					<tr><td><label>Title (Optional):</label></td><td><input type="text" size="30" name="j_title" /></td>
