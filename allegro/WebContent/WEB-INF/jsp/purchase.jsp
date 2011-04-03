@@ -27,7 +27,7 @@
 					</c:forEach>
 					<tr><form method="post" action="/allegro/clerk/addPurchase">
 						<td />
-						<td><input type="text" size="30" name="in_upc" /></td>
+						<td><input type="text" size="30" name="in_upc" value="000000000" /></td>
 						<td><input type="text" size="10" name="in_qty" value="1" /></td>
 						<td />
 						<td><input class="button" value="   Add Item   " type="submit"/></td>

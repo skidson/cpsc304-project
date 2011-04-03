@@ -143,10 +143,6 @@ public class ManagerController {
 				items.add(item);
 			}
 			
-			// Only maintain the specified number of items
-			while (items.size() > numEntry)
-				items.remove(items.size()-1);
-			
 			String select = "SUM(stock) AS stock";
 			tables.clear();
 			tables.add(Table.Stored);
@@ -164,6 +160,10 @@ public class ManagerController {
 						max = i;
 				sorted.add(items.remove(max));
 			}
+			
+			// Only maintain the specified number of items
+			while (sorted.size() > numEntry)
+				sorted.remove(items.size()-1);
 			
 			model.put("items", sorted);
 			
