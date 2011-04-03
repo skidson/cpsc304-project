@@ -172,7 +172,7 @@ public class CustomerController {
 		Calendar cal = Calendar.getInstance();
 		Calendar expectedDate = Calendar.getInstance();
 		
-		cal.set(year, month, 1);
+		cal.set(year, month-1, 1);
 		if(!TransactionService.validCardExpiry(cal)){
 			model.put("error", "Error: Your card has expired!");
 			List<Item> cart = UserService.getShoppingCart(model);
@@ -243,9 +243,6 @@ public class CustomerController {
 			Item item = (Item) JDBCManager.select(Table.Item, conditions).get(0);
 			LeadSinger ls = (LeadSinger) JDBCManager.select(Table.LeadSinger, conditions).get(0);
 			List<AllegroItem> songs = JDBCManager.select(Table.HasSong, conditions);
-			System.out.println(item.toString());
-			System.out.println(ls.toString());
-			System.out.println(songs.toString());
 			
 			model.put("item", item);
 			model.put("leadSinger", ls);
