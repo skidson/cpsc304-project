@@ -10,7 +10,7 @@ public class Item implements AllegroItem {
 	public enum Type {CD, DVD};
 	private enum Category {ROCK, POP, RAP, COUNTRY, CLASSICAL, NEW_AGE, INSTRUMENTAL};
 	
-	private Integer upc, year, quantity = 1;
+	private Integer upc, year, quantity = 1, stock;
 	private String title, company;
 	private Double sellPrice;
 	
@@ -132,6 +132,14 @@ public class Item implements AllegroItem {
 
 	public Integer getQuantity() {
 		return quantity;
+	}
+
+	public void setStock(Integer stock) {
+		this.stock = stock;
+	}
+
+	public Integer getStock() {
+		return stock;
 	}
 	
 }

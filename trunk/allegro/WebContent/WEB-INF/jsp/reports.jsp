@@ -12,6 +12,23 @@
 					<center><font color="red"><b>${error}</b></font></center>
 				</c:if>
 				
+				<!-- Sales Report -->
+				<c:if test="${not empty numEntry}">
+					<h2>Top ${numEntry} Item Sales: ${reportDate}</h2>
+					<table>
+						<tr><th>Item</th><th>Company</th><th>Current Stock</th><th>Sold</th></tr>
+						<c:forEach var="item" items="${items}">
+							<tr>
+								<td>${item.title}</td>
+								<td>${item.company}</td>
+								<td>${item.stock}</td>
+								<td>${item.quantity}</td>
+							</tr>
+						</c:forEach>
+						<tr />
+					</table>
+				</c:if>
+				
 				<!-- Store Report -->
 				<c:if test="${not empty store}">
 					<h2>${store}: ${reportDate}</h2>
@@ -38,7 +55,6 @@
 							<c:set var="catQuantity" value="0"/>
 							<c:set var="catPrice" value="0"/>
 						</c:forEach>
-						<tr />
 						<fmt:formatNumber var="subPrice" value="${totalPrice}" pattern="0.00"/>
 						<tr><td colspan="3" align="right"><b>Total Daily Sales:</b></td><td>${totalQuantity}</td><td>$${subPrice}</td></tr>
 					</table>
@@ -75,7 +91,7 @@
 				<table><form method="post" action="/allegro/manager/salesReport">
 					<tr><th>Number of Entries</th><th>Date</th></tr>
 					<tr>
-						<td><input type="text" size="10" name="in_num" value="10" /></td>
+						<td><input type="text" size="10" name="in_numEntry" value="10" /></td>
 						<td>
 							<select name="in_year">
 								<c:forEach var="i" begin="2011" end="2020"><option>${i}</option></c:forEach>
@@ -93,20 +109,6 @@
 					</tr>
 				</form></table>
 				
-				<c:if test="${not empty numEntry}">
-					<h2>Top ${numEntry} Item Sales: ${reportDate}</h2>
-					<table>
-						<tr><th>Item</th><th>Company</th><th>Current Stock</th><th>Sold</th></tr>
-						<c:forEach var="item" items="${items}">
-							<tr>
-								<td>${item.title}</td>
-								<td>${item.company}</td>
-								<td>${item.stock}</td>
-								<td>${item.quantity}</td>
-							</tr>
-						</c:forEach>
-					</table>
-				</c:if>
 			</div> <!-- main -->
 		
 		</div> <!-- content-wrap -->	
