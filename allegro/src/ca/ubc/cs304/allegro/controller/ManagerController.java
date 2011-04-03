@@ -91,8 +91,93 @@ public class ManagerController {
 		return new ModelAndView("reports", model);
 	}
 	
+	@RequestMapping("/manager/salesReport")
+	public ModelAndView salesReport(@RequestParam("in_numEntry") String in_numEntry,
+			@RequestParam("in_year") Integer year,
+			@RequestParam("in_month") Integer month,
+			@RequestParam("in_day") Integer day) {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(year, month-1, day);
+		int numEntry;
+		
+		Map<String, Object> conditions = new HashMap<String, Object>();
+		
+		try {
+			conditions.put("type", "store");
+			model.put("stores", JDBCManager.select(Table.Store, conditions));
+			numEntry = TransactionService.sanitizeInt(in_numEntry);
+			model.put("numEntry", numEntry);
+			model.put("reportDate", year + "-" + month + "-" + day);
+		} catch (IOException e) {
+			model.put("error", "Error: Invalid Input");
+			return new ModelAndView("reports", model);
+		} catch (SQLException e) {
+			model.put("error", "Error: Could not load store list");
+			return new ModelAndView("reports", model);
+		}
+		
+		try {
+			List<Table> tables = new ArrayList<Table>();
+			tables.add(Table.Item);
+			tables.add(Table.PurchaseItem);
+			tables.add(Table.Purchase);
+			
+			conditions.clear();
+			conditions.put("Item.upc", "PurchaseItem.upc");
+			conditions.put("PurchaseItem.receiptId", "Purchase.receiptId");
+			conditions.put("Purchase.purchaseDate", new Date(calendar.getTimeInMillis()));
+			List<AllegroItem> allItems = JDBCManager.select(tables, conditions, null);
+		
+			// Group items by UPC and sum their quantities
+			List<Item> items = new ArrayList<Item>();
+			for(AllegroItem allItem : allItems) {
+				Item item = (Item)allItem;
+				for (Item processed : items) {
+					if (processed.getUpc().equals(item.getUpc())) {
+						item.setQuantity(item.getQuantity()+processed.getQuantity());
+						items.remove(processed);
+						break;
+					}
+				}
+				items.add(item);
+			}
+			
+			// Only maintain the specified number of items
+			while (items.size() > numEntry)
+				items.remove(items.size()-1);
+			
+			String select = "SUM(stock) AS stock";
+			tables.clear();
+			tables.add(Table.Stored);
+			for (Item item : items) {
+				conditions.clear();
+				conditions.put("upc", item.getUpc());
+				item.setStock(((Stored)JDBCManager.select(select, tables, conditions, null, null).get(0)).getStock());
+			}
+			
+			List<Item> sorted = new ArrayList<Item>();
+			while (!items.isEmpty()) {
+				int max = 0;
+				for (int i = 0; i < items.size(); i++)
+					if (items.get(i).getStock() > items.get(max).getStock())
+						max = i;
+				sorted.add(items.remove(max));
+			}
+			
+			model.put("items", sorted);
+			
+			
+		} catch (SQLException e) {
+			model.put("error", "Error: No purchases found");
+			return new ModelAndView("reports", model);
+		}
+		
+		return new ModelAndView("reports", model);
+	}
+	
 	@RequestMapping("/manager/storeReport")
-	public ModelAndView generateReport(@RequestParam("in_sname") String sname,
+	public ModelAndView storeReport(@RequestParam("in_sname") String sname,
 			@RequestParam("in_year") Integer year,
 			@RequestParam("in_month") Integer month,
 			@RequestParam("in_day") Integer day) {
@@ -137,6 +222,7 @@ public class ManagerController {
 				}
 				items.add(item);
 			}
+			
 			// Generate a list of grouped item lists
 			List<List<Item>> groups = new ArrayList<List<Item>>();
 			List<Item> group = new ArrayList<Item>();

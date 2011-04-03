@@ -7,12 +7,12 @@ import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 
 public class Customer implements AllegroItem {
 	private String name, cid, password, address;
-	private Integer phone;
+	private Long phone;
 	
 	public Customer() {}
 	
 	public Customer(String name, String cid, String password, String address,
-			Integer phone) {
+			Long phone) {
 		super();
 		this.name = name;
 		this.cid = cid;
@@ -41,11 +41,11 @@ public class Customer implements AllegroItem {
 		this.address = address;
 	}
 
-	public Integer getPhone() {
+	public Long getPhone() {
 		return phone;
 	}
 
-	public void setPhone(Integer phone) {
+	public void setPhone(Long phone) {
 		this.phone = phone;
 	}
 
