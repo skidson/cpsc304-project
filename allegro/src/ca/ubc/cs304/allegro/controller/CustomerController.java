@@ -31,6 +31,7 @@ import ca.ubc.cs304.allegro.services.UserService;
 public class CustomerController {
 	@Autowired
 	private ProfileManager profileManager;
+	private static final int NUM_PURCHASES_PER_DAY = 10;
 	
 	@RequestMapping("/customer/search")
 	public ModelAndView search() {
@@ -175,7 +176,7 @@ public class CustomerController {
 										@RequestParam("j_expMonth") int month){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		HashMap<String, Object> conditions = new HashMap<String, Object>();
-		int purchasesProcessedPerDay = 3;
+		int purchasesProcessedPerDay = NUM_PURCHASES_PER_DAY;
 		Calendar cal = Calendar.getInstance();
 		Calendar expectedDate = Calendar.getInstance();
 		

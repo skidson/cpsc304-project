@@ -95,7 +95,7 @@
 									<form method="post" action="/allegro/manager/receiveShipment?sid=${sid}"><tr><td align="right" colspan="3">
 										<input class="button" value=" Receive " type="submit"/>
 									</td></tr></form>
-									<form method="post" action="/allegro/manager/cancelShipment?sid=${sid}"><tr><td align="right" colspan="3">
+									<form method="post" action="/allegro/manager/shipments"><tr><td align="right" colspan="3">
 										<input class="button" value="  Cancel  " type="submit"/>
 									</td></tr></form>
 								</c:otherwise>

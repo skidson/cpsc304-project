@@ -64,7 +64,7 @@
 						</center></table>
 					</c:when>
 					<c:otherwise>
-						Sorry, no results were found!
+						<br/><center>Sorry, no results were found!</center><br/>
 					</c:otherwise>
 					</c:choose>
 				</c:if>

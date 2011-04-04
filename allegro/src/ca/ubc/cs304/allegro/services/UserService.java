@@ -38,8 +38,14 @@ public class UserService {
 		model.put("profile", profile);
 	}
 	
-	public static void clearCart(Map<String, Object> model){
+	public static void clearCart(Map<String, Object> model) {
 		Profile profile = getProfile(model);
+		profile.clearCart();
+		model.put("profile", profile);
+	}
+	
+	public static void clearCart(ProfileManager manager, Map<String, Object> model) {
+		Profile profile = manager.getProfile();
 		profile.clearCart();
 		model.put("profile", profile);
 	}
