@@ -106,12 +106,7 @@ public class ManagerController {
 		try {
 			conditions.put("type", "store");
 			model.put("stores", JDBCManager.select(Table.Store, conditions));
-			numEntry = TransactionService.sanitizeInt(in_numEntry);
-			model.put("numEntry", numEntry);
 			model.put("reportDate", year + "-" + month + "-" + day);
-		} catch (IOException e) {
-			model.put("error", "Error: Invalid Input");
-			return new ModelAndView("reports", model);
 		} catch (SQLException e) {
 			model.put("error", "Error: Could not load store list");
 			return new ModelAndView("reports", model);
@@ -127,8 +122,22 @@ public class ManagerController {
 			conditions.put("Item.upc", "PurchaseItem.upc");
 			conditions.put("PurchaseItem.receiptId", "Purchase.receiptId");
 			conditions.put("Purchase.purchaseDate", new Date(calendar.getTimeInMillis()));
+			
 			List<AllegroItem> allItems = JDBCManager.select(tables, conditions, null);
 		
+			try {
+				numEntry = TransactionService.sanitizeInt(in_numEntry);
+				
+				if (allItems.size() == 0) {
+					model.put("error", "No purchases found");
+					return new ModelAndView("reports", model);
+				}
+				model.put("numEntry", numEntry);
+			} catch (IOException e) {
+				model.put("error", "No purchases found");
+				return new ModelAndView("reports", model);
+			}
+			
 			// Group items by UPC and sum their quantities
 			List<Item> items = new ArrayList<Item>();
 			for(AllegroItem allItem : allItems) {
@@ -166,7 +175,6 @@ public class ManagerController {
 				sorted.remove(sorted.size()-1);
 			
 			model.put("items", sorted);
-			
 			
 		} catch (SQLException e) {
 			model.put("error", "Error: No purchases found");
@@ -281,8 +289,6 @@ public class ManagerController {
 		try {
 			Calendar calendar = Calendar.getInstance();
 			calendar.set(year, month-1, day);
-//			Shipment shipment = new Shipment(sid, supname, sname, new Date(calendar.getTimeInMillis()));
-//			JDBCManager.insert(shipment);
 			model.put("sid", sid);
 			model.put("sname", sname);
 			model.put("supname", supname);
