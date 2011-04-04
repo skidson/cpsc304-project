@@ -1,6 +1,7 @@
 package ca.ubc.cs304.allegro.services;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -106,18 +107,14 @@ public class TransactionService {
 		}
 	}
 	
-	public static void updateStock(Integer upc, String store, Integer quantity) {
+	public static void updateStock(Integer upc, String store, Integer quantity) throws SQLException {
 		Map<String, Object> conditions = new HashMap<String, Object>();
 		conditions.put("upc", upc);
 		conditions.put("sname", store);
-		try {
-			JDBCManager.update(Table.Stored, "stock", new Integer(quantity), conditions);
-		} catch (Exception e) {
-			
-		}
+		JDBCManager.update(Table.Stored, "stock", new Integer(quantity), conditions);
 	}
 	
-	public static void updateStock(Item item, String store, int quantity){
+	public static void updateStock(Item item, String store, int quantity) throws SQLException{
 		updateStock(item.getUpc(), store, quantity);
 	}
 	
