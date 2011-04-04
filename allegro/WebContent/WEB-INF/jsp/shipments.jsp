@@ -59,49 +59,49 @@
 					</tr></form>
 				</table>
 				<br />
-				<c:choose>
-					<c:when test="${not empty sid}">
+					<c:if test="${not empty sid}">
 						<h2>Shipment #${sid}</h2>
 						<table width="100%">
-							<form method="post" action="/allegro/manager/receiveShipment?sid=${sid}">
-								<tr><th>UPC</th><th>Quantity</th><th>Supply Price</th></tr>
-								<c:forEach var="shipItem" items="${shipItems}">
-									<tr>
-										<td>${shipItem.upc}</td>
-										<td>${shipItem.quantity}</td>
-										<fmt:formatNumber var="supPrice" value="${shipItem.supPrice}" pattern="0.00"/>
-										<td>$${supPrice}</td>
-									</tr>
-								</c:forEach>
-								<c:choose>
-									<c:when test="${edit}">
-							</form>
-										<form method="post" action="/allegro/manager/addShipItem">
-											<tr>
-												<td><input type="text" size="30" name="in_upc" value="000000000"/></td>
-												<td><input type="text" size="10" name="in_quantity" value="1" /></td>
-												<td>$<input type="text" size="15" name="in_supPrice" value="" /></td>
-												<input type="hidden" name="in_sid" value="${sid}"/>
-												<td><input class="button" value="   Add Item   " type="submit"/></td>
-											</tr>
-										</form>
-										<form method="post" action="/allegro/manager/viewShipment?sid=${sid}">
-											<tr />
-											<tr><td align="center" colSpan="3"><input class="button" value="    Done    " type="submit"/></td></tr>
-										</form>
-									</c:when>
-									<c:otherwise>
-								<tr />
-								<tr><td align="center" colSpan="3"><input class="button" value=" Receive " type="submit"/></td></tr>
-							</form>
-									</c:otherwise>
-								</c:choose>
+							<tr><th>UPC</th><th>Quantity</th><th>Supply Price</th></tr>
+							<c:forEach var="shipItem" items="${shipItems}">
+								<tr>
+									<td>${shipItem.upc}</td>
+									<td>${shipItem.quantity}</td>
+									<fmt:formatNumber var="supPrice" value="${shipItem.supPrice}" pattern="0.00"/>
+									<td>$${supPrice}</td>
+								</tr>
+							</c:forEach>
+							<c:choose>
+								<c:when test="${edit}">
+									<form method="post" action="/allegro/manager/addShipItem">
+										<tr>
+											<td><input type="text" size="30" name="in_upc" value="000000000"/></td>
+											<td><input type="text" size="10" name="in_quantity" value="1" /></td>
+											<td>$<input type="text" size="15" name="in_supPrice" value="" /></td>
+											<input type="hidden" name="in_sid" value="${sid}"/>
+											<input type="hidden" name="in_sname" value="${sname}"/>
+											<input type="hidden" name="in_supname" value="${supname}"/>
+											<input type="hidden" name="in_date" value="${date}"/>
+											<td><input class="button" value="   Add Item   " type="submit"/></td>
+										</tr>
+									</form>
+									<form method="post" action="/allegro/manager/viewShipment?sid=${sid}">
+										<tr />
+										<tr><td align="center" colSpan="3"><input class="button" value="    Done    " type="submit"/></td></tr>
+									</form>
+								</c:when>
+								<c:otherwise>
+									<tr />
+									<form method="post" action="/allegro/manager/receiveShipment?sid=${sid}"><tr><td align="right" colspan="3">
+										<input class="button" value=" Receive " type="submit"/>
+									</td></tr></form>
+									<form method="post" action="/allegro/manager/cancelShipment?sid=${sid}"><tr><td align="right" colspan="3">
+										<input class="button" value="  Cancel  " type="submit"/>
+									</td></tr></form>
+								</c:otherwise>
+							</c:choose>
 						</table>
-					</c:when>
-					<c:otherwise>
-					
-					</c:otherwise>
-				</c:choose>
+					</c:if>
 			</div> <!-- main -->
 		</div> <!-- content-wrap -->	
 		<%@ include file="/WEB-INF/jsp/footer.jsp" %>

@@ -19,10 +19,8 @@ public class TransactionService {
 		if (value != null) {
 			try {
 				Integer parsed = Integer.parseInt(value);
-				if(parsed > 0)
+				if (parsed > 0)
 					return parsed;
-				else
-					throw new IOException();
 			} catch (NumberFormatException e) {
 				throw new IOException(e);
 			}
@@ -75,7 +73,9 @@ public class TransactionService {
 				return(0.0);
 			value = value.trim();
 			try {
-				return Double.parseDouble(value);
+				double amount = Double.parseDouble(value);
+				if (amount > 0)
+					return amount;
 			} catch (Exception e) {
 				throw new IOException(e);
 			}
