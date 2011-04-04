@@ -9,11 +9,12 @@
 		http://www.springframework.org/schema/security/spring-security-3.0.xsd">
 		
 	<http>
-		<intercept-url pattern="/customer/*" access="ROLE_USER"/>
+		<intercept-url pattern="/*/*cart*" access="ROLE_USER"/>
+		<!--<intercept-url pattern="/customer/*" access="ROLE_USER"/>
 		<intercept-url pattern="/clerk/*" access="ROLE_USER"/>
 		<intercept-url pattern="/manager/*" access="ROLE_USER" />
-		
-		<form-login login-page="/login.jsp" default-target-url="/index/welcome"
+		<form-login login-page="/login.jsp" default-target-url="/index/welcome"-->
+		<form-login login-page="/login.jsp" default-target-url="/customer/cart"
 			authentication-failure-url="/login.jsp?error=true" />
 		<logout logout-success-url="/login.jsp" />
 	</http>

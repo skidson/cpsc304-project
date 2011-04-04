@@ -134,10 +134,10 @@ public class ClerkController {
 		
 		try {
 			for (Item item : cart) {
-				int inStock = TransactionService.checkStock(item, store);
-				if (inStock < item.getQuantity()) {
+				item.setStock(TransactionService.checkStock(item, store));
+				if (item.getStock() < item.getQuantity()) {
 					model.put("error", "Error: Current quantity of '" + item.getTitle() + "'(" + 
-							item.getUpc() + ") is " + inStock);
+							item.getUpc() + ") is " + item.getStock());
 					return new ModelAndView("checkout", model);
 				}
 			}
@@ -147,6 +147,7 @@ public class ClerkController {
 			for (Item item : cart) {
 				JDBCManager.insert(new PurchaseItem(receiptId, item.getUpc(), 
 						item.getQuantity()));
+				TransactionService.updateStock(item, store, item.getStock() - item.getQuantity());
 			}
 			
 		} catch (SQLException e) {

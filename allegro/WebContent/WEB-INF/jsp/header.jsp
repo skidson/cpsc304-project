@@ -5,7 +5,7 @@
 	<h1 id="logo-text"><a href="<c:url value="/index/welcome"/>">Allegro</a></h1>		
 	<p id="slogan">Music Store</p>		
 	
-	<c:if test="${profile.manager || profile.clerk || profile.customer}" >
+	<c:if test="${profile.username != 'anonymousUser' && profile.username != null}">
 		<div id="header-links">
 			<p>Logged in as: ${profile.username} | <a href="<c:url value="/j_spring_security_logout" />">Logout</a></p>		
 		</div>
