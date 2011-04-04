@@ -20,8 +20,8 @@
 				<c:if test="${not empty message}">
 						<tr><td colSpan="2"><font color="green"><b>${message} 
 						<fmt:formatNumber var="refundPrice" value="${refundPrice}" pattern="0.00"/>
-						<c:if test="${type eq 'credit'}"> Your credit card has been credited ${refundPrice}. Sorry for the inconvenience!</c:if>
-						<c:if test="${type eq 'cash'}"> Here is ${refundPrice} in cash. Sorry for the inconvenience!</c:if></b></font></td></tr>
+						<c:if test="${type eq 'credit'}"> Your credit card has been credited $${refundPrice}.</c:if>
+						<c:if test="${type eq 'cash'}"> Here is $${refundPrice} in cash.</c:if></b></font></td></tr>
 				</c:if>
 				<table><form action="/allegro/clerk/getPurchase">
 					<tr>
