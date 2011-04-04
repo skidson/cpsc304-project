@@ -64,6 +64,13 @@ public class ClerkController {
 		return new ModelAndView("checkout", model);
 	}
 	
+	@RequestMapping("/clerk/clearCart")
+	public ModelAndView clearCart() {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		UserService.clearCart(model);
+		return new ModelAndView("purchase", model);
+	}
+	
 	@RequestMapping("/clerk/finalize")
 	public ModelAndView finalize(@RequestParam("method") String method,
 			@RequestParam(value = "in_cash", required = false) String cash, 
@@ -279,7 +286,8 @@ public class ClerkController {
 	public ModelAndView finalizeRefund(@RequestParam("upc") String in_upc,
 										@RequestParam("j_receiptID") String in_receiptID,
 										@RequestParam("in_store") String sname,
-										@RequestParam("in_quantity") String in_quantity) {
+										@RequestParam("in_quantity") String in_quantity,
+										@RequestParam("in_price") double price) {
 		
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		HashMap<String, Object> conditions = new HashMap<String, Object>();
@@ -349,7 +357,7 @@ public class ClerkController {
 				model.put("items", returnedItems);
 				model.put("store", sname);
 				model.put("stores", stores);
-				model.put("receiptI", receiptID);
+				model.put("receiptId", receiptID);
 				return new ModelAndView("refund", model);
 			}
 			int retid = new Random().nextInt(1000000);
@@ -359,6 +367,17 @@ public class ClerkController {
 			RefundItem refItem = new RefundItem(new Integer(retid), new Integer(upc), new Integer(quantity));
 			JDBCManager.insert(refItem);
 			TransactionService.updateStock(upc, sname, item.getQuantity() + quantity);
+			conditions.clear();
+			conditions.put("upc", upc);
+			shared.add("receiptID");
+			tables.add(Table.Purchase);
+			tables.add(Table.PurchaseItem);
+			Purchase purchase = (Purchase)JDBCManager.select(tables, conditions, shared).get(0);
+			
+			if(purchase.getCardNum() == null)
+				model.put("type", "credit");
+			else
+				model.put("type", "cash");
 		}catch(SQLException e){
 			
 		}
@@ -367,6 +386,8 @@ public class ClerkController {
 		
 		try{
 			conditions.clear();
+			tables.clear();
+			shared.clear();
 			conditions.put("receiptId", receiptID);
 			List<AllegroItem> purchaseItems = JDBCManager.select(Table.PurchaseItem, conditions);
 			
@@ -392,14 +413,17 @@ public class ClerkController {
 				shared.clear();
 				refQuantity =0;
 			}
-			model.put("items", returnedItems);
+			
 		}catch (Exception e){
 			
 		}
+		model.put("items", returnedItems);
+		System.out.println(returnedItems.toString());
+		model.put("refundPrice", (quantity * price));
 		model.put("store", sname);
 		model.put("stores", stores);
 		model.put("receiptID", receiptID);
-		model.put("message", "Successfully returned the item");
+		model.put("message", "Successfully returned the item.");
 		
 		return new ModelAndView("refund", model);
 	}

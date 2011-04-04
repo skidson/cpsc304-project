@@ -9,6 +9,9 @@
 		<div id="content-wrap">
 			<div id="main">
 				<h2>Pending Shipments</h2>
+				<c:if test="${not empty param.error}">
+						<center><font color="red"><b>${param.error}</b></font></center>
+				</c:if>
 				<c:if test="${not empty error}">
 					<center><font color="red"><b>${error}</b></font></center>
 				</c:if>

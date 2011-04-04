@@ -1,8 +1,8 @@
 package ca.ubc.cs304.allegro.controller;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager;
 import ca.ubc.cs304.allegro.jdbc.JDBCManager.Table;
 import ca.ubc.cs304.allegro.model.AllegroItem;
+import ca.ubc.cs304.allegro.model.Customer;
 import ca.ubc.cs304.allegro.model.ProfileManager;
 import ca.ubc.cs304.allegro.services.UserService;
 
@@ -68,6 +69,8 @@ public class HomeController {
 		
 		List<Object> parameters = new ArrayList<Object>();
 		Map<String, Object> model = UserService.initUserContext(profileManager);
+		Map<String, Object> conditions = new HashMap<String, Object>();
+		
 		if(name.equals("")){
 			model.put("error", "Error: name was null");
 			return new ModelAndView("register", model);
@@ -76,12 +79,30 @@ public class HomeController {
 			model.put("error", "Error: username was null");
 			return new ModelAndView("register", model);
 		}
+		
+//		try{
+//			conditions.put("cid", username);
+//			Customer acct = (Customer)JDBCManager.select(Table.Customer, conditions).get(0);
+//			if(acct.getCid().equals(username)){
+//				model.put("error", "Error: Duplicate username found in database, please choose another");
+//				return new ModelAndView("register", model);
+//			}
+//				
+//		}catch(SQLException e){
+//			model.put("error", "Error: Duplicate username found in database, please choose another");
+//			return new ModelAndView("register", model);
+//		}
+//		
 		if(address.equals("")){
 			model.put("error", "Error: address was null");
 			return new ModelAndView("register", model);
 		}
 		try{
 			Long.parseLong(phone);
+			if(Long.parseLong(phone) < 0 ){
+				model.put("error", "Error: Phone contained invalid characters");
+				return new ModelAndView("register", model);
+			}
 		}catch(NumberFormatException e){
 			model.put("error", "Error: Phone contained invalid characters");
 			return new ModelAndView("register", model);
@@ -99,7 +120,8 @@ public class HomeController {
 		try {
 			JDBCManager.insert(Table.Customer, parameters);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			model.put("error", "Error: Duplicate username found in database, please choose another");
+			return new ModelAndView("register", model);
 		}
 		return new ModelAndView("welcome", model);
 	}

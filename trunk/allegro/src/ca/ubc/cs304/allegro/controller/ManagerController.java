@@ -162,8 +162,11 @@ public class ManagerController {
 			}
 			
 			// Only maintain the specified number of items
-			while (sorted.size() > numEntry)
-				sorted.remove(items.size()-1);
+			while (sorted.size() > numEntry){
+				System.out.println(sorted.size() + " ASDA" + numEntry);
+				
+				sorted.remove(sorted.size()-1);
+			}
 			
 			model.put("items", sorted);
 			
@@ -280,6 +283,11 @@ public class ManagerController {
 		Integer sid = (new Random()).nextInt(MAX_SHIPMENT_NUM);
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(year, month-1, day);
+		if(!TransactionService.validCardExpiry(calendar)){
+			model.put("error", "Error: Invalid Date");
+			return new ModelAndView("redirect:/manager/shipments", model);
+		}
+		
 		try {
 			JDBCManager.insert(new Shipment(sid, supname, sname, new Date(calendar.getTimeInMillis())));
 			model.put("shipments", JDBCManager.select(Table.Shipment));
@@ -305,6 +313,12 @@ public class ManagerController {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		
 		try {
+			if(TransactionService.sanitizeMoney(supPrice) < 0 ){
+				model.put("edit", true);
+				model.put("sid", sid);
+				model.put("error", "Error: Negative supplier price");
+				return new ModelAndView("shipments", model);
+			}
 			JDBCManager.insert(new ShipItem(sid, TransactionService.sanitizeInt(upc),
 					TransactionService.sanitizeMoney(supPrice),
 					TransactionService.sanitizeInt(quantity)));

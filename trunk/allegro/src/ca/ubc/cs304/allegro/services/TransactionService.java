@@ -109,6 +109,7 @@ public class TransactionService {
 	public static void updateStock(Integer upc, String store, Integer quantity) {
 		Map<String, Object> conditions = new HashMap<String, Object>();
 		conditions.put("upc", upc);
+		conditions.put("sname", store);
 		try {
 			JDBCManager.update(Table.Stored, "stock", new Integer(quantity), conditions);
 		} catch (Exception e) {
