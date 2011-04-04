@@ -54,7 +54,10 @@ public class ManagerController {
 									@RequestParam("in_status") int status){
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		try {
-			JDBCManager.insert(new Supplier(supName, address, city, status));
+			if (supName.equals(""))
+				model.put("error", "Error: Invalid supplier name");
+			else
+				JDBCManager.insert(new Supplier(supName, address, city, status));
 			List<AllegroItem> suppliers = JDBCManager.select(Table.Supplier);
 			model.put("suppliers", suppliers);
 		} catch (SQLException e) {
@@ -447,7 +450,7 @@ public class ManagerController {
 		Map<String, Object> conditions = new HashMap<String, Object>();
 		
 		try {
-			conditions.put("sid", sid);
+			//conditions.put("sid", sid);
 			JDBCManager.delete(Table.Shipment, conditions);
 		} catch (Exception e) {
 			model.put("error", "Error: Could not delete shipment");

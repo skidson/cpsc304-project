@@ -67,7 +67,7 @@ public class ClerkController {
 	@RequestMapping("/clerk/clearCart")
 	public ModelAndView clearCart() {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
-		UserService.clearCart(model);
+		UserService.clearCart(profileManager, model);
 		return new ModelAndView("purchase", model);
 	}
 	
@@ -265,7 +265,6 @@ public class ClerkController {
 				for(AllegroItem refItem : refItemList){
 					refQuantity += (Integer)refItem.getParameters().get(2);
 				}
-				System.out.println("TEST : Setting item upc of " + dbItem.getUpc() + " to : " + (new Integer((Integer)item.getParameters().get(2))- refQuantity));
 				dbItem.setQuantity(new Integer((Integer)item.getParameters().get(2))- refQuantity);
 				returnedItems.add(dbItem);
 				conditions.clear();
