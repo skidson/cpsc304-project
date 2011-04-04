@@ -156,17 +156,14 @@ public class ManagerController {
 			while (!items.isEmpty()) {
 				int max = 0;
 				for (int i = 0; i < items.size(); i++)
-					if (items.get(i).getStock() > items.get(max).getStock())
+					if (items.get(i).getQuantity() > items.get(max).getQuantity())
 						max = i;
 				sorted.add(items.remove(max));
 			}
 			
 			// Only maintain the specified number of items
-			while (sorted.size() > numEntry){
-				System.out.println(sorted.size() + " ASDA" + numEntry);
-				
+			while (sorted.size() > numEntry)
 				sorted.remove(sorted.size()-1);
-			}
 			
 			model.put("items", sorted);
 			
@@ -272,7 +269,6 @@ public class ManagerController {
 		return new ModelAndView("shipments", model);
 	}
 	
-	// TODO
 	@RequestMapping("/manager/createShipment")
 	public ModelAndView createShipment(@RequestParam("in_supname") String supname,
 			@RequestParam("in_sname") String sname,
@@ -281,15 +277,16 @@ public class ManagerController {
 			@RequestParam("in_day") int day) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		Integer sid = (new Random()).nextInt(MAX_SHIPMENT_NUM);
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(year, month-1, day);
-		if(!TransactionService.validCardExpiry(calendar)){
-			model.put("error", "Error: Invalid Date");
-			return new ModelAndView("redirect:/manager/shipments", model);
-		}
 		
 		try {
-			JDBCManager.insert(new Shipment(sid, supname, sname, new Date(calendar.getTimeInMillis())));
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(year, month-1, day);
+//			Shipment shipment = new Shipment(sid, supname, sname, new Date(calendar.getTimeInMillis()));
+//			JDBCManager.insert(shipment);
+			model.put("sid", sid);
+			model.put("sname", sname);
+			model.put("supname", supname);
+			model.put("date", calendar.getTimeInMillis());
 			model.put("shipments", JDBCManager.select(Table.Shipment));
 			Map<String, Object> conditions = new HashMap<String, Object>();
 			conditions.put("status", 0);
@@ -297,7 +294,6 @@ public class ManagerController {
 			conditions.clear();
 			conditions.put("type", "store");
 			model.put("stores", JDBCManager.select(Table.Store, conditions));
-			model.put("sid", sid);
 		} catch (SQLException e) {
 			model.put("error", "Error: Could not load shipments");
 		}
@@ -307,42 +303,58 @@ public class ManagerController {
 	
 	@RequestMapping("/manager/addShipItem")
 	public ModelAndView addShipItem(@RequestParam("in_sid") Integer sid,
-			@RequestParam("in_upc") String upc,
-			@RequestParam("in_supPrice") String supPrice,
-			@RequestParam("in_quantity") String quantity) {
+			@RequestParam("in_upc") String in_upc,
+			@RequestParam("in_supPrice") String in_supPrice,
+			@RequestParam("in_quantity") String in_quantity,
+			@RequestParam(value = "in_sname", required=false) String sname,
+			@RequestParam(value = "in_supname", required=false) String supname,
+			@RequestParam(value = "in_date", required=false) Long date) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		
 		try {
-			if(TransactionService.sanitizeMoney(supPrice) < 0 ){
-				model.put("edit", true);
-				model.put("sid", sid);
-				model.put("error", "Error: Negative supplier price");
-				return new ModelAndView("shipments", model);
-			}
-			JDBCManager.insert(new ShipItem(sid, TransactionService.sanitizeInt(upc),
-					TransactionService.sanitizeMoney(supPrice),
-					TransactionService.sanitizeInt(quantity)));
+			
 			Map<String, Object> conditions = new HashMap<String, Object>();
-			
 			model.put("shipments", JDBCManager.select(Table.Shipment));
-			
 			model.put("stores", JDBCManager.select(Table.Store, conditions));
-			
 			conditions.clear();
 			conditions.put("status", ACTIVE);
 			model.put("suppliers", JDBCManager.select(Table.Supplier, conditions));
+			model.put("edit", true);
+			model.put("sid", sid);
 			
 			conditions.clear();
 			conditions.put("sid", sid);
-			model.put("shipItems", JDBCManager.select(Table.ShipItem, conditions));
+			List<AllegroItem> shipItems = JDBCManager.select(Table.ShipItem, conditions);
+			model.put("shipItems", shipItems);
+			
+			Integer upc, quantity;
+			Double supPrice;
+			try {
+				upc = TransactionService.sanitizeInt(in_upc);
+				supPrice = TransactionService.sanitizeMoney(in_supPrice);
+				quantity = TransactionService.sanitizeInt(in_quantity);
+			}  catch (IOException e) {
+				model.put("error", "Error: Invalid input");
+				return new ModelAndView("shipments", model);
+			}
+			
+			// If the shipment hasn't been created yet, create it and add this shipItem
+			if(date != null)
+				JDBCManager.insert(new Shipment(sid, supname, sname, new Date(date)));
+			
+			ShipItem shipItem = new ShipItem(sid, upc, supPrice, quantity);
+			JDBCManager.insert(shipItem);
+			shipItems.add(shipItem);
+			
+			conditions.clear();
+			conditions.put("sid", sid);
+			model.put("shipItems", shipItems);
 			
 		} catch (SQLException e) {
 			model.put("error", "Error: Could not load shipments");
-		} catch (IOException e) {
-			model.put("error", "Error: Could not add item to shipment");
+			e.printStackTrace();
 		}
-		model.put("edit", true);
-		model.put("sid", sid);
+		
 		return new ModelAndView("shipments", model);
 	}
 	
@@ -416,6 +428,21 @@ public class ManagerController {
 			model.put("error", "Error: Could not receive shipment");
 		}
 		return new ModelAndView("shipments", model);
+	}
+	
+	@RequestMapping("/manager/cancelShipment")
+	public ModelAndView cancelShipment(@RequestParam("sid") Integer sid) {
+		Map<String, Object> model = UserService.initUserContext(profileManager);
+		Map<String, Object> conditions = new HashMap<String, Object>();
+		
+		try {
+			conditions.put("sid", sid);
+			JDBCManager.delete(Table.Shipment, conditions);
+		} catch (Exception e) {
+			model.put("error", "Error: Could not delete shipment");
+		}
+		
+		return new ModelAndView("redirect:/manager/shipments", model);
 	}
 	
 }
