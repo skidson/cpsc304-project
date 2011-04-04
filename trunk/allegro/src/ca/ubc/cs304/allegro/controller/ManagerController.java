@@ -388,12 +388,20 @@ public class ManagerController {
 	}
 	
 	@RequestMapping("/manager/receiveShipment")
-	public ModelAndView receiveShipment(@RequestParam("sid") String sid) {
+	public ModelAndView receiveShipment(@RequestParam("sid") Integer sid) {
 		Map<String, Object> model = UserService.initUserContext(profileManager);
 		try {
+			
 			model.put("shipments", JDBCManager.select(Table.Shipment));
 			Map<String, Object> conditions = new HashMap<String, Object>();
-			conditions.put("sid", Integer.parseInt(sid));
+			model.put("stores", JDBCManager.select(Table.Store));
+			conditions.clear();
+			conditions.put("status", ACTIVE);
+			model.put("suppliers", JDBCManager.select(Table.Supplier, conditions));
+			model.put("shipments", JDBCManager.select(Table.Shipment));
+			
+			conditions.clear();
+			conditions.put("sid", sid);
 			
 			// Store shipment data locally
 			Shipment shipment = (Shipment)JDBCManager.select(Table.Shipment, conditions).get(0);
@@ -403,12 +411,13 @@ public class ManagerController {
 			for (AllegroItem rawItem : shipItems) {
 				ShipItem shipItem = (ShipItem)rawItem;
 				Integer stock = TransactionService.checkStock(shipItem.getUpc(), shipment.getSname());
-				if (stock > 0) {
+				try {
 					TransactionService.updateStock(shipItem.getUpc(), shipment.getSname(),
 							stock + shipItem.getQuantity());
-				} else
+				} catch (SQLException e) {
+					// No entry in Stored for this item (store has never carried this item before), create one
 					JDBCManager.insert(new Stored(shipment.getSname(), shipItem.getUpc(), shipItem.getQuantity()));
-				
+				}
 				// Ensure the item's sell price is atleast 20% greater than supplier's price
 				conditions = new HashMap<String, Object>();
 				conditions.put("upc", shipItem.getUpc());
@@ -419,18 +428,14 @@ public class ManagerController {
 			
 			// Delete shipment data from database
 			conditions = new HashMap<String, Object>();
-			conditions.put("sid", Integer.parseInt(sid));
+			conditions.put("sid", sid);
 			JDBCManager.delete(Table.ShipItem, conditions);
 			JDBCManager.delete(Table.Shipment, conditions);
 			
-			model.put("stores", JDBCManager.select(Table.Store));
-			conditions.clear();
-			conditions.put("status", ACTIVE);
-			model.put("suppliers", JDBCManager.select(Table.Supplier, conditions));
-			model.put("shipments", JDBCManager.select(Table.Shipment));
 			model.put("message", "Shipment #" + shipment.getSid() + " successfully received");
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			model.put("error", "Error: Could not receive shipment");
 		}
 		return new ModelAndView("shipments", model);

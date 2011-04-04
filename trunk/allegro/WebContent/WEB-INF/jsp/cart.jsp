@@ -83,7 +83,7 @@
 						<td><input style="float:right" class="button" value=" Checkout " onclick="parent.location='/allegro/customer/checkout'"/></td>
 					</c:when>
 					<c:otherwise>
-					Your shopping cart is empty!
+						<center><font color="red"><b>Your shopping cart is empty!</b></font></center>
 					</c:otherwise>
 				</c:choose>
 			</div> <!-- main -->
