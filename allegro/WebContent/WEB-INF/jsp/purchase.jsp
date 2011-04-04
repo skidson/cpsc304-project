@@ -39,7 +39,13 @@
 						<td><b>$${totalPrice}</b></td>
 						<td />
 					</tr>
-					<tr />
+					<tr> 
+					<c:if test="${not empty profile.shoppingCart}">
+						<form  method="post" action="/allegro/clerk/clearCart"><td align="center" colSpan="5">
+							<input class="button" value="    Cancel Order    " type="submit"/>
+						</td></form>
+					</c:if>
+					</tr>
 					<tr><form  method="post" action="/allegro/clerk/checkout"><td align="center" colSpan="5">
 						<input class="button" value="    Checkout    " type="submit"/>
 					</td></form></tr>

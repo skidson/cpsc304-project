@@ -93,12 +93,20 @@ public class CustomerController {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		model.put("cat", category);
+		model.put("title", title);
+		model.put("ls", leadSinger);
+		model.put("name",songName);
+		
 		model.put("itemList", results);
 		model.put("result", true);
 		return new ModelAndView("search", model);
 	}
 	@RequestMapping("/customer/updateCart")
-	public ModelAndView updateCart(@RequestParam("j_quantity") String in_quantity, @RequestParam("upc") int upc){
+	public ModelAndView updateCart(@RequestParam("j_quantity") String in_quantity, @RequestParam("upc") int upc,
+									@RequestParam("j_category") String category, @RequestParam(value="j_title", required=false) String title,
+									@RequestParam(value="j_leadSinger", required=false) String leadSinger,
+									@RequestParam(value="j_songName", required=false) String songName){
 	Map<String, Object> model = UserService.initUserContext(profileManager);
 	HashMap<String,Object> params = new HashMap<String, Object>();
 	int quantity = 0;
@@ -106,7 +114,7 @@ public class CustomerController {
 		quantity = TransactionService.sanitizeInt(in_quantity);
 	}catch(IOException e){
 		model.put("error", "Error: Please enter a valid quantity");
-		return new ModelAndView("search", model);
+		return new ModelAndView("redirect:/customer/performSearch?j_category="+category+"&j_title="+title+"&j_leadSinger="+leadSinger+"&j_songName="+songName, model);
 	}
 	params.put("upc", upc);
 	try {

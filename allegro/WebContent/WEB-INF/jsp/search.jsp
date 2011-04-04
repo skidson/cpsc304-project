@@ -10,8 +10,8 @@
 			<div id="main">
 				
 				<h2>Search</h2>
-				<c:if test="${not empty error}">
-						<center><font color="red"><b>${error}</b></font></center>
+				<c:if test="${not empty param.error}">
+						<center><font color="red"><b>${param.error}</b></font></center>
 				</c:if>
 				
 				<table><form method="post" action="/allegro/customer/performSearch">			
@@ -49,6 +49,10 @@
 							<form method="post" action="/allegro/customer/updateCart?upc=${item.upc}">
 								<tr><td>${item.upc}</td><td><a href="<c:url value="/customer/item?upc=${item.upc}"/>">${item.title}</a></td><td>${item.category}</td>
 									<td><input type="text" name="j_quantity"></input></td>
+									<input type="hidden" name="j_category" value="${cat}"></input>
+									<input type="hidden" name="j_title" value="${title}"></input>
+									<input type="hidden" name="j_leadSinger" value="${ls}"></input>
+									<input type="hidden" name="j_songName" value="${name}"></input>
 									<td><input class="button" type="submit" value='Add to cart'/>  </td>
 								</tr>
 							</form>
