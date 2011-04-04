@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <body>
 	<div id="wrap">
 		<c:set var="directory" value="search"/>
@@ -44,10 +44,14 @@
 					<c:when test="${not empty itemList}">
 					<h2>Search Results</h2>
 						<table width="100%"><center>
-							<th>UPC</th><th>Title</th><th>Category</th><th>Quantity</th>		
+							<th>UPC</th><th>Title</th><th>Category</th><th>Price</th><th>Quantity</th>		
 							<c:forEach var="item" items="${itemList}">
 							<form method="post" action="/allegro/customer/updateCart?upc=${item.upc}">
-								<tr><td>${item.upc}</td><td><a href="<c:url value="/customer/item?upc=${item.upc}"/>">${item.title}</a></td><td>${item.category}</td>
+								<tr><td>${item.upc}</td>
+									<td><a href="<c:url value="/customer/item?upc=${item.upc}"/>">${item.title}</a></td>
+									<td>${item.category}</td>
+									<fmt:formatNumber var="price" value="${item.sellPrice}" pattern="0.00"/>
+									<td>$${price}</td>
 									<td><input type="text" name="j_quantity"></input></td>
 									<input type="hidden" name="j_category" value="${cat}"></input>
 									<input type="hidden" name="j_title" value="${title}"></input>
@@ -60,7 +64,7 @@
 						</center></table>
 					</c:when>
 					<c:otherwise>
-						Sorry, not results were found!
+						Sorry, no results were found!
 					</c:otherwise>
 					</c:choose>
 				</c:if>

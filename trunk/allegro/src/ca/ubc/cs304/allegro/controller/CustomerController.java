@@ -2,7 +2,6 @@ package ca.ubc.cs304.allegro.controller;
 
 import java.io.IOException;
 import java.sql.Date;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;

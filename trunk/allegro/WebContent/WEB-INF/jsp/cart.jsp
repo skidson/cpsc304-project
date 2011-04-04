@@ -18,26 +18,29 @@
 					<c:choose>
 						<c:when test="${checkout eq 'true'}">
 							<table width="100%">
-							<th>Title</th><th>Price</th><th>Quantity</th>
+							<th>Title</th><th>Quantity</th><th>Price</th>
 							<c:forEach var="item" items="${profile.shoppingCart}">
 								<tr>
 									<td>${item.title}</td>
-									<td>$${item.sellPrice}</td>
 									<td>${item.quantity}</td>
+									<td>$${item.sellPrice}</td>
 									<c:set var="totalPrice" value="${totalPrice + (item.sellPrice * item.quantity)}"/>
 								</tr>
 								
 							</c:forEach>
+							<tr />
 							<tr>
 								<fmt:formatNumber var="totalPrice" value="${totalPrice}" pattern="0.00"/>
-		
-								<td></td><td>Total Price : $${totalPrice}</td><td></td>
+								<td/><td align="right"><b>Total Price:</b></td><td>$${totalPrice}</td>
 							</tr>
 							</table>
 						<br/>
 						<br/>
 						Please input your credit card number and expiry date to complete this transaction.
 						<table width="100%"><form action="/allegro/customer/finalize">
+						
+						
+						
 						<tr>
 						<td>Card Number: <input type="text" name="j_cardnum"/></td>
 						<td>Expiry Date: 
@@ -72,18 +75,20 @@
 									<td>${item.title}</td>
 									<td>$${item.sellPrice}</td>
 									<td>${item.quantity}</td>
-									<td><input class="button" size="8%" value=" Remove " onclick="parent.location='/allegro/customer/removeItem?index=${counter}'" /></td>
+									<td><input class="button" type="submit" value="  Remove  " onclick="parent.location='/allegro/customer/removeItem?index=${counter}'" /></td>
 									<c:set var="counter" value="${counter+1}"/>					
 								</tr>
 							</c:forEach>
-							
-							
+							<tr />
+							<tr><td colspan="3"/><td><input class="button" type="submit" value=" Checkout " onclick="parent.location='/allegro/customer/checkout'"/></td></tr>
 						</table>
 						
-						<td><input style="float:right" class="button" value=" Checkout " onclick="parent.location='/allegro/customer/checkout'"/></td>
+						
 					</c:when>
 					<c:otherwise>
-						<center><font color="red"><b>Your shopping cart is empty!</b></font></center>
+						<br />
+						<center><b>Your shopping cart is empty!</b></center>
+						<br />
 					</c:otherwise>
 				</c:choose>
 			</div> <!-- main -->
